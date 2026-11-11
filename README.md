@@ -21,6 +21,7 @@ bin/web down    # stop
 
 ```bash
 bin/harness up       # build and start
+bin/harness connect  # connect to the website (the setup page shows the command)
 bin/harness claude   # run Claude Code inside it
 bin/harness down     # stop
 ```

@@ -18,7 +18,9 @@ RUN groupadd --gid "${HARNESS_GID}" claude \
     && useradd --uid "${HARNESS_UID}" --gid "${HARNESS_GID}" --create-home --shell /bin/bash claude
 
 COPY harness/managed-settings.json /etc/claude-code/managed-settings.json
+COPY --chmod=0755 harness/agent.sh /usr/local/bin/harness-agent
+COPY --chmod=0755 harness/harness-claude.sh /usr/local/bin/harness-claude
 
 USER claude
 WORKDIR /workspace
-CMD ["sleep", "infinity"]
+CMD ["harness-agent"]

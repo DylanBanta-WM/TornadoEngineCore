@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\AuthenticateHarness;
+use App\Http\Middleware\EnsureSetupComplete;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,10 +17,20 @@ return Application::configure(basePath: dirname(__DIR__))
         then: function () {
             Route::middleware('web')
                 ->group(base_path('routes/auth.php'));
+
+            Route::middleware('web')
+                ->group(base_path('routes/setup.php'));
+
+            Route::middleware(AuthenticateHarness::class)
+                ->group(base_path('routes/harness.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->web(append: [EnsureSetupComplete::class]);
+        $middleware->prependToPriorityList(
+            before: AuthenticatesRequests::class,
+            prepend: EnsureSetupComplete::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

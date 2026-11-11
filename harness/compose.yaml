@@ -15,12 +15,14 @@ services:
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     environment:
+      HARNESS_TOKEN: ${HARNESS_TOKEN:-}
+      HARNESS_WEB_URL: http://tornado-nginx
       HTTPS_PROXY: http://harness-proxy:8888
       HTTP_PROXY: http://harness-proxy:8888
-      NO_PROXY: localhost,127.0.0.1
+      NO_PROXY: localhost,127.0.0.1,tornado-nginx
       https_proxy: http://harness-proxy:8888
       http_proxy: http://harness-proxy:8888
-      no_proxy: localhost,127.0.0.1
+      no_proxy: localhost,127.0.0.1,tornado-nginx
     volumes:
       - type: bind
         source: ..
@@ -31,7 +33,7 @@ services:
       - harness-home:/home/claude
     tmpfs:
       - /tmp
-    networks: [harness-internal]
+    networks: [harness-internal, tornado-link]
     depends_on: [harness-proxy]
 
   harness-proxy:
@@ -54,6 +56,9 @@ networks:
   harness-internal:
     internal: true
   harness-egress: {}
+  # Shared with the website only (bin/harness and bin/web create it).
+  tornado-link:
+    external: true
 
 volumes:
   harness-home:

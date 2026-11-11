@@ -25,7 +25,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ../web/public:/var/www/html/public:ro
     depends_on: [app]
-    networks: [internal, edge]
+    networks: [internal, edge, tornado-link]
 
   mariadb:
     image: mariadb:11.4.13-noble
@@ -47,6 +47,9 @@ networks:
   internal:
     internal: true
   edge: {}
+  # Shared with the harness only (bin/web and bin/harness create it).
+  tornado-link:
+    external: true
 
 volumes:
   mariadb:

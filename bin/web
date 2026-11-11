@@ -5,8 +5,12 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 export APP_UID="${APP_UID:-$(id -u)}" APP_GID="${APP_GID:-$(id -g)}"
 dc() { docker compose -f "$root/docker/compose.yaml" --env-file "$root/web/.env" "$@"; }
 
+link_network() {
+  docker network inspect tornado-link >/dev/null 2>&1 || docker network create --internal tornado-link >/dev/null
+}
+
 case "${1:-}" in
-  up)      dc up -d --build && dc exec -T app php artisan migrate --force ;;
+  up)      link_network && dc up -d --build && dc exec -T app php artisan migrate --force ;;
   down)    dc down ;;
   artisan) shift; dc exec app php artisan "$@" ;;
   *)       echo "usage: bin/web up | down | artisan <args>" >&2; exit 2 ;;
