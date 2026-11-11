@@ -1,0 +1,12 @@
+^api\.anthropic\.com$
+^claude\.ai$
+^claude\.com$
+^platform\.claude\.com$
+^code\.claude\.com$
+^github\.com$
+^api\.github\.com$
+^codeload\.github\.com$
+^objects\.githubusercontent\.com$
+^registry\.npmjs\.org$
+^repo\.packagist\.org$
+^packagist\.org$

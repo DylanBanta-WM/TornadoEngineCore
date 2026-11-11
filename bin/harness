@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Start and use the harness: bin/harness up | claude | shell | down
+set -euo pipefail
+cd "$(dirname "$0")/../harness"
+
+export HARNESS_UID="${HARNESS_UID:-$(id -u)}" HARNESS_GID="${HARNESS_GID:-$(id -g)}"
+
+case "${1:-}" in
+  up)     docker compose up -d --build ;;
+  claude) shift; docker compose exec -it harness claude "$@" ;;
+  shell)  docker compose exec -it harness bash ;;
+  down)   docker compose down ;;
+  *)      echo "usage: bin/harness up | claude | shell | down" >&2; exit 2 ;;
+esac

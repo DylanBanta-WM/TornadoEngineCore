@@ -1,0 +1,54 @@
+name: tornado-harness
+
+services:
+  harness:
+    build:
+      context: ..
+      dockerfile: harness/Dockerfile
+      args:
+        HARNESS_UID: ${HARNESS_UID:-1000}
+        HARNESS_GID: ${HARNESS_GID:-1000}
+    image: tornado-harness:dev
+    container_name: tornado-harness
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      HTTPS_PROXY: http://harness-proxy:8888
+      HTTP_PROXY: http://harness-proxy:8888
+      NO_PROXY: localhost,127.0.0.1
+    volumes:
+      - type: bind
+        source: ..
+        target: /workspace
+      # The archive stays on the host only.
+      - type: tmpfs
+        target: /workspace/TE Pre-Alpha
+      - harness-home:/home/claude
+    tmpfs:
+      - /tmp
+    networks: [harness-internal]
+    depends_on: [harness-proxy]
+
+  harness-proxy:
+    build:
+      context: ..
+      dockerfile: harness/proxy/Dockerfile
+    image: tornado-harness-proxy:dev
+    container_name: tornado-harness-proxy
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /run/tinyproxy
+    networks: [harness-internal, harness-egress]
+
+networks:
+  # No route out: the harness reaches the internet only through the proxy.
+  harness-internal:
+    internal: true
+  harness-egress: {}
+
+volumes:
+  harness-home:
