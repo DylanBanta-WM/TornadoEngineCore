@@ -10,6 +10,13 @@ Tools for school IT teams, built privacy first.
 4. Logs are scrubbed as they're written.
 5. Every broker call is audited.
 
+## Website
+
+```bash
+bin/web up      # build, start and migrate: http://127.0.0.1:8090
+bin/web down    # stop
+```
+
 ## Harness
 
 ```bash
