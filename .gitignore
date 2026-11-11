@@ -1,0 +1,7 @@
+# The archived first attempt (built from wm.Tools). Reference only; never commit it.
+/TE Pre-Alpha/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
