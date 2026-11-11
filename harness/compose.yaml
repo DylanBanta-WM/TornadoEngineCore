@@ -18,6 +18,9 @@ services:
       HTTPS_PROXY: http://harness-proxy:8888
       HTTP_PROXY: http://harness-proxy:8888
       NO_PROXY: localhost,127.0.0.1
+      https_proxy: http://harness-proxy:8888
+      http_proxy: http://harness-proxy:8888
+      no_proxy: localhost,127.0.0.1
     volumes:
       - type: bind
         source: ..
@@ -37,11 +40,13 @@ services:
       dockerfile: harness/proxy/Dockerfile
     image: tornado-harness-proxy:dev
     container_name: tornado-harness-proxy
+    environment:
+      HARNESS_NETWORK: ${HARNESS_NETWORK:-open}
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     tmpfs:
-      - /run/tinyproxy
+      - /run/tinyproxy:mode=1777
     networks: [harness-internal, harness-egress]
 
 networks:

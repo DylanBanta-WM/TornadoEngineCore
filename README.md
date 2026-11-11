@@ -18,4 +18,12 @@ bin/harness claude   # run Claude Code inside it
 bin/harness down     # stop
 ```
 
-The harness only reaches the sites listed in `harness/proxy/allow.txt`.
+### Internet access
+
+All three options are safe: the assistant only ever sees student and staff data through the privacy broker, as pseudonyms. Logged and Strict add security on top of that.
+
+- **Open** (default): the assistant can reach any public website.
+- **Logged**: the same as Open, but every site it connects to is recorded for you to review (`docker logs tornado-harness-proxy`).
+- **Strict**: only approved sites (Anthropic, GitHub, package downloads, listed in `harness/proxy/allow.txt`). Web search still works, but the assistant can't open other pages.
+
+Set `HARNESS_NETWORK=open`, `logged` or `strict` in `harness/.env`, then run `bin/harness up`.
