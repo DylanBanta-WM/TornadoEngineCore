@@ -7,9 +7,13 @@
     ];
 @endphp
 
-<x-setup-layout>
+<x-setup-layout wide>
     <div class="mt-8 overflow-hidden bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <x-setup.header :title="__('Set up DNS and HTTPS for Tornado Engine')" />
+
+        <div class="mt-6 px-6 sm:px-8">
+            @include('setup.partials.dns-diagram')
+        </div>
 
         <ul class="mt-6 px-6 sm:px-8 pb-6 sm:pb-8 space-y-3 text-sm">
             @foreach ($links as [$url, $label])
