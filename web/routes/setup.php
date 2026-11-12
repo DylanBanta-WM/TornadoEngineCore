@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Route;
 | First-time Setup Routes
 |--------------------------------------------------------------------------
 |
-| Create the admin account, connect the harness, save its Claude Code login
+| Google sign-in, the admin account, the harness, its Claude Code login
 |
 */
 
 Route::get('/setup', [SetupController::class, 'index'])->name('setup');
-Route::post('/setup/admin', [SetupController::class, 'storeAdmin'])->name('setup.admin');
+Route::post('/setup/google', [SetupController::class, 'storeGoogle'])->name('setup.google');
 
 Route::middleware('auth')->prefix('setup')->name('setup.')->group(function () {
     Route::post('/harness', [SetupController::class, 'storeHarness'])->name('harness');

@@ -6,7 +6,7 @@ use App\Models\Setting;
 use App\Models\User;
 
 /**
- * First-time setup: an admin account, then the harness, then its Claude Code login.
+ * First-time setup: Google sign-in, the admin account, the harness, then its Claude Code login.
  */
 class Setup
 {
@@ -17,6 +17,10 @@ class Setup
 
     public static function step(): string
     {
+        if (! GoogleSignIn::configured()) {
+            return 'google';
+        }
+
         if (! User::where('is_admin', true)->exists()) {
             return 'admin';
         }

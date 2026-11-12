@@ -1,45 +1,60 @@
 <x-guest-layout>
     <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ __('Set up Tornado Engine') }}</h1>
 
-    <ol class="mt-2 mb-6 flex gap-4 text-sm">
-        @foreach (['admin' => __('Admin account'), 'harness' => __('Harness'), 'claude' => __('Claude Code')] as $key => $label)
+    <ol class="mt-2 mb-6 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        @foreach (['google' => __('Google sign-in'), 'admin' => __('Admin account'), 'harness' => __('Harness'), 'claude' => __('Claude Code')] as $key => $label)
             <li class="{{ $step === $key ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400' }}">
                 {{ $loop->iteration }}. {{ $label }}
             </li>
         @endforeach
     </ol>
 
-    @if ($step === 'admin')
-        <form method="POST" action="{{ route('setup.admin') }}">
+    @if ($step === 'google')
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+            <p>{{ __('Make a sign-in app for Tornado Engine in Google Cloud, signed in as a Google Workspace admin:') }}</p>
+            <ol class="mt-2 ms-5 list-decimal space-y-2">
+                <li>{{ __('Open') }} <a href="https://console.cloud.google.com/auth/overview" target="_blank" rel="noopener" class="underline hover:text-gray-900 dark:hover:text-gray-100">Google Cloud Console</a> {{ __('and create a project.') }}</li>
+                <li>{{ __('Click Get started. Name the app Tornado Engine and set Audience to Internal.') }}</li>
+                <li>{{ __('Go to Clients, then Create client. Choose Web application and add this authorized redirect URI:') }}
+                    <pre class="mt-1 p-2 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 overflow-x-auto select-all">{{ $callbackUrl }}</pre>
+                </li>
+                <li>{{ __('Copy the client ID and client secret below. Google shows the secret only once.') }}</li>
+            </ol>
+        </div>
+
+        <form method="POST" action="{{ route('setup.google') }}" class="mt-6">
             @csrf
 
             <div>
-                <x-input-label for="name" :value="__('Name')" />
-                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                <x-input-label for="domain" :value="__('School domain')" />
+                <x-text-input id="domain" class="block mt-1 w-full" type="text" name="domain" :value="old('domain', $domain)" required autofocus placeholder="example.org" />
+                <x-input-error :messages="$errors->get('domain')" class="mt-2" />
             </div>
 
             <div class="mt-4">
-                <x-input-label for="email" :value="__('Email')" />
-                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                <x-input-label for="client_id" :value="__('Client ID')" />
+                <x-text-input id="client_id" class="block mt-1 w-full" type="text" name="client_id" :value="old('client_id')" required autocomplete="off" />
+                <x-input-error :messages="$errors->get('client_id')" class="mt-2" />
             </div>
 
             <div class="mt-4">
-                <x-input-label for="password" :value="__('Password')" />
-                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+                <x-input-label for="client_secret" :value="__('Client secret')" />
+                <x-text-input id="client_secret" class="block mt-1 w-full" type="password" name="client_secret" required autocomplete="off" />
+                <x-input-error :messages="$errors->get('client_secret')" class="mt-2" />
             </div>
 
             <div class="flex justify-end mt-6">
-                <x-primary-button>{{ __('Create admin account') }}</x-primary-button>
+                <x-primary-button>{{ __('Save') }}</x-primary-button>
             </div>
         </form>
+    @elseif ($step === 'admin')
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Sign in with your :domain Google account. It becomes the Tornado Engine admin.', ['domain' => $domain]) }}</p>
+        <x-input-error :messages="$errors->get('google')" class="mt-4" />
+
+        <div class="flex items-center justify-between mt-6">
+            <a href="{{ route('setup', ['change' => 'google']) }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">{{ __('Change Google settings') }}</a>
+            <x-primary-link :href="route('google.redirect')">{{ __('Sign in with Google') }}</x-primary-link>
+        </div>
     @elseif ($step === 'harness')
         @if ($harnessToken)
             <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Run this on the server, in the Tornado Engine folder:') }}</p>
@@ -47,10 +62,7 @@
             <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">{{ __('Waiting for the harness to connect.') }}</p>
 
             <div class="flex justify-end mt-6">
-                <a href="{{ route('setup') }}"
-                   class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white">
-                    {{ __('Check connection') }}
-                </a>
+                <x-primary-link :href="route('setup')">{{ __('Check connection') }}</x-primary-link>
             </div>
         @else
             <form method="POST" action="{{ route('setup.harness') }}">

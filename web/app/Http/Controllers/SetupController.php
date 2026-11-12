@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
-use App\Models\User;
+use App\Support\GoogleSignIn;
 use App\Support\Setup;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class SetupController extends Controller
@@ -23,40 +21,42 @@ class SetupController extends Controller
 
         $step = Setup::step();
 
-        if ($step !== 'admin' && ! $request->user()?->is_admin) {
+        if (! in_array($step, ['google', 'admin'], true) && ! $request->user()?->is_admin) {
             return redirect()->route('login');
+        }
+
+        if ($step === 'admin' && $request->query('change') === 'google') {
+            $step = 'google';
         }
 
         return view('setup.index', [
             'step' => $step,
             'harnessToken' => session('harness_token'),
+            'domain' => GoogleSignIn::domain(),
+            'callbackUrl' => GoogleSignIn::callbackUrl(),
         ]);
     }
 
-    public function storeAdmin(Request $request): RedirectResponse
+    public function storeGoogle(Request $request): RedirectResponse
     {
-        abort_if(Setup::step() !== 'admin', 403);
+        abort_unless(in_array(Setup::step(), ['google', 'admin'], true), 403);
 
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'domain' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i'],
+            'client_id' => ['required', 'string', 'max:255'],
+            'client_secret' => ['required', 'string', 'max:255'],
         ]);
 
-        $user = new User($data);
-        $user->is_admin = true;
-        $user->email_verified_at = now();
-        $user->save();
-
-        Auth::login($user);
-        $request->session()->regenerate();
+        Setting::put('google.domain', strtolower(trim($data['domain'])));
+        Setting::put('google.client_id', trim($data['client_id']));
+        Setting::putSecret('google.client_secret', trim($data['client_secret']));
 
         return redirect()->route('setup');
     }
 
     public function storeHarness(Request $request): RedirectResponse
     {
-        abort_unless($request->user()->is_admin && Setup::step() !== 'admin', 403);
+        abort_unless($request->user()->is_admin && in_array(Setup::step(), ['harness', 'claude'], true), 403);
 
         $token = Str::random(48);
         Setting::put('harness.token_hash', hash('sha256', $token));
