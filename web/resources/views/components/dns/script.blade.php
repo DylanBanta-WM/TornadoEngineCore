@@ -19,5 +19,5 @@
             <a href="{{ asset('scripts/'.$file) }}" download class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white hover:bg-indigo-500">{{ __('Download') }}</a>
         </div>
     </div>
-    <pre class="max-h-72 overflow-auto px-4 py-3 font-mono text-[13px] leading-relaxed text-gray-100"><code x-ref="script">{{ file_get_contents(public_path('scripts/'.$file)) }}</code></pre>
+    <pre class="max-h-72 overflow-auto [color-scheme:dark] px-4 py-3 font-mono text-[13px] leading-relaxed text-gray-100"><code x-ref="script">{{ file_get_contents(public_path('scripts/'.$file)) }}</code></pre>
 </div>

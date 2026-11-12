@@ -100,53 +100,48 @@
                     </x-dns.code>
                 </x-dns.step>
 
-                <x-dns.step n="5" :title="__('Get the certificate')">
+                <x-dns.step n="5" :title="__('Get the certificate and add the site')">
+                    <p>{{ __('This script gets the HTTPS certificate from Let\'s Encrypt and adds the Tornado Engine site to the Nginx RP. If Nginx doesn\'t accept the new site, the script undoes it.') }}</p>
+                    <x-dns.script file="add-tornado-engine-site.sh" />
+                    <p>{{ __('Copy it to the Nginx RP the same way as the script in step 4, then run it:') }}</p>
                     <x-dns.code>
-                        sudo certbot certonly \
-                          --dns-cloudflare \
-                          --dns-cloudflare-credentials /root/.secrets/certbot/cloudflare.ini \
-                          --deploy-hook "systemctl reload nginx" \
-                          -d te.example.org
+                        sudo bash add-tornado-engine-site.sh
                     </x-dns.code>
+                    <p>{!! __('It asks for Tornado Engine\'s address, :domain, and the local IP and port of the server Tornado Engine runs on, :upstream. The first time, Certbot also asks for an email address and for you to accept Let\'s Encrypt\'s terms.', ['domain' => '<code class="'.$code.'">te.example.org</code>', 'upstream' => '<code class="'.$code.'">10.0.0.30:8090</code>']) !!}</p>
+                    <p>{!! __('If the Nginx RP runs on the same machine as Tornado Engine, enter :local. If your Nginx RP is a different machine, set :bind to this server\'s IP.', ['local' => '<code class="'.$code.'">127.0.0.1:8090</code>', 'bind' => '<code class="'.$code.'">WEB_BIND</code>']) !!}</p>
                     <p>{{ __('Certbot renews the certificate by itself before it expires and reloads the Nginx RP when it does, so you only do this once.') }}</p>
-                </x-dns.step>
-
-                <x-dns.step n="6" :title="__('Add the Tornado Engine site to the Nginx RP')">
-                    <p>{!! __('Create :file with:', ['file' => '<code class="'.$code.'">/etc/nginx/sites-available/te.example.org</code>']) !!}</p>
-                    <x-dns.code>
-                        # http:// visits go to https://
-                        server {
-                            listen 80;
-                            server_name te.example.org;
-                            return 301 https://$host$request_uri;
-                        }
-
-                        server {
-                            listen 443 ssl;
-                            server_name te.example.org;
-
-                            ssl_certificate     /etc/letsencrypt/live/te.example.org/fullchain.pem;
-                            ssl_certificate_key /etc/letsencrypt/live/te.example.org/privkey.pem;
-
-                            # Reverse proxy: pass each visit on to Tornado Engine.
-                            location / {
-                                proxy_pass http://10.0.0.30:8090;
-                                proxy_set_header Host $host;
-                                proxy_set_header X-Forwarded-Proto https;
-                                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                                proxy_set_header X-Real-IP $remote_addr;
+                    <details class="rounded-md border border-gray-200 dark:border-gray-700 px-4 py-3">
+                        <summary class="cursor-pointer font-medium text-gray-900 dark:text-gray-100">{{ __('What the script adds to the Nginx RP') }}</summary>
+                        <p class="mt-3">{!! __('A site config at :file, using your answers:', ['file' => '<code class="'.$code.'">/etc/nginx/sites-available/te.example.org</code>']) !!}</p>
+                        <x-dns.code>
+                            # http:// visits go to https://
+                            server {
+                                listen 80;
+                                server_name te.example.org;
+                                return 301 https://$host$request_uri;
                             }
-                        }
-                    </x-dns.code>
-                    <p>{!! __('Use the local IP and port of your Tornado Engine server in proxy_pass. If the Nginx RP runs on the same machine as Tornado Engine, use :local. If your Nginx RP is a different machine, set :bind to this server\'s IP.', ['local' => '<code class="'.$code.'">proxy_pass http://127.0.0.1:8090;</code>', 'bind' => '<code class="'.$code.'">WEB_BIND</code>']) !!}</p>
-                    <p>{{ __('Turn the site on and reload the Nginx RP:') }}</p>
-                    <x-dns.code>
-                        sudo ln -s /etc/nginx/sites-available/te.example.org /etc/nginx/sites-enabled/
-                        sudo nginx -t && sudo systemctl reload nginx
-                    </x-dns.code>
+
+                            server {
+                                listen 443 ssl;
+                                server_name te.example.org;
+
+                                ssl_certificate     /etc/letsencrypt/live/te.example.org/fullchain.pem;
+                                ssl_certificate_key /etc/letsencrypt/live/te.example.org/privkey.pem;
+
+                                # Reverse proxy: pass each visit on to Tornado Engine.
+                                location / {
+                                    proxy_pass http://10.0.0.30:8090;
+                                    proxy_set_header Host $host;
+                                    proxy_set_header X-Forwarded-Proto https;
+                                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                                    proxy_set_header X-Real-IP $remote_addr;
+                                }
+                            }
+                        </x-dns.code>
+                    </details>
                 </x-dns.step>
 
-                <x-dns.step n="7" :title="__('Add the name to your local DNS server')">
+                <x-dns.step n="6" :title="__('Add the name to your local DNS server')">
                     <p>{{ __('Add an A record for te.example.org pointing to the Nginx RP\'s local IP, 10.0.0.20. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.') }}</p>
                     <p>{{ __('Many DNS servers need a zone before you can add the record. Make the zone for te.example.org itself, not the whole example.org, so your other example.org addresses keep working.') }}</p>
                     <x-dns.screenshot name="local-dns-record" :alt="__('A new A record on a local DNS server')" />
@@ -157,7 +152,7 @@
                     <x-dns.screenshot name="nslookup" :alt="__('nslookup answering with the Nginx RP\'s local IP')" />
                 </x-dns.step>
 
-                <x-dns.step n="8" :title="__('Finish setup')">
+                <x-dns.step n="7" :title="__('Finish setup')">
                     <p>{!! __('Open :url and enter that address on the Web address step.', ['url' => '<code class="'.$code.'">https://te.example.org/setup</code>']) !!}</p>
                 </x-dns.step>
             </ol>
@@ -188,7 +183,7 @@
             </div>
 
             <div x-show="tab === 'outside'" x-cloak role="tabpanel" class="pt-6 text-sm text-gray-700 dark:text-gray-300">
-                <p>{{ __('Do these as well, so Tornado Engine is also available from home and anywhere else. Keep the local DNS record from step 7: it sends computers on your local network straight to the Nginx RP.') }}</p>
+                <p>{{ __('Do these as well, so Tornado Engine is also available from home and anywhere else. Keep the local DNS record from step 6: it sends computers on your local network straight to the Nginx RP.') }}</p>
 
                 <ol class="mt-6 space-y-8">
                     <x-dns.step n="1" :title="__('Add the record in Cloudflare')">
