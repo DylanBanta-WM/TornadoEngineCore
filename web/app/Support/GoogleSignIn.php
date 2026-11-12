@@ -25,7 +25,7 @@ class GoogleSignIn
 
     public static function callbackUrl(): string
     {
-        return rtrim(config('app.url'), '/').'/auth/google/callback';
+        return (Setup::address() ?? rtrim(config('app.url'), '/')).'/auth/google/callback';
     }
 
     public function redirect(): RedirectResponse

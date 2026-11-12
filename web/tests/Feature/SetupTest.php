@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Support\GoogleSignIn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Laravel\Socialite\Two\User as GoogleUser;
 use Tests\TestCase;
 
@@ -15,11 +16,44 @@ class SetupTest extends TestCase
 
     protected bool $setupComplete = false;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        URL::forceRootUrl('https://te.school.test');
+        URL::forceScheme('https');
+        Setting::put('site.url', 'https://te.school.test');
+    }
+
     private function saveGoogle(): void
     {
         Setting::put('google.domain', 'school.test');
         Setting::put('google.client_id', 'id.apps.googleusercontent.com');
         Setting::putSecret('google.client_secret', 'secret');
+    }
+
+    public function test_setup_starts_with_the_web_address(): void
+    {
+        Setting::put('site.url', null);
+        URL::forceRootUrl('http://10.0.0.5:8090');
+        URL::forceScheme('http');
+
+        $this->get('/')->assertRedirect('/setup');
+        $this->get('/setup')->assertOk()->assertSee('Find out how to set up DNS and HTTPS');
+
+        $this->post('/setup/address', ['address' => 'https://10.0.0.5'])->assertSessionHasErrors('address');
+        $this->post('/setup/address', ['address' => 'http://te.school.test'])->assertSessionHasErrors('address');
+        $this->post('/setup/address', ['address' => 'https://TE.school.test/setup'])->assertRedirect('/setup');
+
+        $this->assertSame('https://te.school.test', Setting::get('site.url'));
+        $this->get('/setup')->assertSee('Open Tornado Engine at its address');
+    }
+
+    public function test_the_address_cannot_change_once_there_is_an_admin(): void
+    {
+        User::factory()->create(['is_admin' => true]);
+
+        $this->post('/setup/address', ['address' => 'https://evil.test'])->assertForbidden();
     }
 
     public function test_every_page_leads_to_setup_until_it_is_finished(): void

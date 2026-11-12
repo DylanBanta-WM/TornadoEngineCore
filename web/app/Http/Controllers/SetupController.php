@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Models\User;
 use App\Support\GoogleSignIn;
 use App\Support\Setup;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,7 @@ class SetupController extends Controller
 
         $step = Setup::step();
 
-        if (! in_array($step, ['google', 'admin'], true) && ! $request->user()?->is_admin) {
+        if (! in_array($step, ['address', 'google', 'admin'], true) && ! $request->user()?->is_admin) {
             return redirect()->route('login');
         }
 
@@ -31,10 +32,33 @@ class SetupController extends Controller
 
         return view('setup.index', [
             'step' => $step,
+            'address' => Setup::address(),
+            'addressLocked' => User::where('is_admin', true)->exists(),
             'harnessToken' => session('harness_token'),
             'domain' => GoogleSignIn::domain(),
             'callbackUrl' => GoogleSignIn::callbackUrl(),
         ]);
+    }
+
+    public function storeAddress(Request $request): RedirectResponse
+    {
+        abort_if(User::where('is_admin', true)->exists(), 403);
+
+        $data = $request->validate([
+            'address' => ['required', 'string', 'max:255', 'url:https', function ($attribute, $value, $fail) {
+                $host = parse_url($value, PHP_URL_HOST) ?: '';
+
+                if (filter_var(trim($host, '[]'), FILTER_VALIDATE_IP) || ! str_contains($host, '.')) {
+                    $fail(__('Use a domain name, not an IP address.'));
+                }
+            }],
+        ]);
+
+        $parts = parse_url($data['address']);
+        $port = isset($parts['port']) && $parts['port'] !== 443 ? ':'.$parts['port'] : '';
+        Setting::put('site.url', 'https://'.strtolower($parts['host']).$port);
+
+        return redirect()->route('setup');
     }
 
     public function storeGoogle(Request $request): RedirectResponse

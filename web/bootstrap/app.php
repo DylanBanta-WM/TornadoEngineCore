@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // HTTPS is usually handled by the district's reverse proxy.
+        $middleware->trustProxies(at: '*');
         $middleware->web(append: [EnsureSetupComplete::class]);
         $middleware->prependToPriorityList(
             before: AuthenticatesRequests::class,

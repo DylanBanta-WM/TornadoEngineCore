@@ -1,5 +1,6 @@
 @php
     $steps = [
+        'address' => __('Web address'),
         'google' => __('Google sign-in'),
         'admin' => __('Admin account'),
         'harness' => __('Harness'),
@@ -9,7 +10,7 @@
 @endphp
 
 <x-setup-layout>
-    <ol class="mt-8 grid grid-cols-4">
+    <ol class="mt-8 grid grid-cols-5">
         @foreach ($steps as $key => $label)
             @php($done = $loop->index < $current)
             @php($active = $loop->index === $current)
