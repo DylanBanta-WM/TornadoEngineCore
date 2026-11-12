@@ -50,6 +50,15 @@ class SetupTest extends TestCase
         $this->get('/setup')->assertSee('Open Tornado Engine at its address');
     }
 
+    public function test_setup_warns_when_the_site_listens_on_every_address(): void
+    {
+        config(['app.web_bind' => '0.0.0.0']);
+        $this->get('/setup')->assertSee('Any computer on the network can reach this site directly');
+
+        config(['app.web_bind' => '127.0.0.1']);
+        $this->get('/setup')->assertDontSee('Any computer on the network can reach this site directly');
+    }
+
     public function test_the_address_cannot_change_once_there_is_an_admin(): void
     {
         User::factory()->create(['is_admin' => true]);

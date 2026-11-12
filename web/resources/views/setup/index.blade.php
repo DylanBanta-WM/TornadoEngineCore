@@ -10,6 +10,8 @@
 @endphp
 
 <x-setup-layout>
+    <x-setup.bind-warning />
+
     <ol class="mt-8 grid grid-cols-5">
         @foreach ($steps as $key => $label)
             @php($done = $loop->index < $current)

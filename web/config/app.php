@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // The address the website listens on (set in .env, applied by bin/web up).
+    'web_bind' => env('WEB_BIND', '0.0.0.0'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
