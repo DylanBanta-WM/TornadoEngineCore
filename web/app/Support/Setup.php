@@ -10,6 +10,9 @@ use App\Models\User;
  */
 class Setup
 {
+    /** The steps, in order. */
+    public const STEPS = ['address', 'google', 'admin', 'harness', 'claude'];
+
     public static function complete(): bool
     {
         return Setting::get('setup.completed_at') !== null;

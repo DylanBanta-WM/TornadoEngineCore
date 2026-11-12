@@ -28,7 +28,8 @@
         </div>
     </div>
 
-    <x-setup.footer class="justify-end">
+    <x-setup.footer class="justify-between">
+        <x-setup.back :href="$back" />
         <x-primary-button>{{ __('Save and finish') }}</x-primary-button>
     </x-setup.footer>
 </form>

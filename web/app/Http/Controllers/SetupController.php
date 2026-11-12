@@ -20,18 +20,26 @@ class SetupController extends Controller
             return redirect()->route('dashboard');
         }
 
-        $step = Setup::step();
+        $current = Setup::step();
 
-        if (! in_array($step, ['address', 'google', 'admin'], true) && ! $request->user()?->is_admin) {
+        if (! in_array($current, ['address', 'google', 'admin'], true) && ! $request->user()?->is_admin) {
             return redirect()->route('login');
         }
 
-        if ($step === 'admin' && $request->query('change') === 'google') {
-            $step = 'google';
-        }
+        // ?step= looks back at a step that's already done.
+        $steps = Setup::STEPS;
+        $now = array_search($current, $steps);
+        $asked = array_search($request->query('step'), $steps, true);
+        $index = $asked !== false && $asked < $now ? $asked : $now;
+        $step = $steps[$index];
 
         return view('setup.index', [
             'step' => $step,
+            'current' => $current,
+            'reviewing' => $step !== $current,
+            'back' => $index > 0 ? route('setup', ['step' => $steps[$index - 1]]) : null,
+            'next' => $index + 1 < $now ? route('setup', ['step' => $steps[$index + 1]]) : route('setup'),
+            'user' => $request->user(),
             'address' => Setup::address(),
             'addressLocked' => User::where('is_admin', true)->exists(),
             'harnessToken' => session('harness_token'),
@@ -56,9 +64,11 @@ class SetupController extends Controller
 
         $parts = parse_url($data['address']);
         $port = isset($parts['port']) && $parts['port'] !== 443 ? ':'.$parts['port'] : '';
-        Setting::put('site.url', 'https://'.strtolower($parts['host']).$port);
+        $address = 'https://'.strtolower($parts['host']).$port;
+        Setting::put('site.url', $address);
 
-        return redirect()->route('setup');
+        // Go straight on at the new address.
+        return redirect()->away($address.'/setup');
     }
 
     public function storeGoogle(Request $request): RedirectResponse

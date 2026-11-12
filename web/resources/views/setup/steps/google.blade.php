@@ -7,6 +7,16 @@
     ];
 @endphp
 
+@if ($reviewing && $addressLocked)
+    <x-setup.header :title="__('Google sign-in')">
+        {{ __('Sign-in is set up for :domain.', ['domain' => $domain]) }}
+    </x-setup.header>
+
+    <x-setup.footer class="justify-between">
+        <x-setup.back :href="$back" />
+        <x-primary-link :href="$next">{{ __('Next') }}</x-primary-link>
+    </x-setup.footer>
+@else
 <div x-data="{ keys: @js($errors->any() || $domain !== null) }">
     <div x-show="! keys">
         <x-setup.header :title="__('Create a Google sign-in app')">
@@ -27,7 +37,8 @@
             @endforeach
         </ol>
 
-        <x-setup.footer class="justify-end">
+        <x-setup.footer class="justify-between">
+            <x-setup.back :href="$back" />
             <x-primary-button type="button" x-on:click="keys = true">{{ __('Next') }}</x-primary-button>
         </x-setup.footer>
     </div>
@@ -59,7 +70,8 @@
 
         <x-setup.footer class="justify-between">
             <x-secondary-button x-on:click="keys = false">{{ __('Back') }}</x-secondary-button>
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button>{{ __('Next') }}</x-primary-button>
         </x-setup.footer>
     </form>
 </div>
+@endif

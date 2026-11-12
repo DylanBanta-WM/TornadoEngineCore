@@ -44,7 +44,7 @@ class SetupTest extends TestCase
 
         $this->post('/setup/address', ['address' => 'https://10.0.0.5'])->assertSessionHasErrors('address');
         $this->post('/setup/address', ['address' => 'http://te.school.test'])->assertSessionHasErrors('address');
-        $this->post('/setup/address', ['address' => 'https://TE.school.test/setup'])->assertRedirect('/setup');
+        $this->post('/setup/address', ['address' => 'https://TE.school.test/setup'])->assertRedirect('https://te.school.test/setup');
 
         $this->assertSame('https://te.school.test', Setting::get('site.url'));
         $this->get('/setup')->assertSee('Open Tornado Engine at its address');
@@ -57,6 +57,27 @@ class SetupTest extends TestCase
 
         config(['app.web_bind' => '127.0.0.1']);
         $this->get('/setup')->assertDontSee('Any computer on the network can reach this site directly');
+    }
+
+    public function test_finished_steps_can_be_looked_at_again(): void
+    {
+        $this->saveGoogle();
+
+        $this->get('/setup')->assertSee('Sign in with Google');
+        $this->get('/setup?step=google')->assertSee('Enter the app')->assertSee('/setup?step=address', false);
+        $this->get('/setup?step=address')->assertSee('te.school.test')->assertSee('Find out how to set up DNS');
+        // A step that isn't reached yet shows the current one instead.
+        $this->get('/setup?step=claude')->assertSee('Sign in with Google');
+    }
+
+    public function test_after_sign_in_the_earlier_steps_are_read_only(): void
+    {
+        $this->saveGoogle();
+        $admin = User::factory()->create(['is_admin' => true, 'email' => 'it@school.test']);
+
+        $this->actingAs($admin)->get('/setup?step=address')->assertDontSee('address-form')->assertSee('https://te.school.test');
+        $this->actingAs($admin)->get('/setup?step=google')->assertSee('Sign-in is set up for school.test');
+        $this->actingAs($admin)->get('/setup?step=admin')->assertSee('it@school.test')->assertSee('/setup?step=google', false);
     }
 
     public function test_the_address_cannot_change_once_there_is_an_admin(): void
