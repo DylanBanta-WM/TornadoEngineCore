@@ -77,10 +77,10 @@
         <text x="274" y="186" text-anchor="middle" class="{{ $note }}" font-size="12">{{ __('HTTPS to 10.0.0.20') }}</text>
     @endif
 
-    {{-- Nginx server --}}
+    {{-- Nginx RP (reverse proxy) --}}
     @php($nx = $nginx[0] + $nginx[2] / 2)
     <rect x="{{ $nginx[0] }}" y="{{ $nginx[1] }}" width="{{ $nginx[2] }}" height="{{ $nginx[3] }}" rx="8" class="{{ $box }}" />
-    <text x="{{ $nx }}" y="198" text-anchor="middle" class="{{ $name }}">{{ __('Nginx server') }}</text>
+    <text x="{{ $nx }}" y="198" text-anchor="middle" class="{{ $name }}">{{ __('Nginx RP') }}</text>
     <text x="{{ $nx }}" y="217" text-anchor="middle" class="{{ $note }}" font-size="12">10.0.0.20</text>
     <rect x="{{ $nginx[0] - 4 }}" y="166" width="{{ $nginx[2] + 8 }}" height="72" rx="10" class="{{ $you }}" stroke-dasharray="5 4" />
     <text x="{{ $nx }}" y="258" text-anchor="middle" class="{{ $youText }}" font-size="12">{{ __('You add the certificate') }}</text>
@@ -99,7 +99,7 @@
     <text x="{{ $ex }}" y="198" text-anchor="middle" class="{{ $name }}">{{ __('Tornado Engine') }}</text>
     <text x="{{ $ex }}" y="217" text-anchor="middle" class="{{ $note }}" font-size="12">10.0.0.30:8090</text>
 
-    {{-- 5: the page back to Nginx, 6: Nginx sends it to the browser --}}
+    {{-- 5: the page back to the Nginx RP, 6: the Nginx RP sends it to the browser --}}
     <path d="M{{ $ex }} 236 L{{ $ex }} 296 L{{ $nx + 78 }} 296 L{{ $nx + 78 }} 240" fill="none" class="{{ $back }}" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#back-{{ $id }})" />
     {!! $step(5, ($ex + $nx + 78) / 2, 296) !!}
     <text x="{{ ($ex + $nx + 78) / 2 }}" y="318" text-anchor="middle" class="{{ $note }}" font-size="12">{{ __('the page') }}</text>

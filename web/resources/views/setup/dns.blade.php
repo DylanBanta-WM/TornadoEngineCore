@@ -5,20 +5,20 @@
 
     $local = [
         __('The browser asks your local DNS server where te.example.org is.'),
-        __('The DNS server answers with the Nginx server\'s local IP, 10.0.0.20. If there\'s no record, the browser says the site can\'t be reached.'),
-        __('The browser connects to the Nginx server over HTTPS. Nginx shows the certificate for te.example.org and finds its site for that name.'),
-        __('Nginx acts as a reverse proxy: it forwards the request to Tornado Engine\'s local IP and port, 10.0.0.30:8090. The browser never connects to Tornado Engine directly.'),
-        __('Tornado Engine sends the page back to Nginx.'),
-        __('Nginx sends the page on to the browser, over HTTPS.'),
+        __('The DNS server answers with the Nginx RP\'s local IP, 10.0.0.20. If there\'s no record, the browser says the site can\'t be reached.'),
+        __('The browser connects to the Nginx RP over HTTPS. The Nginx RP shows the certificate for te.example.org and finds its site for that name.'),
+        __('The Nginx RP acts as a reverse proxy: it forwards the request to Tornado Engine\'s local IP and port, 10.0.0.30:8090. The browser never connects to Tornado Engine directly.'),
+        __('Tornado Engine sends the page back to the Nginx RP.'),
+        __('The Nginx RP sends the page on to the browser, over HTTPS.'),
     ];
 
     $public = [
         __('A browser outside the network asks public DNS where te.example.org is. Your domain\'s public DNS is at Cloudflare.'),
         __('Cloudflare answers with the district\'s public IP address, 203.0.113.10.'),
-        __('The browser connects to the public IP. The firewall forwards ports 80 and 443 to the Nginx server\'s local IP.'),
-        __('Nginx handles HTTPS and, as a reverse proxy, forwards the request to Tornado Engine, just as on your local network.'),
-        __('Tornado Engine sends the page back to Nginx.'),
-        __('Nginx sends the page back through the firewall to the browser.'),
+        __('The browser connects to the public IP. The firewall forwards ports 80 and 443 to the Nginx RP\'s local IP.'),
+        __('The Nginx RP handles HTTPS and, as a reverse proxy, forwards the request to Tornado Engine, just as on your local network.'),
+        __('Tornado Engine sends the page back to the Nginx RP.'),
+        __('The Nginx RP sends the page back through the firewall to the browser.'),
     ];
 
     $reading = [
@@ -40,24 +40,24 @@
             <p>{{ __('You will need:') }}</p>
             <ul class="ms-5 list-disc space-y-1">
                 <li>{{ __('A domain whose DNS is managed by Cloudflare.') }}</li>
-                <li>{{ __('A machine for the Nginx server, running Ubuntu, Debian or Raspberry Pi OS. Other systems, such as Windows, can also work, but are outside the scope of our examples.') }}</li>
+                <li>{{ __('A machine for the Nginx RP (reverse proxy), running Ubuntu, Debian or Raspberry Pi OS. Other systems, such as Windows, can also work, but are outside the scope of our examples.') }}</li>
                 <li>{{ __('Access to your district\'s local DNS server.') }}</li>
             </ul>
 
             <p class="pt-2">{{ __('Our examples use:') }}</p>
             <ul class="ms-5 list-disc space-y-1">
                 <li><code class="{{ $code }}">te.example.org</code>: {{ __('the address for Tornado Engine') }}</li>
-                <li><code class="{{ $code }}">10.0.0.20</code>: {{ __('the Nginx server\'s local IP') }}</li>
+                <li><code class="{{ $code }}">10.0.0.20</code>: {{ __('the Nginx RP\'s local IP') }}</li>
                 <li><code class="{{ $code }}">10.0.0.30:8090</code>: {{ __('the local IP of the server Tornado Engine runs on, and its') }} <code class="{{ $code }}">WEB_PORT</code></li>
                 <li><code class="{{ $code }}">203.0.113.10</code>: {{ __('the district\'s public IP (only if Tornado Engine is available from outside)') }}</li>
             </ul>
 
-            <p class="pt-2">{{ __('The Nginx server is a separate web server that every visit goes through first. It holds the HTTPS certificate and passes each visit on to the right machine (a reverse proxy). It can be a VM, an old workstation or a Raspberry Pi: anything that\'s always on.') }}</p>
+            <p class="pt-2">{{ __('The Nginx RP is a separate web server that every visit goes through first. It holds the HTTPS certificate and passes each visit on to the right machine. It can be a VM, an old workstation or a Raspberry Pi: anything that\'s always on.') }}</p>
         </div>
 
         <div class="mt-6 mx-6 sm:mx-8 flex gap-3 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-200" role="note">
             <svg class="mt-0.5 size-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.5 2.6a1.7 1.7 0 0 1 3 0l6.3 11.6A1.7 1.7 0 0 1 16.3 17H3.7a1.7 1.7 0 0 1-1.5-2.8L8.5 2.6ZM10 6a1 1 0 0 0-1 1v3.5a1 1 0 1 0 2 0V7a1 1 0 0 0-1-1Zm0 8.5a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z" clip-rule="evenodd" /></svg>
-            <p><span class="font-semibold">{{ __('Note:') }}</span> {{ __('The Nginx server isn\'t the Nginx that runs the web server inside Tornado Engine. It\'s a separate machine that only acts as a reverse proxy.') }}</p>
+            <p><span class="font-semibold">{{ __('Note:') }}</span> {{ __('The Nginx RP isn\'t Nginx WEB, the web server that runs inside Tornado Engine. The Nginx RP is a separate machine that only acts as a reverse proxy.') }}</p>
         </div>
 
         {{-- Everyone --}}
@@ -67,11 +67,11 @@
             <ol class="mt-5 space-y-8">
                 <x-dns.step n="1" :title="__('Manage your domain\'s DNS with Cloudflare')">
                     <p>{!! __('In our examples, your domain\'s DNS is managed by Cloudflare. Certbot uses Cloudflare to prove you own the domain. If your domain isn\'t on Cloudflare yet, you\'ll need access to your domain registrar to move its DNS there. See :link.', ['link' => '<a href="https://developers.cloudflare.com/fundamentals/manage-domains/add-site/" target="_blank" rel="noopener" class="'.$link.'">'.e(__('Cloudflare: add your domain')).'</a>']) !!}</p>
-                    <p>{!! __('You can likely keep your existing DNS provider instead, as long as it still gives you control of your domain\'s DNS records, such as the A record. Certbot works with most other providers too: it needs to add a temporary TXT record, usually through a plugin for your provider. See :plugins.', ['plugins' => '<a href="https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins" target="_blank" rel="noopener" class="'.$link.'">'.e(__('Certbot\'s DNS plugins')).'</a>']) !!}</p>
+                    <p>{!! __('Alternatively, you can likely keep your existing DNS provider instead, as long as it still gives you control of your domain\'s DNS records, such as the A record. Certbot works with most other providers too: it needs to add a temporary TXT record, usually through a plugin for your provider. See :plugins.', ['plugins' => '<a href="https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins" target="_blank" rel="noopener" class="'.$link.'">'.e(__('Certbot\'s DNS plugins')).'</a>']) !!}</p>
                 </x-dns.step>
 
-                <x-dns.step n="2" :title="__('Install Nginx and Certbot on the Nginx server')">
-                    <p>{{ __('On the Nginx server, running Ubuntu, Debian or Raspberry Pi OS:') }}</p>
+                <x-dns.step n="2" :title="__('Install Nginx and Certbot on the Nginx RP')">
+                    <p>{{ __('On the Nginx RP, running Ubuntu, Debian or Raspberry Pi OS:') }}</p>
                     <x-dns.code>
                         sudo apt install nginx certbot python3-certbot-dns-cloudflare
                     </x-dns.code>
@@ -87,7 +87,7 @@
                     <x-dns.screenshot name="cloudflare-token-created" :alt="__('The token created page, with the token blurred')" />
                 </x-dns.step>
 
-                <x-dns.step n="4" :title="__('Save the token on the Nginx server')">
+                <x-dns.step n="4" :title="__('Save the token on the Nginx RP')">
                     <x-dns.code>
                         sudo mkdir -p /root/.secrets/certbot
                         sudo nano /root/.secrets/certbot/cloudflare.ini
@@ -110,10 +110,10 @@
                           --deploy-hook "systemctl reload nginx" \
                           -d te.example.org
                     </x-dns.code>
-                    <p>{{ __('Certbot renews the certificate by itself before it expires and reloads Nginx when it does, so you only do this once.') }}</p>
+                    <p>{{ __('Certbot renews the certificate by itself before it expires and reloads the Nginx RP when it does, so you only do this once.') }}</p>
                 </x-dns.step>
 
-                <x-dns.step n="6" :title="__('Add the Tornado Engine site to Nginx')">
+                <x-dns.step n="6" :title="__('Add the Tornado Engine site to the Nginx RP')">
                     <p>{!! __('Create :file with:', ['file' => '<code class="'.$code.'">/etc/nginx/sites-available/te.example.org</code>']) !!}</p>
                     <x-dns.code>
                         # http:// visits go to https://
@@ -140,8 +140,8 @@
                             }
                         }
                     </x-dns.code>
-                    <p>{!! __('Use the local IP and port of your Tornado Engine server in proxy_pass. If Nginx runs on the same machine as Tornado Engine, use :local. If your Nginx server is a different machine, set :bind to this server\'s IP.', ['local' => '<code class="'.$code.'">proxy_pass http://127.0.0.1:8090;</code>', 'bind' => '<code class="'.$code.'">WEB_BIND</code>']) !!}</p>
-                    <p>{{ __('Turn the site on and reload Nginx:') }}</p>
+                    <p>{!! __('Use the local IP and port of your Tornado Engine server in proxy_pass. If the Nginx RP runs on the same machine as Tornado Engine, use :local. If your Nginx RP is a different machine, set :bind to this server\'s IP.', ['local' => '<code class="'.$code.'">proxy_pass http://127.0.0.1:8090;</code>', 'bind' => '<code class="'.$code.'">WEB_BIND</code>']) !!}</p>
+                    <p>{{ __('Turn the site on and reload the Nginx RP:') }}</p>
                     <x-dns.code>
                         sudo ln -s /etc/nginx/sites-available/te.example.org /etc/nginx/sites-enabled/
                         sudo nginx -t && sudo systemctl reload nginx
@@ -149,14 +149,14 @@
                 </x-dns.step>
 
                 <x-dns.step n="7" :title="__('Add the name to your local DNS server')">
-                    <p>{{ __('Add an A record for te.example.org pointing to the Nginx server\'s local IP, 10.0.0.20. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.') }}</p>
+                    <p>{{ __('Add an A record for te.example.org pointing to the Nginx RP\'s local IP, 10.0.0.20. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.') }}</p>
                     <p>{{ __('Many DNS servers need a zone before you can add the record. Make the zone for te.example.org itself, not the whole example.org, so your other example.org addresses keep working.') }}</p>
                     <x-dns.screenshot name="local-dns-record" :alt="__('A new A record on a local DNS server')" />
-                    <p>{{ __('Check it from a computer on the network. It should answer with the Nginx server\'s local IP, 10.0.0.20:') }}</p>
+                    <p>{{ __('Check it from a computer on the network. It should answer with the Nginx RP\'s local IP, 10.0.0.20:') }}</p>
                     <x-dns.code>
                         nslookup te.example.org
                     </x-dns.code>
-                    <x-dns.screenshot name="nslookup" :alt="__('nslookup answering with the Nginx server\'s local IP')" />
+                    <x-dns.screenshot name="nslookup" :alt="__('nslookup answering with the Nginx RP\'s local IP')" />
                 </x-dns.step>
 
                 <x-dns.step n="8" :title="__('Finish setup')">
@@ -190,7 +190,7 @@
             </div>
 
             <div x-show="tab === 'outside'" x-cloak role="tabpanel" class="pt-6 text-sm text-gray-700 dark:text-gray-300">
-                <p>{{ __('Do these as well, so Tornado Engine is also available from home and anywhere else. Keep the local DNS record from step 7: it sends computers on your local network straight to the Nginx server.') }}</p>
+                <p>{{ __('Do these as well, so Tornado Engine is also available from home and anywhere else. Keep the local DNS record from step 7: it sends computers on your local network straight to the Nginx RP.') }}</p>
 
                 <ol class="mt-6 space-y-8">
                     <x-dns.step n="1" :title="__('Add the record in Cloudflare')">
@@ -200,8 +200,8 @@
                         <x-dns.screenshot name="cloudflare-add-record" :alt="__('The Add record form for an A record')" />
                     </x-dns.step>
 
-                    <x-dns.step n="2" :title="__('Forward ports 80 and 443 to the Nginx server')">
-                        <p>{{ __('On the district firewall, forward ports 80 and 443 to the Nginx server\'s local IP, 10.0.0.20. How you do this depends on your firewall, so it\'s outside the scope of our examples.') }}</p>
+                    <x-dns.step n="2" :title="__('Forward ports 80 and 443 to the Nginx RP')">
+                        <p>{{ __('On the district firewall, forward ports 80 and 443 to the Nginx RP\'s local IP, 10.0.0.20. How you do this depends on your firewall, so it\'s outside the scope of our examples.') }}</p>
                     </x-dns.step>
 
                     <x-dns.step n="3" :title="__('Choose the proxy status (optional)')">
