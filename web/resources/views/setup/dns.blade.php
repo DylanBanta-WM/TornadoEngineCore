@@ -219,10 +219,18 @@
 
                 <ol class="mt-6 space-y-8">
                     <x-dns.step n="1" :title="__('Add the record in Cloudflare')">
-                        <p>{{ __('In Cloudflare, open your domain, then DNS and Records, and click Add record.') }}</p>
-                        <x-dns.screenshot name="cloudflare-dns-records" :alt="__('Cloudflare DNS Records page')" />
-                        <p>{!! $ips(__('Type: A. Name: te. IPv4 address: the district\'s public IP, 203.0.113.10 in our examples. Then choose the proxy status (see step 3) and save.')) !!}</p>
-                        <x-dns.screenshot name="cloudflare-add-record" :alt="__('The Add record form for an A record')" />
+                        <p>{{ __('In Cloudflare, open your domain (the numbers match the screenshots):') }}</p>
+                        <ol class="ms-5 list-decimal space-y-1">
+                            <li>{{ __('Under DNS, click Records.') }}</li>
+                            <li>{{ __('Click Add record.') }}</li>
+                        </ol>
+                        <x-dns.screenshot name="cloudflare-dns-record-1-2" :alt="__('Records under DNS, and the Add record button')" />
+                        <ol start="3" class="ms-5 list-decimal space-y-1">
+                            <li>{!! __('Leave Type as A and enter the subdomain, :name, as the Name.', ['name' => '<code class="'.$code.'">te</code>']) !!}</li>
+                            <li>{!! $ips(__('Enter the district\'s public IP as the IPv4 address, 203.0.113.10 in our examples.')) !!}</li>
+                            <li>{{ __('Choose the Proxy status (see step 3), then click Save.') }}</li>
+                        </ol>
+                        <x-dns.screenshot name="cloudflare-dns-record-3-4" :alt="__('The Add record window with the name and public IP filled in')" />
                     </x-dns.step>
 
                     <x-dns.step n="2" :title="__('Forward ports 80 and 443 to the Nginx RP')">
