@@ -40,7 +40,7 @@ class SetupTest extends TestCase
 
         $this->get('/')->assertRedirect('/setup');
         $this->get('/setup')->assertOk()->assertSee('Find out how to set up DNS and HTTPS')->assertSee('/dns-setup');
-        $this->get('/dns-setup')->assertOk()->assertSee('Back to setup')->assertSee('dns_cloudflare_api_token');
+        $this->get('/dns-setup')->assertOk()->assertSee('Back to setup')->assertSee('dns_cloudflare_api_token')->assertSee('save-cloudflare-token.sh');
 
         $this->post('/setup/address', ['address' => 'https://10.0.0.5'])->assertSessionHasErrors('address');
         $this->post('/setup/address', ['address' => 'http://te.school.test'])->assertSessionHasErrors('address');

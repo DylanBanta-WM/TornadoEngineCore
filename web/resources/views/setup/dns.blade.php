@@ -88,17 +88,15 @@
                 </x-dns.step>
 
                 <x-dns.step n="4" :title="__('Save the token on the Nginx RP')">
+                    <p>{{ __('This script asks for your token and saves it where Certbot looks for it, readable only by root. Running it again replaces the saved token.') }}</p>
+                    <x-dns.script file="save-cloudflare-token.sh" />
+                    <p>{{ __('Download it and copy it to the Nginx RP, or create the file there and paste the script in:') }}</p>
                     <x-dns.code>
-                        sudo mkdir -p /root/.secrets/certbot
-                        sudo nano /root/.secrets/certbot/cloudflare.ini
+                        nano save-cloudflare-token.sh
                     </x-dns.code>
-                    <p>{{ __('Put this line in the file, with your token in place of YOUR_TOKEN, then save:') }}</p>
+                    <p>{{ __('Then run it on the Nginx RP and paste your token when it asks:') }}</p>
                     <x-dns.code>
-                        dns_cloudflare_api_token = YOUR_TOKEN
-                    </x-dns.code>
-                    <p>{{ __('Make it readable only by root:') }}</p>
-                    <x-dns.code>
-                        sudo chmod 600 /root/.secrets/certbot/cloudflare.ini
+                        sudo bash save-cloudflare-token.sh
                     </x-dns.code>
                 </x-dns.step>
 
