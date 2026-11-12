@@ -1,5 +1,5 @@
 {{--
-    How a browser reaches Tornado Engine. $public: false = on the school network, true = from outside.
+    How a browser reaches Tornado Engine. $public: false = on the local network, true = from outside.
 --}}
 @php
     $public ??= false;
@@ -23,7 +23,7 @@
 @endphp
 
 <svg viewBox="0 0 {{ $width }} 350" class="w-full h-auto text-[13px]" role="img" aria-labelledby="dns-{{ $id }}-title" font-family="inherit">
-    <title id="dns-{{ $id }}-title">{{ $public ? __('Reaching Tornado Engine from outside') : __('Reaching Tornado Engine on the school network') }}</title>
+    <title id="dns-{{ $id }}-title">{{ $public ? __('Reaching Tornado Engine from outside') : __('Reaching Tornado Engine on the local network') }}</title>
     <defs>
         <marker id="arrow-{{ $id }}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
             <path d="M0 0 L10 5 L0 10 z" class="fill-indigo-500" />
@@ -43,7 +43,7 @@
     {{-- Browser --}}
     <rect x="{{ $browser[0] }}" y="{{ $browser[1] }}" width="{{ $browser[2] }}" height="{{ $browser[3] }}" rx="8" class="{{ $box }}" />
     <text x="95" y="198" text-anchor="middle" class="{{ $name }}">{{ __('Browser') }}</text>
-    <text x="95" y="217" text-anchor="middle" class="{{ $note }}" font-size="12">{{ $public ? __('at home, anywhere') : __('on the school network') }}</text>
+    <text x="95" y="217" text-anchor="middle" class="{{ $note }}" font-size="12">{{ $public ? __('at home, anywhere') : __('on the local network') }}</text>
 
     {{-- DNS server --}}
     <rect x="{{ $dns[0] }}" y="{{ $dns[1] }}" width="{{ $dns[2] }}" height="{{ $dns[3] }}" rx="8" class="{{ $box }}" />
