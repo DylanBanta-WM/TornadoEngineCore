@@ -66,7 +66,8 @@
 
             <ol class="mt-5 space-y-8">
                 <x-dns.step n="1" :title="__('Manage your domain\'s DNS with Cloudflare')">
-                    <p>{!! __('In our examples, your domain\'s DNS is managed by Cloudflare. Certbot uses Cloudflare to prove you own the domain. To move your domain\'s DNS to Cloudflare, see :link.', ['link' => '<a href="https://developers.cloudflare.com/fundamentals/manage-domains/add-site/" target="_blank" rel="noopener" class="'.$link.'">'.e(__('Cloudflare: add your domain')).'</a>']) !!}</p>
+                    <p>{!! __('In our examples, your domain\'s DNS is managed by Cloudflare. Certbot uses Cloudflare to prove you own the domain. If your domain isn\'t on Cloudflare yet, you\'ll need access to your domain registrar to move its DNS there. See :link.', ['link' => '<a href="https://developers.cloudflare.com/fundamentals/manage-domains/add-site/" target="_blank" rel="noopener" class="'.$link.'">'.e(__('Cloudflare: add your domain')).'</a>']) !!}</p>
+                    <p>{!! __('You can likely keep your existing DNS provider instead, as long as it still gives you control of your domain\'s DNS records, such as the A record. Certbot works with most other providers too: it needs to add a temporary TXT record, usually through a plugin for your provider. See :plugins.', ['plugins' => '<a href="https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins" target="_blank" rel="noopener" class="'.$link.'">'.e(__('Certbot\'s DNS plugins')).'</a>']) !!}</p>
                 </x-dns.step>
 
                 <x-dns.step n="2" :title="__('Install Nginx and Certbot on the Nginx server')">
