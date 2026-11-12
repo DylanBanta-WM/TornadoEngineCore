@@ -3,3 +3,6 @@
 .env.*
 !.env.example
 !/web/.env.testing
+
+# Screenshots waiting to be added
+/temp/

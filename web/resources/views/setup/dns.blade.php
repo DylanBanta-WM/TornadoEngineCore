@@ -82,12 +82,25 @@
 
                 <x-dns.step n="3" :title="__('Create a Cloudflare API token')">
                     <p>{{ __('Certbot uses this token to add a temporary DNS record in Cloudflare that proves you own the domain. This is how you get a certificate even if Tornado Engine is only available on your local network.') }}</p>
-                    <p>{{ __('In Cloudflare, go to My Profile, then API Tokens, and click Create Token. Use the Edit zone DNS template.') }}</p>
-                    <x-dns.screenshot name="cloudflare-api-tokens" :alt="__('Cloudflare API Tokens page with the Edit zone DNS template')" />
-                    <p>{{ __('Under Zone Resources, choose Include, Specific zone and your domain. Click Continue to summary, then Create Token.') }}</p>
-                    <x-dns.screenshot name="cloudflare-token-settings" :alt="__('Token settings: Zone, DNS, Edit for one domain')" />
-                    <p>{{ __('Copy the token now. Cloudflare only shows it once.') }}</p>
-                    <x-dns.screenshot name="cloudflare-token-created" :alt="__('The token created page, with the token blurred')" />
+                    <p>{{ __('In Cloudflare (the numbers match the screenshots):') }}</p>
+                    <ol class="ms-5 list-decimal space-y-1">
+                        <li>{{ __('Under Manage account, click Account API tokens.') }}</li>
+                        <li>{{ __('Click Create a token.') }}</li>
+                    </ol>
+                    <x-dns.screenshot name="cloudflare-api-tokens-1-2" :alt="__('Account API tokens under Manage account, and the Create a token button')" />
+                    <ol start="3" class="ms-5 list-decimal space-y-1">
+                        <li>{!! __('Name the token. We named ours :name.', ['name' => '<code class="'.$code.'">tornado-engine</code>']) !!}</li>
+                        <li>{{ __('Select the Edit zone DNS template.') }}</li>
+                    </ol>
+                    <x-dns.screenshot name="cloudflare-api-tokens-3-4" :alt="__('The token name and the Edit zone DNS template')" />
+                    <ol start="5" class="ms-5 list-decimal space-y-1">
+                        <li>{{ __('Click Review token. If you want, you can also change the Token expiration and Client IP address filtering first. If the token expires, Certbot can\'t renew the certificate, so make a new token and run the step 4 script again before then.') }}</li>
+                    </ol>
+                    <x-dns.screenshot name="cloudflare-api-tokens-5" :alt="__('The Review token button')" />
+                    <ol start="6" class="ms-5 list-decimal space-y-1">
+                        <li>{{ __('Click Create token. Copy the token now: Cloudflare only shows it once.') }}</li>
+                    </ol>
+                    <x-dns.screenshot name="cloudflare-api-tokens-6" :alt="__('The Review token page and the Create token button')" />
                 </x-dns.step>
 
                 <x-dns.step n="4" :title="__('Save the token on the Nginx RP')">
