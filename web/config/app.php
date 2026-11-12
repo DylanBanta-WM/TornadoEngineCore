@@ -15,7 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
-    // The address the website listens on (set in .env, applied by bin/web up).
+    // The address the website listens on (set in .env, applied by docker compose up -d).
     'web_bind' => env('WEB_BIND', '0.0.0.0'),
 
     /*

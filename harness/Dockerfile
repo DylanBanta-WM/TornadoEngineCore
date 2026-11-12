@@ -20,6 +20,7 @@ RUN groupadd --gid "${HARNESS_GID}" claude \
 COPY harness/managed-settings.json /etc/claude-code/managed-settings.json
 COPY --chmod=0755 harness/agent.sh /usr/local/bin/harness-agent
 COPY --chmod=0755 harness/harness-claude.sh /usr/local/bin/harness-claude
+COPY --chmod=0755 harness/connect.sh /usr/local/bin/harness-connect
 
 USER claude
 WORKDIR /workspace

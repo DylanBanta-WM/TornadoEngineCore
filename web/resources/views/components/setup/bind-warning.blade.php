@@ -5,8 +5,8 @@
             {{ __('WEB_BIND is set to 0.0.0.0, so anyone who knows this server\'s IP and port can connect without going through Nginx and HTTPS. That isn\'t secure.') }}
         </p>
         <p class="mt-2">
-            {{ __('Read the pre-run setup instructions in the README, change WEB_BIND in web/.env, then restart the website with') }}
-            <code class="font-mono">bin/web up</code>.
+            {{ __('Read the pre-run setup instructions in the README, change WEB_BIND in .env, then restart the website with') }}
+            <code class="font-mono">docker compose up -d</code>.
             {{ __('This can\'t be changed here, because the website can\'t change its own network address.') }}
         </p>
     </div>

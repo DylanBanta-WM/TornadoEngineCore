@@ -4,7 +4,7 @@
     </x-setup.header>
 
     <div class="mt-6 px-6 sm:px-8">
-        <code class="block rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 font-mono text-sm text-gray-900 dark:text-gray-100 break-all select-all">bin/harness connect {{ $harnessToken }}</code>
+        <code class="block rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 font-mono text-sm text-gray-900 dark:text-gray-100 break-all select-all">docker compose exec harness harness-connect {{ $harnessToken }}</code>
         <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">{{ __('Waiting for the harness to connect.') }}</p>
     </div>
 

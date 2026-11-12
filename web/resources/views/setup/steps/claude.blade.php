@@ -13,7 +13,7 @@
                     <span>
                         <span class="font-medium text-gray-900 dark:text-gray-100">{{ $label }}</span>
                         @if ($value === 'subscription')
-                            <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Run') }} <code class="font-mono">bin/harness claude setup-token</code></span>
+                            <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Run') }} <code class="font-mono">docker compose exec harness harness-claude setup-token</code></span>
                         @endif
                     </span>
                 </label>

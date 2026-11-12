@@ -6,11 +6,11 @@ This document provides essential style guidelines and library documentation for 
 
 ## Important: Run Commands in the Harness
 
-**CRITICAL:** AI agents work inside the harness container (`bin/harness`), never on the host. Run `php artisan`, `composer` and `npm` commands inside the harness, from the `web/` directory.
+**CRITICAL:** AI agents work inside the harness container (`docker compose exec harness bash`), never on the host. Run `php artisan`, `composer` and `npm` commands inside the harness, from the `web/` directory.
 
 ### Examples:
 ```bash
-# Inside the harness (bin/harness shell), in /workspace/web:
+# Inside the harness (docker compose exec harness bash), in /workspace/web:
 php artisan make:migration create_notes_table
 php artisan migrate
 php artisan make:controller NoteController

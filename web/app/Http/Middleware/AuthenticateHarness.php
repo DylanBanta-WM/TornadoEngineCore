@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthenticateHarness
 {
     /**
-     * The harness sends the token from `bin/harness connect` as a bearer token.
+     * The harness sends the token saved by `harness-connect` as a bearer token.
      *
      * @param  Closure(Request): (Response)  $next
      */

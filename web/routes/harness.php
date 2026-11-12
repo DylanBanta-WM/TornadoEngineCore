@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 | Harness API Routes
 |--------------------------------------------------------------------------
 |
-| Called by the harness container with the token from `bin/harness connect`
+| Called by the harness container with the token saved by `harness-connect`
 |
 */
 
