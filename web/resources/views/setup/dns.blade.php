@@ -142,7 +142,7 @@
                 </x-dns.step>
 
                 <x-dns.step n="6" :title="__('Add the name to your local DNS server')">
-                    <p>{{ __('Add an A record for te.example.org pointing to the Nginx RP\'s local IP, 10.0.0.20. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.') }}</p>
+                    <p>{!! __('Add an A record for :domain pointing to the Nginx RP\'s local IP, 10.0.0.20. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.', ['domain' => '<code class="'.$code.'">te.example.org</code>']) !!}</p>
                     <p>{{ __('Many DNS servers need a zone before you can add the record. Make the zone for te.example.org itself, not the whole example.org, so your other example.org addresses keep working.') }}</p>
                     <x-dns.screenshot name="local-dns-record" :alt="__('A new A record on a local DNS server')" />
                     <p>{{ __('Check it from a computer on the network. It should answer with the Nginx RP\'s local IP, 10.0.0.20:') }}</p>
