@@ -27,7 +27,9 @@ class GoogleController extends Controller
 
         try {
             $account = $google->user();
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            report($e);
+
             return $this->failed(__('Google sign-in didn\'t work. Try again.'));
         }
 

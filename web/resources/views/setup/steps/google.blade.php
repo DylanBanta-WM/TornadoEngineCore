@@ -43,7 +43,8 @@
 
         <div class="mt-4 space-y-5">
             <div>
-                <x-input-label for="domain" :value="__('School domain')" />
+                <x-input-label for="domain" :value="__('Sign-in domain')" />
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('The part after the @ in your school\'s Google accounts. It can be different from Tornado Engine\'s web address.') }}</p>
                 <x-text-input id="domain" class="block mt-1 w-full" type="text" name="domain" :value="old('domain', $domain)" required placeholder="example.org" />
                 <x-input-error :messages="$errors->get('domain')" class="mt-2" />
             </div>

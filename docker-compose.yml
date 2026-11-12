@@ -43,7 +43,8 @@ services:
         condition: service_completed_successfully
       assets:
         condition: service_completed_successfully
-    networks: [internal]
+    # edge: the website reaches Google (sign-in) over the internet.
+    networks: [internal, edge]
 
   nginx:
     image: nginx:1.28.3-alpine3.23
