@@ -12,7 +12,7 @@ Tools for school IT teams, built privacy first.
 
 ## Pre-run setup
 
-From [Pre-run Setup.md](Pre-run%20Setup.md). Do this before running `bin/web up` for the first time.
+Do this before running `bin/web up` for the first time.
 
 1. Copy the settings file:
 
