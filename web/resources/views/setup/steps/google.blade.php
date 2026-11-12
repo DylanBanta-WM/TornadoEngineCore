@@ -17,38 +17,31 @@
         <x-primary-link :href="$next">{{ __('Next') }}</x-primary-link>
     </x-setup.footer>
 @else
-<div x-data="{ keys: @js($errors->any() || $domain !== null) }">
-    <div x-show="! keys">
-        <x-setup.header :title="__('Create a Google sign-in app')">
-            {{ __('Use a Google Workspace admin account.') }}
-        </x-setup.header>
+<form method="POST" action="{{ route('setup.google') }}">
+    @csrf
 
-        <ol class="mt-6 px-6 sm:px-8 space-y-5">
-            @foreach ($guide as $line)
-                <li class="flex gap-4">
-                    <span class="flex size-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950 text-xs font-semibold text-indigo-600 dark:text-indigo-400">{{ $loop->iteration }}</span>
-                    <div class="min-w-0 pt-0.5 text-sm text-gray-700 dark:text-gray-300">
-                        {!! $line !!}
-                        @if ($loop->iteration === 3)
-                            <code class="mt-2 block rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 font-mono text-sm text-gray-900 dark:text-gray-100 break-all select-all">{{ $callbackUrl }}</code>
-                        @endif
-                    </div>
-                </li>
-            @endforeach
-        </ol>
+    <x-setup.header :title="__('Create a Google sign-in app')">
+        {{ __('Use a Google Workspace admin account.') }}
+    </x-setup.header>
 
-        <x-setup.footer class="justify-between">
-            <x-setup.back :href="$back" />
-            <x-primary-button type="button" x-on:click="keys = true">{{ __('Next') }}</x-primary-button>
-        </x-setup.footer>
-    </div>
+    <ol class="mt-6 px-6 sm:px-8 space-y-5">
+        @foreach ($guide as $line)
+            <li class="flex gap-4">
+                <span class="flex size-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950 text-xs font-semibold text-indigo-600 dark:text-indigo-400">{{ $loop->iteration }}</span>
+                <div class="min-w-0 pt-0.5 text-sm text-gray-700 dark:text-gray-300">
+                    {!! $line !!}
+                    @if ($loop->iteration === 3)
+                        <code class="mt-2 block rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 font-mono text-sm text-gray-900 dark:text-gray-100 break-all select-all">{{ $callbackUrl }}</code>
+                    @endif
+                </div>
+            </li>
+        @endforeach
+    </ol>
 
-    <form x-show="keys" x-cloak method="POST" action="{{ route('setup.google') }}">
-        @csrf
+    <div class="mt-8 mx-6 sm:mx-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h2 class="font-semibold text-gray-900 dark:text-gray-100">{{ __('Enter the app\'s keys') }}</h2>
 
-        <x-setup.header :title="__('Enter the app\'s keys')" />
-
-        <div class="mt-6 px-6 sm:px-8 space-y-5">
+        <div class="mt-4 space-y-5">
             <div>
                 <x-input-label for="domain" :value="__('School domain')" />
                 <x-text-input id="domain" class="block mt-1 w-full" type="text" name="domain" :value="old('domain', $domain)" required placeholder="example.org" />
@@ -67,11 +60,11 @@
                 <x-input-error :messages="$errors->get('client_secret')" class="mt-2" />
             </div>
         </div>
+    </div>
 
-        <x-setup.footer class="justify-between">
-            <x-secondary-button x-on:click="keys = false">{{ __('Back') }}</x-secondary-button>
-            <x-primary-button>{{ __('Next') }}</x-primary-button>
-        </x-setup.footer>
-    </form>
-</div>
+    <x-setup.footer class="justify-between">
+        <x-setup.back :href="$back" />
+        <x-primary-button>{{ __('Next') }}</x-primary-button>
+    </x-setup.footer>
+</form>
 @endif
