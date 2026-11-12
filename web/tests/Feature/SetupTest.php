@@ -39,7 +39,8 @@ class SetupTest extends TestCase
         URL::forceScheme('http');
 
         $this->get('/')->assertRedirect('/setup');
-        $this->get('/setup')->assertOk()->assertSee('Find out how to set up DNS and HTTPS');
+        $this->get('/setup')->assertOk()->assertSee('Find out how to set up DNS and HTTPS')->assertSee('/dns-setup');
+        $this->get('/dns-setup')->assertOk()->assertSee('letsencrypt.org');
 
         $this->post('/setup/address', ['address' => 'https://10.0.0.5'])->assertSessionHasErrors('address');
         $this->post('/setup/address', ['address' => 'http://te.school.test'])->assertSessionHasErrors('address');

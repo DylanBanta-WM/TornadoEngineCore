@@ -1,13 +1,4 @@
-@php
-    $help = [
-        ['https://letsencrypt.org/docs/challenge-types/#dns-01-challenge', __('Let\'s Encrypt: certificates for servers that aren\'t public')],
-        ['https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins', __('Certbot: plugins for your DNS provider')],
-        ['https://www.youtube.com/watch?v=liV3c9m_OX8', __('Video: certificates for local sites with Cloudflare (Techno Tim)')],
-        ['https://developers.google.com/identity/protocols/oauth2/web-server#uri-validation', __('Google: rules for sign-in addresses')],
-    ];
-@endphp
-
-<div x-data="{ change: @js($address === null || $errors->any()), help: false }">
+<div x-data="{ change: @js($address === null || $errors->any()) }">
     <x-setup.header :title="__('Web address')">
         {{ __('Google sign-in only works on a domain name with HTTPS. It can stay on your own network.') }}
     </x-setup.header>
@@ -30,14 +21,9 @@
             </form>
         @endunless
 
-        <button type="button" x-on:click="help = ! help" class="mt-6 text-sm font-medium text-indigo-600 dark:text-indigo-400 underline">
+        <a href="{{ route('dns-setup') }}" target="_blank" class="mt-6 inline-block text-sm font-medium text-indigo-600 dark:text-indigo-400 underline">
             {{ __('Find out how to set up DNS and HTTPS for Tornado Engine') }}
-        </button>
-        <ul x-show="help" x-cloak class="mt-3 space-y-2 text-sm">
-            @foreach ($help as [$url, $label])
-                <li><a href="{{ $url }}" target="_blank" rel="noopener" class="text-gray-700 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-gray-100">{{ $label }}</a></li>
-            @endforeach
-        </ul>
+        </a>
     </div>
 
     @if ($address)

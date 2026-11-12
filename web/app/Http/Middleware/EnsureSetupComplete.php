@@ -16,7 +16,7 @@ class EnsureSetupComplete
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! Setup::complete() && ! $request->routeIs('setup', 'setup.*', 'login', 'logout', 'google.*')) {
+        if (! Setup::complete() && ! $request->routeIs('setup', 'setup.*', 'login', 'logout', 'google.*', 'dns-setup')) {
             return redirect()->route('setup');
         }
 
