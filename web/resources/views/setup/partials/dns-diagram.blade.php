@@ -17,12 +17,12 @@
     $dns = $public ? [190, 20, 200, 64] : [190, 20, 200, 64];
     $firewall = [300, 170, 160, 64];
     $nginx = $public ? [540, 170, 170, 64] : [380, 170, 170, 64];
-    $engine = $public ? [790, 170, 170, 64] : [680, 170, 170, 64];
-    $width = $public ? 980 : 870;
+    $engine = $public ? [840, 170, 170, 64] : [700, 170, 170, 64];
+    $width = $public ? 1030 : 890;
     $id = $public ? 'public' : 'local';
 @endphp
 
-<svg viewBox="0 0 {{ $width }} 330" class="w-full h-auto text-[13px]" role="img" aria-labelledby="dns-{{ $id }}-title" font-family="inherit">
+<svg viewBox="0 0 {{ $width }} 350" class="w-full h-auto text-[13px]" role="img" aria-labelledby="dns-{{ $id }}-title" font-family="inherit">
     <title id="dns-{{ $id }}-title">{{ $public ? __('Reaching Tornado Engine from outside') : __('Reaching Tornado Engine on the school network') }}</title>
     <defs>
         <marker id="arrow-{{ $id }}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
@@ -86,18 +86,25 @@
     <text x="{{ $nx }}" y="258" text-anchor="middle" class="{{ $youText }}" font-size="12">{{ __('You add the certificate') }}</text>
     <text x="{{ $nx }}" y="274" text-anchor="middle" class="{{ $youText }}" font-size="12">{{ __('and the site') }}</text>
 
-    {{-- 4: pass on --}}
+    {{-- 4: reverse proxy --}}
     @php($ex = $engine[0] + $engine[2] / 2)
+    @php($gap = ($nginx[0] + $nginx[2] + $engine[0]) / 2)
     <line x1="{{ $nginx[0] + $nginx[2] + 2 }}" y1="202" x2="{{ $engine[0] - 4 }}" y2="202" class="{{ $line }}" stroke-width="2" marker-end="url(#arrow-{{ $id }})" />
-    {!! $step(4, ($nginx[0] + $nginx[2] + $engine[0]) / 2, 202) !!}
+    {!! $step(4, $gap, 202) !!}
+    <text x="{{ $gap }}" y="174" text-anchor="middle" class="{{ $note }}" font-size="12">{{ __('Reverse proxy:') }}</text>
+    <text x="{{ $gap }}" y="188" text-anchor="middle" class="{{ $note }}" font-size="12">{{ __('forwards it on') }}</text>
 
     {{-- Tornado Engine --}}
     <rect x="{{ $engine[0] }}" y="{{ $engine[1] }}" width="{{ $engine[2] }}" height="{{ $engine[3] }}" rx="8" class="{{ $te }}" />
     <text x="{{ $ex }}" y="198" text-anchor="middle" class="{{ $name }}">{{ __('Tornado Engine') }}</text>
     <text x="{{ $ex }}" y="217" text-anchor="middle" class="{{ $note }}" font-size="12">10.0.0.30:8090</text>
 
-    {{-- 5: the reply goes back --}}
-    <path d="M{{ $ex }} 236 L{{ $ex }} 306 L95 306 L95 238" fill="none" class="{{ $back }}" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#back-{{ $id }})" />
-    {!! $step(5, ($ex + 95) / 2, 306) !!}
-    <text x="{{ ($ex + 95) / 2 + 18 }}" y="300" class="{{ $note }}" font-size="12">{{ __('the page, back through Nginx') }}</text>
+    {{-- 5: the page back to Nginx, 6: Nginx sends it to the browser --}}
+    <path d="M{{ $ex }} 236 L{{ $ex }} 296 L{{ $nx + 78 }} 296 L{{ $nx + 78 }} 240" fill="none" class="{{ $back }}" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#back-{{ $id }})" />
+    {!! $step(5, ($ex + $nx + 78) / 2, 296) !!}
+    <text x="{{ ($ex + $nx + 78) / 2 }}" y="318" text-anchor="middle" class="{{ $note }}" font-size="12">{{ __('the page') }}</text>
+
+    <path d="M{{ $nx - 78 }} 238 L{{ $nx - 78 }} 326 L95 326 L95 238" fill="none" class="{{ $back }}" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#back-{{ $id }})" />
+    {!! $step(6, ($nx - 78 + 95) / 2, 326) !!}
+    <text x="{{ ($nx - 78 + 95) / 2 }}" y="314" text-anchor="middle" class="{{ $note }}" font-size="12">{{ __('Reverse proxy: sends the page back') }}</text>
 </svg>

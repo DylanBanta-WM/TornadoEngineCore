@@ -10,16 +10,18 @@
         __('The browser asks your local DNS server where te.example.org is.'),
         __('The DNS server answers with the Nginx server\'s address, 10.0.0.20. If there\'s no record, the browser says the site can\'t be reached.'),
         __('The browser connects to the Nginx server over HTTPS. Nginx shows the certificate for te.example.org and finds its site for that name.'),
-        __('Nginx passes the request on to Tornado Engine, at 10.0.0.30 port 8090.'),
-        __('Tornado Engine\'s page goes back through Nginx to the browser.'),
+        __('Nginx acts as a reverse proxy: it forwards the request to Tornado Engine, at 10.0.0.30 port 8090. The browser never connects to Tornado Engine directly.'),
+        __('Tornado Engine sends the page back to Nginx.'),
+        __('Nginx sends the page on to the browser, over HTTPS.'),
     ];
 
     $public = [
         __('A browser outside the network asks public DNS where te.example.org is. Your domain\'s public DNS is at Cloudflare.'),
         __('Cloudflare answers with the district\'s public IP address, 203.0.113.10.'),
         __('The browser connects to the public IP. The firewall forwards ports 80 and 443 to the Nginx server.'),
-        __('Nginx handles HTTPS and passes the request on to Tornado Engine, just as on the school network.'),
-        __('Tornado Engine\'s page goes back through Nginx and the firewall to the browser.'),
+        __('Nginx handles HTTPS and, as a reverse proxy, forwards the request to Tornado Engine, just as on the school network.'),
+        __('Tornado Engine sends the page back to Nginx.'),
+        __('Nginx sends the page back through the firewall to the browser.'),
     ];
 @endphp
 
