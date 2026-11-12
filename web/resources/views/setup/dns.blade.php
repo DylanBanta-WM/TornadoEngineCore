@@ -158,9 +158,25 @@
                 </x-dns.step>
 
                 <x-dns.step n="6" :title="__('Add the name to your local DNS server')">
-                    <p>{!! __('Add an A record for :domain pointing to the Nginx RP\'s local IP, :ip. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.', ['domain' => '<code class="'.$code.'">te.example.org</code>', 'ip' => '<code class="'.$code.'">10.0.0.20</code>']) !!}</p>
-                    <p>{{ __('Many DNS servers need a zone before you can add the record. Make the zone for te.example.org itself, not the whole example.org, so your other example.org addresses keep working.') }}</p>
-                    <x-dns.screenshot name="local-dns-record" :alt="__('A new A record on a local DNS server')" />
+                    <p>{!! __('Add an A record for :domain pointing to the Nginx RP\'s local IP, :ip. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.', ['domain' => '<code class="'.$code.'">te.example.org</code>', 'ip' => '<code class="'.$code.'">10.0.0.20</code>']) !!}</p>
+                    <p>{!! __('If your DNS server already has a zone for your domain, as in our screenshots, add the record there. If it doesn\'t, make a zone for :domain itself, not the whole :zone, so your other :zone addresses keep working.', ['domain' => '<code class="'.$code.'">te.example.org</code>', 'zone' => '<code class="'.$code.'">example.org</code>']) !!}</p>
+                    <p>{{ __('Our screenshots use Windows Server DNS Manager. Other DNS servers work in a similar way.') }}</p>
+                    <ol class="ms-5 list-decimal space-y-1">
+                        <li>{!! __('Open DNS Manager (:cmd) and select your domain under Forward Lookup Zones.', ['cmd' => '<code class="'.$code.'">dnsmgmt.msc</code>']) !!}</li>
+                    </ol>
+                    <x-dns.screenshot name="local-dns-record-1" :alt="__('DNS Manager with the domain selected under Forward Lookup Zones')" />
+                    <ol start="2" class="ms-5 list-decimal space-y-1">
+                        <li>{{ __('Right-click anywhere in the list of records and select New Host (A or AAAA)...') }}</li>
+                    </ol>
+                    <x-dns.screenshot name="local-dns-record-2" :alt="__('The right-click menu with New Host (A or AAAA)')" />
+                    <ol start="3" class="ms-5 list-decimal space-y-1">
+                        <li>{!! __('Enter the subdomain, :name, and the Nginx RP\'s local IP, :ip. Then click Add Host.', ['name' => '<code class="'.$code.'">te</code>', 'ip' => '<code class="'.$code.'">10.0.0.20</code>']) !!}</li>
+                    </ol>
+                    <x-dns.screenshot name="local-dns-record-3" :alt="__('The New Host window with the name and IP address filled in')" />
+                    <ol start="4" class="ms-5 list-decimal space-y-1">
+                        <li>{{ __('The new record shows at the bottom of the list.') }}</li>
+                    </ol>
+                    <x-dns.screenshot name="local-dns-record-4" :alt="__('The new te record at the bottom of the list')" />
                     <p>{!! $ips(__('Check it from a computer on the network. It should answer with the Nginx RP\'s local IP, 10.0.0.20:')) !!}</p>
                     <x-dns.code>
                         nslookup te.example.org
