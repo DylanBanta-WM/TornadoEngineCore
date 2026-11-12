@@ -15,7 +15,15 @@
     <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <div class="min-h-screen px-4 py-10 sm:py-16">
             <div class="mx-auto {{ $wide ? 'max-w-4xl' : 'max-w-2xl' }}">
-                <p class="text-center text-sm font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">{{ config('app.name') }}</p>
+                <div class="relative">
+                    @if ($back)
+                        <a href="{{ $back }}" class="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                            <svg class="size-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.8 4.2a1 1 0 0 1 0 1.4L8.4 10l4.4 4.4a1 1 0 0 1-1.4 1.4l-5.1-5.1a1 1 0 0 1 0-1.4l5.1-5.1a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
+                            {{ __('Back to setup') }}
+                        </a>
+                    @endif
+                    <p class="text-center text-sm font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">{{ config('app.name') }}</p>
+                </div>
 
                 {{ $slot }}
             </div>

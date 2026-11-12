@@ -7,7 +7,7 @@ use Illuminate\View\View;
 
 class SetupLayout extends Component
 {
-    public function __construct(public bool $wide = false) {}
+    public function __construct(public bool $wide = false, public ?string $back = null) {}
 
     public function render(): View
     {
