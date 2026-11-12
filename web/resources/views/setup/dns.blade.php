@@ -3,6 +3,9 @@
     $code = 'rounded bg-gray-100 dark:bg-gray-900 px-1 py-0.5 font-mono text-[13px] text-gray-900 dark:text-gray-100';
     $h2 = 'text-base font-semibold text-gray-900 dark:text-gray-100';
 
+    // Shows IP addresses in a sentence as code.
+    $ips = fn (string $text) => preg_replace('/\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b/', '<code class="'.$code.'">$0</code>', e($text));
+
     $local = [
         __('The browser asks your local DNS server where te.example.org is.'),
         __('The DNS server answers with the Nginx RP\'s local IP, 10.0.0.20. If there\'s no record, the browser says the site can\'t be reached.'),
@@ -142,10 +145,10 @@
                 </x-dns.step>
 
                 <x-dns.step n="6" :title="__('Add the name to your local DNS server')">
-                    <p>{!! __('Add an A record for :domain pointing to the Nginx RP\'s local IP, 10.0.0.20. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.', ['domain' => '<code class="'.$code.'">te.example.org</code>']) !!}</p>
+                    <p>{!! __('Add an A record for :domain pointing to the Nginx RP\'s local IP, :ip. How you add it depends on your DNS server; the screenshot below is one example. Computers that need Tornado Engine must use this DNS server. Usually your DHCP server already hands it out.', ['domain' => '<code class="'.$code.'">te.example.org</code>', 'ip' => '<code class="'.$code.'">10.0.0.20</code>']) !!}</p>
                     <p>{{ __('Many DNS servers need a zone before you can add the record. Make the zone for te.example.org itself, not the whole example.org, so your other example.org addresses keep working.') }}</p>
                     <x-dns.screenshot name="local-dns-record" :alt="__('A new A record on a local DNS server')" />
-                    <p>{{ __('Check it from a computer on the network. It should answer with the Nginx RP\'s local IP, 10.0.0.20:') }}</p>
+                    <p>{!! $ips(__('Check it from a computer on the network. It should answer with the Nginx RP\'s local IP, 10.0.0.20:')) !!}</p>
                     <x-dns.code>
                         nslookup te.example.org
                     </x-dns.code>
@@ -177,7 +180,7 @@
                 @include('setup.partials.dns-diagram', ['public' => false])
                 <ol class="space-y-2">
                     @foreach ($local as $text)
-                        <li class="flex gap-3"><span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-[11px] font-semibold text-white">{{ $loop->iteration }}</span><span>{{ $text }}</span></li>
+                        <li class="flex gap-3"><span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-[11px] font-semibold text-white">{{ $loop->iteration }}</span><span>{!! $ips($text) !!}</span></li>
                     @endforeach
                 </ol>
             </div>
@@ -189,12 +192,12 @@
                     <x-dns.step n="1" :title="__('Add the record in Cloudflare')">
                         <p>{{ __('In Cloudflare, open your domain, then DNS and Records, and click Add record.') }}</p>
                         <x-dns.screenshot name="cloudflare-dns-records" :alt="__('Cloudflare DNS Records page')" />
-                        <p>{{ __('Type: A. Name: te. IPv4 address: the district\'s public IP, 203.0.113.10 in our examples. Then choose the proxy status (see step 3) and save.') }}</p>
+                        <p>{!! $ips(__('Type: A. Name: te. IPv4 address: the district\'s public IP, 203.0.113.10 in our examples. Then choose the proxy status (see step 3) and save.')) !!}</p>
                         <x-dns.screenshot name="cloudflare-add-record" :alt="__('The Add record form for an A record')" />
                     </x-dns.step>
 
                     <x-dns.step n="2" :title="__('Forward ports 80 and 443 to the Nginx RP')">
-                        <p>{{ __('On the district firewall, forward ports 80 and 443 to the Nginx RP\'s local IP, 10.0.0.20. How you do this depends on your firewall, so it\'s outside the scope of our examples.') }}</p>
+                        <p>{!! $ips(__('On the district firewall, forward ports 80 and 443 to the Nginx RP\'s local IP, 10.0.0.20. How you do this depends on your firewall, so it\'s outside the scope of our examples.')) !!}</p>
                     </x-dns.step>
 
                     <x-dns.step n="3" :title="__('Choose the proxy status (optional)')">
@@ -216,7 +219,7 @@
                 </div>
                 <ol class="mt-4 space-y-2">
                     @foreach ($public as $text)
-                        <li class="flex gap-3"><span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-[11px] font-semibold text-white">{{ $loop->iteration }}</span><span>{{ $text }}</span></li>
+                        <li class="flex gap-3"><span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-[11px] font-semibold text-white">{{ $loop->iteration }}</span><span>{!! $ips($text) !!}</span></li>
                     @endforeach
                 </ol>
             </div>
