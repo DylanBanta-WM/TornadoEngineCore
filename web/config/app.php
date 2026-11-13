@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Tornado Engine'),
 
     // The address the website listens on (set in .env, applied by docker compose up -d).
     'web_bind' => env('WEB_BIND', '0.0.0.0'),

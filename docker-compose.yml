@@ -11,9 +11,10 @@ services:
     working_dir: /app
     environment:
       COMPOSER_HOME: /tmp/composer
-    command: ["composer", "install", "--no-interaction", "--no-progress"]
+    command: ["sh", "/tornado/composer.sh"]
     volumes:
       - ./web:/app
+      - ./docker/composer.sh:/tornado/composer.sh:ro
 
   assets:
     image: node:20.19.5-trixie-slim

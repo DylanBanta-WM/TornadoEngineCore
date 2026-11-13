@@ -7,9 +7,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "composer/semver": "^3.4",
         "laravel/framework": "^13.17",
         "laravel/socialite": "^5.32",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "tornado-engine/nav": "^0.1",
+        "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -80,9 +83,17 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "tornado-engine-nav": {
+            "type": "vcs",
+            "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav",
+            "no-api": true
+        }
+    }
 }

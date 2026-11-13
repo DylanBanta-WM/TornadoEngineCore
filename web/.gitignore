@@ -25,3 +25,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# A district's or a developer's modules (see README)
+/modules/
+/composer.local.json
+/composer.local.lock

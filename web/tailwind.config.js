@@ -7,6 +7,9 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        // Modules' views
+        './vendor/tornado-engine/*/resources/views/**/*.blade.php',
+        './modules/*/resources/views/**/*.blade.php',
     ],
 
     theme: {
