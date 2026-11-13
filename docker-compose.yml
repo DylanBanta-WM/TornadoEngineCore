@@ -67,7 +67,8 @@ services:
         condition: service_completed_successfully
     networks: [internal]
 
-  nginx:
+  # Nginx WEB: Tornado Engine's own web server (not the district's Nginx RP).
+  nginx-web:
     image: nginx:1.28.3-alpine3.23
     ports:
       - "${WEB_BIND:-0.0.0.0}:${WEB_PORT:-8090}:80"
@@ -105,13 +106,13 @@ services:
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     environment:
-      HARNESS_WEB_URL: http://nginx
+      HARNESS_WEB_URL: http://nginx-web
       HTTPS_PROXY: http://harness-proxy:8888
       HTTP_PROXY: http://harness-proxy:8888
-      NO_PROXY: localhost,127.0.0.1,nginx
+      NO_PROXY: localhost,127.0.0.1,nginx-web
       https_proxy: http://harness-proxy:8888
       http_proxy: http://harness-proxy:8888
-      no_proxy: localhost,127.0.0.1,nginx
+      no_proxy: localhost,127.0.0.1,nginx-web
     volumes:
       - type: bind
         source: .
