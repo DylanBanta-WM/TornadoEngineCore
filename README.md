@@ -52,7 +52,7 @@ docker compose exec harness harness-claude           # run Claude Code in the ha
 All three options are safe: the assistant only ever sees student and staff data through the privacy broker, as pseudonyms. Logged and Strict add security on top of that.
 
 - **Open** (default): the assistant can reach any public website.
-- **Logged**: the same as Open, but every site it connects to is recorded for you to review (`docker logs tornado-harness-proxy`).
+- **Logged**: the same as Open, but every site it connects to is recorded for you to review (`docker compose logs harness-proxy`).
 - **Strict**: only approved sites (Anthropic, GitHub, package downloads, listed in `harness/proxy/allow.txt`). Web search still works, but the assistant can't open other pages.
 
 Set `HARNESS_NETWORK=open`, `logged` or `strict` in `.env`, then run `docker compose up -d`.
