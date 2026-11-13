@@ -334,6 +334,7 @@ Tools are built as modules, never as changes to Core. Each module is its own git
 - Its service provider loads the module's routes, views (`loadViewsFrom(..., '{name}')`) and migrations, and adds its menu items through Nav.
 - Tests go in the module's `tests/` folder and extend Core's `Tests\TestCase`; they run with Core's tests.
 - If something a module needs isn't possible without changing Core, add a general extension point to Core instead of a module-specific change.
+- `core` is open-ended (`>=0.3`). When Core changes in a way that breaks a module, release a new version of that module with an updated `core` range, and make Core require that new version in its `composer.json`.
 - Release by tagging a version (`v0.1.0`) and pushing; Packagist publishes it.
 
 When `web/composer.local.json` exists, run Composer with `COMPOSER=composer.local.json`, for example `COMPOSER=composer.local.json composer update`.
