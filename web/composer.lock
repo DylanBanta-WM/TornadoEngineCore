@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15dc498915ac5eadda79e91dc3174ba1",
+    "content-hash": "9d162da4414b358f15d33dd500f3990b",
     "packages": [
         {
             "name": "brick/math",
@@ -6454,17 +6454,63 @@
             "time": "2025-12-02T11:56:42+00:00"
         },
         {
-            "name": "tornado-engine/docs",
-            "version": "v0.2.0",
+            "name": "tornado-engine/access",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Docs.git",
-                "reference": "ef8b4a31fda2d689e0bc519ff19ddb2b244afbb3"
+                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Access.git",
+                "reference": "5665843bbb4e2421dfd70c861b9f8837226e8532"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/ef8b4a31fda2d689e0bc519ff19ddb2b244afbb3",
-                "reference": "ef8b4a31fda2d689e0bc519ff19ddb2b244afbb3",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/5665843bbb4e2421dfd70c861b9f8837226e8532",
+                "reference": "5665843bbb4e2421dfd70c861b9f8837226e8532",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^13.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "tornado": {
+                    "core": ">=0.3",
+                    "name": "Access",
+                    "provider": "TornadoEngine\\Access\\AccessServiceProvider",
+                    "core-module": true
+                },
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TornadoEngine\\Access\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Tornado Engine core-module: users, roles, and which pages each person can see.",
+            "support": {
+                "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Access/issues",
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.1.0"
+            },
+            "time": "2026-11-13T15:26:49+00:00"
+        },
+        {
+            "name": "tornado-engine/docs",
+            "version": "v0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Docs.git",
+                "reference": "eec3a3ac9d4d31d7b50ba50d1f9eff2fdbb58859"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/eec3a3ac9d4d31d7b50ba50d1f9eff2fdbb58859",
+                "reference": "eec3a3ac9d4d31d7b50ba50d1f9eff2fdbb58859",
                 "shasum": ""
             },
             "require": {
@@ -6480,7 +6526,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.2.x-dev"
+                    "dev-main": "0.3.x-dev"
                 }
             },
             "autoload": {
@@ -6495,9 +6541,9 @@
             "description": "Tornado Engine core-module: documentation pages in Administration. Other modules add their own docs.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.2.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.3.0"
             },
-            "time": "2026-11-13T15:10:30+00:00"
+            "time": "2026-11-13T15:26:49+00:00"
         },
         {
             "name": "tornado-engine/nav",
