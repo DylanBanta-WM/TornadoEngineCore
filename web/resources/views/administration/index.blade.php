@@ -84,4 +84,9 @@
             </div>
         </form>
     </x-settings-card>
+
+    {{-- Modules' own settings --}}
+    @foreach ($cards as $card)
+        @include($card)
+    @endforeach
 </x-admin-layout>

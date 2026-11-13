@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Administration\Administration;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,6 +28,19 @@ class AdministrationTest extends TestCase
             ->assertSee('Google sign-in')
             ->assertSee('Harness')
             ->assertSee('Claude Code login');
+    }
+
+    public function test_modules_add_cards(): void
+    {
+        $view = 'zz-test-card';
+        file_put_contents(resource_path("views/{$view}.blade.php"), '<x-settings-card title="Test module">Card body</x-settings-card>');
+
+        try {
+            app(Administration::class)->card($view)->card('no.such.view');
+            $this->actingAs($this->admin())->get('/administration')->assertSee('Test module')->assertSee('Card body');
+        } finally {
+            unlink(resource_path("views/{$view}.blade.php"));
+        }
     }
 
     public function test_staff_cannot_change_settings(): void

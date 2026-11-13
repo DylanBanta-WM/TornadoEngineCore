@@ -1,0 +1,3 @@
+# Containers that modules bring with them. Written by docker/composer.sh on each start;
+# don't edit by hand. A module lists its compose file under "extra.tornado.compose".
+include: []

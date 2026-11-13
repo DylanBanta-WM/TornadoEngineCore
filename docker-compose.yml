@@ -1,6 +1,10 @@
 # Each copy needs its own COMPOSE_PROJECT_NAME and WEB_PORT in .env.
 name: ${COMPOSE_PROJECT_NAME:-tornado}
 
+# Modules' own containers (see docker/modules.yml).
+include:
+  - docker/modules.yml
+
 x-host-user: &host-user "${HOST_UID:-1000}:${HOST_GID:-1000}"
 
 services:
@@ -15,6 +19,8 @@ services:
     volumes:
       - ./web:/app
       - ./docker/composer.sh:/tornado/composer.sh:ro
+      - ./docker/modules.yml:/tornado/modules.yml
+      - ./docker/modules.php:/tornado/modules.php:ro
 
   assets:
     image: node:20.19.5-trixie-slim

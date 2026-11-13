@@ -332,6 +332,7 @@ Tools are built as modules, never as changes to Core. Each module is its own git
   ```
   `core` is the range of Core versions it works with; Core only starts modules that fit.
 - Its service provider loads the module's routes, views (`loadViewsFrom(..., '{name}')`) and migrations, and adds its menu items through Nav.
+- A module that needs its own containers lists its compose file as `"compose": "docker/compose.yml"` in the `tornado` section. Core includes it on the next `docker compose up -d` (run it twice: the first run installs the module). Its services join Core's `internal` network (and `edge` for the internet), declared the same way as in Core's `docker-compose.yml`.
 - Tests go in the module's `tests/` folder and extend Core's `Tests\TestCase`; they run with Core's tests.
 - If something a module needs isn't possible without changing Core, add a general extension point to Core instead of a module-specific change.
 - `core` is open-ended (`>=0.3`). When Core changes in a way that breaks a module, release a new version of that module with an updated `core` range, and make Core require that new version in its `composer.json`.

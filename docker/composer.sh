@@ -10,8 +10,11 @@ if [ -f composer.local.json ]; then
   [ -d vendor/wikimedia/composer-merge-plugin ] || composer install --no-interaction --no-progress
   export COMPOSER=composer.local.json
   if [ ! -f composer.local.lock ] || [ composer.local.json -nt composer.local.lock ] || [ composer.json -nt composer.local.lock ]; then
-    exec composer update --no-interaction --no-progress
+    composer update --no-interaction --no-progress
+    php /tornado/modules.php
+    exit
   fi
 fi
 
-exec composer install --no-interaction --no-progress
+composer install --no-interaction --no-progress
+php /tornado/modules.php

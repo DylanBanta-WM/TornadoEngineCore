@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Administration\Administration;
 use App\Models\Setting;
 use App\Support\GoogleSignIn;
 use App\Support\Settings;
@@ -15,9 +16,10 @@ use Illuminate\View\View;
  */
 class AdministrationController extends Controller
 {
-    public function index(): View
+    public function index(Administration $administration): View
     {
         return view('administration.index', [
+            'cards' => $administration->cards(),
             'address' => Setup::address(),
             'domain' => GoogleSignIn::domain(),
             'clientId' => Setting::get('google.client_id'),
