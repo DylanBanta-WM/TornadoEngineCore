@@ -29,5 +29,8 @@ class AppServiceProvider extends ServiceProvider
         // Who can open Administration. Until the Access module manages permissions,
         // it's the admin made during first-time setup.
         Gate::define('administration', fn (User $user) => (bool) $user->is_admin);
+
+        // Core's own updates, run by the updater service.
+        app(Administration::class)->tab('updates', __('Updates'), order: 90)->card('administration.updates', tab: 'updates');
     }
 }

@@ -28,7 +28,7 @@ foreach ($includes as $path) {
     $yaml .= "  - path: ../{$path}\n    env_file: ../.env\n";
 }
 
-$target = '/tornado/modules.yml';
+$target = $argv[1] ?? '/tornado/modules.yml';
 if (@file_get_contents($target) !== $yaml) {
     file_put_contents($target, $yaml);
     fwrite(STDOUT, "Modules' containers changed. Run \"docker compose up -d\" again to start them.\n");

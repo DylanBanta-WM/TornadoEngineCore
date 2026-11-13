@@ -337,6 +337,7 @@ Tools are built as modules, never as changes to Core. Each module is its own git
 - If something a module needs isn't possible without changing Core, add a general extension point to Core instead of a module-specific change.
 - `core` is open-ended (`>=0.3`). When Core changes in a way that breaks a module, release a new version of that module with an updated `core` range, and make Core require that new version in its `composer.json`.
 - Release by tagging a version (`v0.1.0`) and pushing; Packagist publishes it.
+- Give the GitHub repository the topic `tornado-engine-module` so it's listed on `/modules`.
 
 ### Composer when `web/composer.local.json` exists
 

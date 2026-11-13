@@ -52,7 +52,9 @@ docker compose exec harness harness-claude           # run Claude Code in the ha
 
 Core-modules, such as Nav, are installed automatically.
 
-To add your own modules, copy `web/composer.local.json.example` to `web/composer.local.json`, list them under `require`, and run `docker compose up -d`. Core's own files stay unchanged, so updating Core doesn't conflict with your modules.
+Install and update modules on the `/modules` page, and update Core under Administration → Updates. The `updater` service does the work. If a module brings its own containers, or an update changes Tornado Engine's containers, the page says to run `docker compose up -d` (or `--build`) on the server.
+
+You can also list modules in `web/composer.local.json` under `require` and run `docker compose up -d`. Core's own files stay unchanged, so updating Core doesn't conflict with your modules.
 
 To work on a module, clone its repo into `web/modules/`. That copy is used instead of the published one.
 

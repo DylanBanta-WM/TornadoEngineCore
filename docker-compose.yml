@@ -50,6 +50,52 @@ services:
     # edge: the website reaches Google (sign-in) over the internet.
     networks: [internal, edge]
 
+  # Installs and updates modules and Core when an admin asks on /modules or Administration → Updates.
+  # The website only queues the request; this does the work (Composer, git, migrations).
+  updater:
+    restart: unless-stopped
+    build:
+      context: ./docker
+      args:
+        APP_UID: ${HOST_UID:-1000}
+        APP_GID: ${HOST_GID:-1000}
+    env_file: .env
+    user: *host-user
+    environment:
+      COMPOSER_HOME: /tmp/composer
+      HOME: /tmp
+      # The repository is owned by the host user; let git work with it from here.
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: "*"
+    command: ["php", "artisan", "tornado:updater"]
+    volumes:
+      - ./web:/var/www/html
+      - .:/tornado
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # edge: it downloads modules and updates.
+    networks: [internal, edge]
+
+  # Rebuilds the website's styles when the updater asks (a new module's pages need theirs).
+  assets-watcher:
+    restart: unless-stopped
+    image: node:20.19.5-trixie-slim
+    user: *host-user
+    working_dir: /app
+    environment:
+      HOME: /tmp
+    command: ["sh", "/tornado/assets-watcher.sh"]
+    volumes:
+      - ./web:/app
+      - ./docker/assets-watcher.sh:/tornado/assets-watcher.sh:ro
+    depends_on:
+      assets:
+        condition: service_completed_successfully
+    # edge: npm downloads packages when a Core update changes them.
+    networks: [edge]
+
   # Run once on each start: database updates from Core and its modules.
   migrate:
     build:
