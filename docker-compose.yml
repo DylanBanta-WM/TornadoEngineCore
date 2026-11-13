@@ -33,7 +33,25 @@ services:
         APP_UID: ${HOST_UID:-1000}
         APP_GID: ${HOST_GID:-1000}
     env_file: .env
-    command: ["sh", "-c", "php artisan migrate --force && exec php-fpm"]
+    volumes:
+      - ./web:/var/www/html
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      assets:
+        condition: service_completed_successfully
+    # edge: the website reaches Google (sign-in) over the internet.
+    networks: [internal, edge]
+
+  # Run once on each start: database updates from Core and its modules.
+  migrate:
+    build:
+      context: ./docker
+      args:
+        APP_UID: ${HOST_UID:-1000}
+        APP_GID: ${HOST_GID:-1000}
+    env_file: .env
+    command: ["php", "artisan", "migrate", "--force"]
     volumes:
       - ./web:/var/www/html
     depends_on:
@@ -41,10 +59,7 @@ services:
         condition: service_healthy
       composer:
         condition: service_completed_successfully
-      assets:
-        condition: service_completed_successfully
-    # edge: the website reaches Google (sign-in) over the internet.
-    networks: [internal, edge]
+    networks: [internal]
 
   nginx:
     image: nginx:1.28.3-alpine3.23
