@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AuthenticateHarness;
 use App\Http\Middleware\EnsureSetupComplete;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('web')
                 ->group(base_path('routes/setup.php'));
 
+            Route::middleware('web')
+                ->group(base_path('routes/administration.php'));
+
             Route::middleware(AuthenticateHarness::class)
                 ->group(base_path('routes/harness.php'));
         },
@@ -29,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // HTTPS is usually handled by the district's reverse proxy.
         $middleware->trustProxies(at: '*');
         $middleware->web(append: [EnsureSetupComplete::class]);
+        $middleware->alias(['admin' => EnsureUserIsAdmin::class]);
         $middleware->prependToPriorityList(
             before: AuthenticatesRequests::class,
             prepend: EnsureSetupComplete::class,

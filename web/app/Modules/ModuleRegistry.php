@@ -22,6 +22,13 @@ class ModuleRegistry
         foreach ($installed['packages'] ?? [] as $package) {
             $tornado = $package['extra']['tornado'] ?? null;
 
+            // Read the module's own composer.json when it's there, so a module being developed
+            // in modules/ is seen as it is now, not as it was when Composer last installed it.
+            $own = dirname($installedJson).'/'.($package['install-path'] ?? '').'/composer.json';
+            if (isset($package['install-path']) && is_file($own)) {
+                $tornado = json_decode(file_get_contents($own), true)['extra']['tornado'] ?? $tornado;
+            }
+
             if (! is_array($tornado)) {
                 continue;
             }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DnsSetupController;
 use App\Http\Controllers\SetupController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/setup', [SetupController::class, 'index'])->name('setup');
-Route::view('/dns-setup', 'setup.dns')->name('dns-setup');
+Route::get('/dns-setup', DnsSetupController::class)->name('dns-setup');
 Route::post('/setup/address', [SetupController::class, 'storeAddress'])->name('setup.address');
 Route::post('/setup/google', [SetupController::class, 'storeGoogle'])->name('setup.google');
 
