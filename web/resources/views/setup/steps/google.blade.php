@@ -60,6 +60,8 @@
                 <x-text-input id="client_secret" class="block mt-1 w-full" type="password" name="client_secret" required autocomplete="off" />
                 <x-input-error :messages="$errors->get('client_secret')" class="mt-2" />
             </div>
+
+            <x-input-error :messages="$errors->get('google_keys')" />
         </div>
     </div>
 

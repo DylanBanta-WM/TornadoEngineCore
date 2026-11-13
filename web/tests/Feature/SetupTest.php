@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Setting;
 use App\Models\User;
+use App\Support\ConnectionCheck;
 use App\Support\GoogleSignIn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
@@ -106,6 +107,15 @@ class SetupTest extends TestCase
         $this->assertNotSame('secret', Setting::get('google.client_secret'));
         $this->assertSame('secret', Setting::getSecret('google.client_secret'));
         $this->get('/setup')->assertSee('Sign in with Google');
+    }
+
+    public function test_setup_wont_save_google_keys_that_fail_the_check(): void
+    {
+        $this->mock(ConnectionCheck::class)->shouldReceive('google')->andReturn('Google didn\'t accept this client ID and secret.');
+
+        $this->from('/setup')->post('/setup/google', ['domain' => 'school.test', 'client_id' => 'bad', 'client_secret' => 'bad'])
+            ->assertSessionHasErrors('google_keys');
+        $this->assertNull(Setting::get('google.client_id'));
     }
 
     public function test_the_first_google_sign_in_becomes_the_admin(): void

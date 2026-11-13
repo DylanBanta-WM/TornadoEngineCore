@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Administration\Administration;
 use App\Models\Setting;
+use App\Support\ConnectionCheck;
 use App\Support\GoogleSignIn;
 use App\Support\Settings;
 use App\Support\Setup;
@@ -38,9 +39,16 @@ class AdministrationController extends Controller
         return redirect()->away($address.'/administration')->with('status', 'address');
     }
 
-    public function google(Request $request): RedirectResponse
+    public function google(Request $request, ConnectionCheck $check): RedirectResponse
     {
-        Settings::saveGoogle($request->validate(Settings::googleRules()));
+        $data = $request->validate(Settings::googleRules());
+
+        // Keep the working client until the new one passes.
+        if ($problem = $check->google($data['client_id'], $data['client_secret'], GoogleSignIn::callbackUrl())) {
+            return back()->withErrors(['google_keys' => $problem])->withInput($request->only('domain'));
+        }
+
+        Settings::saveGoogle($data);
 
         return redirect()->route('administration')->with('status', 'google');
     }
@@ -50,9 +58,16 @@ class AdministrationController extends Controller
         return redirect()->route('administration')->with('harness_token', Settings::newHarnessToken());
     }
 
-    public function claude(Request $request): RedirectResponse
+    public function claude(Request $request, ConnectionCheck $check): RedirectResponse
     {
-        Settings::saveClaude($request->validate(Settings::claudeRules()));
+        $data = $request->validate(Settings::claudeRules());
+
+        // Keep the working login until the new one passes.
+        if ($problem = $check->claude($data['type'], trim($data['credential']))) {
+            return back()->withErrors(['credential' => $problem])->withInput($request->only('type'));
+        }
+
+        Settings::saveClaude($data);
 
         return redirect()->route('administration')->with('status', 'claude');
     }

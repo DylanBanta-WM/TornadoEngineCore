@@ -20,27 +20,49 @@
 
     <x-settings-card :title="__('Google sign-in')" :saved="session('status') === 'google'">
         <p>{!! __('Authorized redirect URI: :uri', ['uri' => '<code class="'.$code.'">'.e($callbackUrl).'</code>']) !!}</p>
-        <form method="POST" action="{{ route('administration.google') }}" class="space-y-4">
-            @csrf
-            <div>
-                <x-input-label for="domain" :value="__('Sign-in domain')" />
-                <x-text-input id="domain" class="mt-1 block w-full" type="text" name="domain" :value="old('domain', $domain)" required />
-                <x-input-error :messages="$errors->get('domain')" class="mt-2" />
-            </div>
-            <div>
-                <x-input-label for="client_id" :value="__('Client ID')" />
-                <x-text-input id="client_id" class="mt-1 block w-full" type="text" name="client_id" :value="old('client_id', $clientId)" required autocomplete="off" />
-                <x-input-error :messages="$errors->get('client_id')" class="mt-2" />
-            </div>
-            <div>
-                <x-input-label for="client_secret" :value="__('Client secret')" />
-                <x-text-input id="client_secret" class="mt-1 block w-full" type="password" name="client_secret" required autocomplete="off" />
-                <x-input-error :messages="$errors->get('client_secret')" class="mt-2" />
-            </div>
-            <div class="flex justify-end">
-                <x-primary-button>{{ __('Save') }}</x-primary-button>
-            </div>
-        </form>
+
+        <div x-data="{ editing: @js(! $clientId || $errors->hasAny(['domain', 'client_id', 'client_secret', 'google_keys'])) }" class="space-y-4">
+            @if ($clientId)
+                <div x-show="! editing" class="space-y-4">
+                    <dl class="space-y-1">
+                        <div><dt class="inline font-medium text-gray-900 dark:text-gray-100">{{ __('Sign-in domain:') }}</dt> <dd class="inline">{{ $domain }}</dd></div>
+                        <div><dt class="inline font-medium text-gray-900 dark:text-gray-100">{{ __('Client ID and secret:') }}</dt> <dd class="inline">{{ __('saved') }}</dd></div>
+                    </dl>
+                    <div class="flex justify-end">
+                        <x-danger-button type="button" x-on:click="editing = true">{{ __('Clear') }}</x-danger-button>
+                    </div>
+                </div>
+            @endif
+
+            <form x-show="editing" @if ($clientId) x-cloak @endif method="POST" action="{{ route('administration.google') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <x-input-label for="domain" :value="__('Sign-in domain')" />
+                    <x-text-input id="domain" class="mt-1 block w-full" type="text" name="domain" :value="old('domain', $domain)" required />
+                    <x-input-error :messages="$errors->get('domain')" class="mt-2" />
+                </div>
+                <div>
+                    <x-input-label for="client_id" :value="__('Client ID')" />
+                    <x-text-input id="client_id" class="mt-1 block w-full" type="text" name="client_id" required autocomplete="off" />
+                    <x-input-error :messages="$errors->get('client_id')" class="mt-2" />
+                </div>
+                <div>
+                    <x-input-label for="client_secret" :value="__('Client secret')" />
+                    <x-text-input id="client_secret" class="mt-1 block w-full" type="password" name="client_secret" required autocomplete="off" />
+                    <x-input-error :messages="$errors->get('client_secret')" class="mt-2" />
+                </div>
+                <x-input-error :messages="$errors->get('google_keys')" />
+                @if ($clientId)
+                    <p class="text-gray-600 dark:text-gray-400">{{ __('The saved client keeps working until a new one passes the check.') }}</p>
+                @endif
+                <div class="flex justify-end gap-3">
+                    @if ($clientId)
+                        <x-secondary-button type="button" x-on:click="editing = false">{{ __('Cancel') }}</x-secondary-button>
+                    @endif
+                    <x-primary-button>{{ __('Check and save') }}</x-primary-button>
+                </div>
+            </form>
+        </div>
     </x-settings-card>
 
     <x-settings-card :title="__('Harness')">
@@ -62,27 +84,43 @@
     </x-settings-card>
 
     <x-settings-card :title="__('Claude Code login')" :saved="session('status') === 'claude'">
-        <p>{{ $claudeType === 'api_key' ? __('Using an Anthropic API key.') : __('Using a Claude subscription token.') }}</p>
-        <form method="POST" action="{{ route('administration.claude') }}" class="space-y-4">
-            @csrf
-            <fieldset class="space-y-3">
-                @foreach (['subscription' => __('Claude subscription token'), 'api_key' => __('Anthropic API key')] as $value => $label)
-                    <label class="flex min-h-11 items-center gap-3 rounded-md border border-gray-200 dark:border-gray-700 px-3 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
-                        <input type="radio" name="type" value="{{ $value }}" class="text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500" @checked(old('type', $claudeType ?? 'subscription') === $value)>
-                        <span class="font-medium text-gray-900 dark:text-gray-100">{{ $label }}</span>
-                    </label>
-                @endforeach
-                <x-input-error :messages="$errors->get('type')" />
-            </fieldset>
-            <div>
-                <x-input-label for="credential" :value="__('New token or key')" />
-                <x-text-input id="credential" class="mt-1 block w-full" type="password" name="credential" required autocomplete="off" />
-                <x-input-error :messages="$errors->get('credential')" class="mt-2" />
-            </div>
-            <div class="flex justify-end">
-                <x-primary-button>{{ __('Save') }}</x-primary-button>
-            </div>
-        </form>
+        <div x-data="{ editing: @js(! $claudeType || $errors->hasAny(['type', 'credential'])) }" class="space-y-4">
+            @if ($claudeType)
+                <div x-show="! editing" class="space-y-4">
+                    <p>{{ $claudeType === 'api_key' ? __('An Anthropic API key is saved.') : __('A Claude subscription token is saved.') }}</p>
+                    <div class="flex justify-end">
+                        <x-danger-button type="button" x-on:click="editing = true">{{ __('Clear') }}</x-danger-button>
+                    </div>
+                </div>
+            @endif
+
+            <form x-show="editing" @if ($claudeType) x-cloak @endif method="POST" action="{{ route('administration.claude') }}" class="space-y-4">
+                @csrf
+                <fieldset class="space-y-3">
+                    @foreach (['subscription' => __('Claude subscription token'), 'api_key' => __('Anthropic API key')] as $value => $label)
+                        <label class="flex min-h-11 items-center gap-3 rounded-md border border-gray-200 dark:border-gray-700 px-3 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
+                            <input type="radio" name="type" value="{{ $value }}" class="text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500" @checked(old('type', $claudeType ?? 'subscription') === $value)>
+                            <span class="font-medium text-gray-900 dark:text-gray-100">{{ $label }}</span>
+                        </label>
+                    @endforeach
+                    <x-input-error :messages="$errors->get('type')" />
+                </fieldset>
+                <div>
+                    <x-input-label for="credential" :value="__('Token or key')" />
+                    <x-text-input id="credential" class="mt-1 block w-full" type="password" name="credential" required autocomplete="off" />
+                    <x-input-error :messages="$errors->get('credential')" class="mt-2" />
+                </div>
+                @if ($claudeType)
+                    <p class="text-gray-600 dark:text-gray-400">{{ __('The saved login keeps working until a new one passes the check.') }}</p>
+                @endif
+                <div class="flex justify-end gap-3">
+                    @if ($claudeType)
+                        <x-secondary-button type="button" x-on:click="editing = false">{{ __('Cancel') }}</x-secondary-button>
+                    @endif
+                    <x-primary-button>{{ __('Check and save') }}</x-primary-button>
+                </div>
+            </form>
+        </div>
     </x-settings-card>
 
     {{-- Modules' own settings --}}

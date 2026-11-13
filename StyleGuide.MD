@@ -338,7 +338,18 @@ Tools are built as modules, never as changes to Core. Each module is its own git
 - `core` is open-ended (`>=0.3`). When Core changes in a way that breaks a module, release a new version of that module with an updated `core` range, and make Core require that new version in its `composer.json`.
 - Release by tagging a version (`v0.1.0`) and pushing; Packagist publishes it.
 
-When `web/composer.local.json` exists, run Composer with `COMPOSER=composer.local.json`, for example `COMPOSER=composer.local.json composer update`.
+### Composer when `web/composer.local.json` exists
+
+`vendor/` is installed from `composer.local.json`, which pulls in Core's `composer.json` and links the modules in `web/modules/`. Running Composer against `composer.json` alone (plain `composer require`, `composer update` or `composer install`) rewrites `vendor/` without the local file: it replaces the linked modules with released copies and removes modules that only `composer.local.json` lists. If one of those brought containers, `docker/modules.yml` then points at a missing file and `docker compose` stops working.
+
+- **Install or update packages:** `COMPOSER=composer.local.json composer update` (or `... composer update vendor/package`).
+- **Add a package to Core itself:** change Core's `composer.json` and lock without installing, then install from the local file:
+  ```bash
+  COMPOSER=composer.json composer require vendor/package --no-update
+  COMPOSER=composer.json composer update vendor/package --no-install
+  COMPOSER=composer.local.json composer update vendor/package
+  ```
+- **If `docker compose` reports a missing module compose file:** `git show HEAD:docker/modules.yml > docker/modules.yml`, then run `docker compose up -d` twice.
 
 ---
 

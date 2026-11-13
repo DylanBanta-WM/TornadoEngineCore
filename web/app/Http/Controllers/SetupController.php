@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use App\Models\User;
+use App\Support\ConnectionCheck;
 use App\Support\GoogleSignIn;
 use App\Support\Settings;
 use App\Support\Setup;
@@ -57,11 +58,15 @@ class SetupController extends Controller
         return redirect()->away($address.'/setup');
     }
 
-    public function storeGoogle(Request $request): RedirectResponse
+    public function storeGoogle(Request $request, ConnectionCheck $check): RedirectResponse
     {
         abort_unless(in_array(Setup::step(), ['google', 'admin'], true), 403);
 
-        Settings::saveGoogle($request->validate(Settings::googleRules()));
+        $data = $request->validate(Settings::googleRules());
+        if ($problem = $check->google($data['client_id'], $data['client_secret'], GoogleSignIn::callbackUrl())) {
+            return back()->withErrors(['google_keys' => $problem])->withInput($request->only('domain'));
+        }
+        Settings::saveGoogle($data);
 
         return redirect()->route('setup');
     }
@@ -73,11 +78,15 @@ class SetupController extends Controller
         return redirect()->route('setup')->with('harness_token', Settings::newHarnessToken());
     }
 
-    public function storeClaude(Request $request): RedirectResponse
+    public function storeClaude(Request $request, ConnectionCheck $check): RedirectResponse
     {
         abort_unless($request->user()->is_admin && Setup::step() === 'claude' && ! Setup::complete(), 403);
 
-        Settings::saveClaude($request->validate(Settings::claudeRules()));
+        $data = $request->validate(Settings::claudeRules());
+        if ($problem = $check->claude($data['type'], trim($data['credential']))) {
+            return back()->withErrors(['credential' => $problem])->withInput($request->only('type'));
+        }
+        Settings::saveClaude($data);
         Setting::put('setup.completed_at', now()->toIso8601String());
 
         return redirect()->route('dashboard');
