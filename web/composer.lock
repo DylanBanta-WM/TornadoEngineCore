@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c07e86190cbe510448681b3e171cebb0",
+    "content-hash": "2e16ad9777590baa47efd9be51bf7206",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6822,6 +6822,53 @@
                 "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.1.0"
             },
             "time": "2026-11-13T15:26:49+00:00"
+        },
+        {
+            "name": "tornado-engine/cron",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Cron.git",
+                "reference": "7279a3e0c7db4c7a1427cd8664c6fb816ba41eda"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Cron/zipball/7279a3e0c7db4c7a1427cd8664c6fb816ba41eda",
+                "reference": "7279a3e0c7db4c7a1427cd8664c6fb816ba41eda",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^13.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "tornado": {
+                    "core": ">=0.4",
+                    "name": "Cron",
+                    "compose": "docker/compose.yml",
+                    "provider": "TornadoEngine\\Cron\\CronServiceProvider",
+                    "core-module": true
+                },
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TornadoEngine\\Cron\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Tornado Engine core-module: scheduled jobs. Modules register jobs; admins choose when they run.",
+            "support": {
+                "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/issues",
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/tree/v0.1.0"
+            },
+            "time": "2026-11-13T17:27:59+00:00"
         },
         {
             "name": "tornado-engine/docs",
