@@ -33,6 +33,7 @@ services:
       - ./web:/app
 
   app:
+    restart: unless-stopped
     build:
       context: ./docker
       args:
@@ -69,6 +70,7 @@ services:
 
   # Nginx WEB: Tornado Engine's own web server (not the district's Nginx RP).
   nginx-web:
+    restart: unless-stopped
     image: nginx:1.28.3-alpine3.23
     ports:
       - "${WEB_BIND:-0.0.0.0}:${WEB_PORT:-8090}:80"
@@ -79,6 +81,7 @@ services:
     networks: [internal, edge, link]
 
   mariadb:
+    restart: unless-stopped
     image: mariadb:11.4.13-noble
     environment:
       MARIADB_DATABASE: ${DB_DATABASE:?set in .env}
@@ -95,6 +98,7 @@ services:
 
   # The harness: Claude Code, with only this folder and no access to the host.
   harness:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: harness/Dockerfile
@@ -129,6 +133,7 @@ services:
     depends_on: [harness-proxy]
 
   harness-proxy:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: harness/proxy/Dockerfile
