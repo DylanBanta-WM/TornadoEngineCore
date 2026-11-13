@@ -47,6 +47,14 @@ docker compose down                                  # stop
 docker compose exec harness harness-claude           # run Claude Code in the harness
 ```
 
+## Modules
+
+Core-modules, such as Nav, are installed automatically.
+
+To add your own modules, copy `web/composer.local.json.example` to `web/composer.local.json`, list them under `require`, and run `docker compose up -d`. Core's own files stay unchanged, so updating Core doesn't conflict with your modules.
+
+To work on a module, clone its repo into `web/modules/`. That copy is used instead of the published one.
+
 ### Harness internet access
 
 All three options are safe: the assistant only ever sees student and staff data through the privacy broker, as pseudonyms. Logged and Strict add security on top of that.

@@ -313,6 +313,33 @@ More complex pages may create new or custom layouts, but that is out of the scop
 
 ---
 
+## Modules
+
+Tools are built as modules, never as changes to Core. Each module is its own git repo and Composer package, named `tornado-engine/{name}` for official modules.
+
+- Develop it in `web/modules/{name}` (cloned there; Core's git ignores the folder). Composer links it into `vendor/`.
+- Its `composer.json` has a `tornado` section under `extra`:
+  ```json
+  "extra": {
+      "tornado": {
+          "name": "Notes",
+          "core": "^0.1",
+          "core-module": false,
+          "provider": "TornadoEngine\\Notes\\NotesServiceProvider"
+      },
+      "branch-alias": { "dev-main": "0.1.x-dev" }
+  }
+  ```
+  `core` is the range of Core versions it works with; Core only starts modules that fit.
+- Its service provider loads the module's routes, views (`loadViewsFrom(..., '{name}')`) and migrations, and adds its menu items through Nav.
+- Tests go in the module's `tests/` folder and extend Core's `Tests\TestCase`; they run with Core's tests.
+- If something a module needs isn't possible without changing Core, add a general extension point to Core instead of a module-specific change.
+- Release by tagging a version (`v0.1.0`) and pushing; Packagist publishes it.
+
+When `web/composer.local.json` exists, run Composer with `COMPOSER=composer.local.json`, for example `COMPOSER=composer.local.json composer update`.
+
+---
+
 ## Phones and Screen Sizes
 
 Every page must work on a phone as well as a desktop. Write the phone layout first, then add styles for larger screens.

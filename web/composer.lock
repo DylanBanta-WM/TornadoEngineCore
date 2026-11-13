@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8148c4041c1913b06dd47561441c531",
+    "content-hash": "ecad62b4aeae04c8a30cde4662e430af",
     "packages": [
         {
             "name": "brick/math",
@@ -6458,7 +6458,7 @@
             "version": "v0.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav",
+                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav.git",
                 "reference": "2731db6550861c7bfc6dcd3a6efe391511c263cb"
             },
             "dist": {
@@ -6474,10 +6474,10 @@
             "type": "library",
             "extra": {
                 "tornado": {
-                    "name": "Nav",
                     "core": "^0.1",
-                    "core-module": true,
-                    "provider": "TornadoEngine\\Nav\\NavServiceProvider"
+                    "name": "Nav",
+                    "provider": "TornadoEngine\\Nav\\NavServiceProvider",
+                    "core-module": true
                 },
                 "branch-alias": {
                     "dev-main": "0.1.x-dev"
@@ -6488,10 +6488,15 @@
                     "TornadoEngine\\Nav\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Tornado Engine core-module: the site's navigation menu. Other modules add their items to it.",
+            "support": {
+                "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/issues",
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.1.0"
+            },
             "time": "2026-11-13T14:29:00+00:00"
         },
         {
