@@ -312,3 +312,44 @@ We are using the `x-app-layout` configured to use Tailwind's `dark:` tags for co
 More complex pages may create new or custom layouts, but that is out of the scope of this style guide.
 
 ---
+
+## Phones and Screen Sizes
+
+Every page must work on a phone as well as a desktop. Write the phone layout first, then add styles for larger screens.
+
+### Breakpoints
+
+Use Tailwind's breakpoints only. Styles without a prefix are for phones; each prefix applies from that width up.
+
+| Prefix | From | Typical screen |
+|---|---|---|
+| (none) | 0px | Phone |
+| `sm:` | 640px | Large phone sideways, small tablet |
+| `md:` | 768px | Tablet |
+| `lg:` | 1024px | Laptop and desktop |
+
+In custom CSS (the `mobile` folder), use `min-width` media queries at these same widths.
+
+### Layout
+
+- Side padding is `px-4` on phones, then `sm:px-6 lg:px-8`, as in the default dashboard.
+- The page never scrolls sideways. Wide content, such as tables and code, scrolls inside its own box with `overflow-x-auto`.
+- Columns stack on phones: `grid grid-cols-1 md:grid-cols-2`.
+- Cards are rounded from `sm:` up (`sm:rounded-lg`).
+- Images and diagrams use `max-w-full h-auto`, so they shrink to fit.
+
+### Touch
+
+- Buttons and links people tap are at least 44px tall.
+- Nothing works only on hover. Hover effects are extras.
+- Form fields use at least 16px text (`text-base`), so phones don't zoom in when they're tapped.
+
+### Navigation
+
+Modules don't build their own menus. They add their items through the Nav module, which shows them in the top bar on larger screens and in the menu button on phones.
+
+### Before a page is done
+
+Check it at 375px wide (a phone) and 1280px wide (a desktop), in light and dark mode.
+
+---
