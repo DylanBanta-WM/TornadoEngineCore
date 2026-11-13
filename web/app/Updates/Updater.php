@@ -59,7 +59,7 @@ class Updater
 
         $this->step($job, $git(['fetch', '--no-tags', 'https://github.com/'.config('tornado.core_repository').'.git', "refs/tags/{$tag}:refs/tags/{$tag}"]));
 
-        if (trim($this->step($job, $git(['diff', '--name-only', 'HEAD', $tag, '--', 'docker', 'docker-compose.yml']))) !== '') {
+        if (trim($this->step($job, $git(['diff', '--name-only', 'HEAD', $tag, '--', 'docker', 'docker-compose.yml', 'harness']))) !== '') {
             $notes['rebuild'] = __('This update changes Tornado Engine\'s containers. On the server, run docker compose up -d --build to finish it.');
         }
 

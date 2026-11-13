@@ -79,7 +79,7 @@ class UpdatesTest extends TestCase
     {
         Process::fake([
             "*'status' '--porcelain'*" => Process::result(''),
-            "*'diff' '--name-only'*" => Process::result("docker-compose.yml\n"),
+            "*'diff' '--name-only'*'harness'*" => Process::result("docker-compose.yml\n"),
             '*modules.php*' => Process::result("Modules' containers changed. Run \"docker compose up -d\" again to start them.\n"),
             '*' => Process::result('ok'),
         ]);
