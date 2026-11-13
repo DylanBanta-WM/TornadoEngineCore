@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e1042d43a479cb8fcbf8b527c9fc5156",
+    "content-hash": "8fb87210ba8b3655ce13b16223bc6aa0",
     "packages": [
         {
             "name": "brick/math",
@@ -6452,6 +6452,52 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.4.0"
             },
             "time": "2025-12-02T11:56:42+00:00"
+        },
+        {
+            "name": "tornado-engine/docs",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DylanBanta-WM/TornadoEngine-Docs.git",
+                "reference": "a622fc065aa5e5e463520fb638ce10ae3fa67769"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/a622fc065aa5e5e463520fb638ce10ae3fa67769",
+                "reference": "a622fc065aa5e5e463520fb638ce10ae3fa67769",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^13.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "tornado": {
+                    "core": ">=0.2",
+                    "name": "Docs",
+                    "provider": "TornadoEngine\\Docs\\DocsServiceProvider",
+                    "core-module": true
+                },
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TornadoEngine\\Docs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Tornado Engine core-module: documentation pages in Administration. Other modules add their own docs.",
+            "support": {
+                "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/issues",
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.1.0"
+            },
+            "time": "2026-11-13T14:51:56+00:00"
         },
         {
             "name": "tornado-engine/nav",
