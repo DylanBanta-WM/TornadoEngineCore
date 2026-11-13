@@ -14,8 +14,8 @@
         "laravel/framework": "^13.17",
         "laravel/socialite": "^5.32",
         "laravel/tinker": "^3.0",
-        "tornado-engine/docs": ">=0.1",
-        "tornado-engine/nav": ">=0.2",
+        "tornado-engine/docs": ">=0.2",
+        "tornado-engine/nav": ">=0.3",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

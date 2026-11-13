@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8fb87210ba8b3655ce13b16223bc6aa0",
+    "content-hash": "15dc498915ac5eadda79e91dc3174ba1",
     "packages": [
         {
             "name": "brick/math",
@@ -6455,16 +6455,16 @@
         },
         {
             "name": "tornado-engine/docs",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Docs.git",
-                "reference": "a622fc065aa5e5e463520fb638ce10ae3fa67769"
+                "reference": "ef8b4a31fda2d689e0bc519ff19ddb2b244afbb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/a622fc065aa5e5e463520fb638ce10ae3fa67769",
-                "reference": "a622fc065aa5e5e463520fb638ce10ae3fa67769",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/ef8b4a31fda2d689e0bc519ff19ddb2b244afbb3",
+                "reference": "ef8b4a31fda2d689e0bc519ff19ddb2b244afbb3",
                 "shasum": ""
             },
             "require": {
@@ -6474,13 +6474,13 @@
             "type": "library",
             "extra": {
                 "tornado": {
-                    "core": ">=0.2",
+                    "core": ">=0.3",
                     "name": "Docs",
                     "provider": "TornadoEngine\\Docs\\DocsServiceProvider",
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -6495,22 +6495,22 @@
             "description": "Tornado Engine core-module: documentation pages in Administration. Other modules add their own docs.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.1.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.2.0"
             },
-            "time": "2026-11-13T14:51:56+00:00"
+            "time": "2026-11-13T15:10:30+00:00"
         },
         {
             "name": "tornado-engine/nav",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav.git",
-                "reference": "0741ecaeb76615f42ff8f769cc6a3a49a51fc1cb"
+                "reference": "eee677b48b3e22d93a99a531a12d8ea41c748db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/0741ecaeb76615f42ff8f769cc6a3a49a51fc1cb",
-                "reference": "0741ecaeb76615f42ff8f769cc6a3a49a51fc1cb",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/eee677b48b3e22d93a99a531a12d8ea41c748db7",
+                "reference": "eee677b48b3e22d93a99a531a12d8ea41c748db7",
                 "shasum": ""
             },
             "require": {
@@ -6526,7 +6526,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.2.x-dev"
+                    "dev-main": "0.3.x-dev"
                 }
             },
             "autoload": {
@@ -6541,9 +6541,9 @@
             "description": "Tornado Engine core-module: the site's navigation menu. Other modules add their items to it.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.2.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.3.0"
             },
-            "time": "2026-11-13T14:51:54+00:00"
+            "time": "2026-11-13T15:10:28+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

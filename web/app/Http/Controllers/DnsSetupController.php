@@ -14,8 +14,8 @@ class DnsSetupController extends Controller
      */
     public function __invoke(): View|RedirectResponse
     {
-        if (Setup::complete() && Route::has('administration.docs.show')) {
-            return redirect()->route('administration.docs.show', 'dns-setup');
+        if (Setup::complete() && Route::has('docs.show')) {
+            return redirect()->route('docs.show', 'dns-setup');
         }
 
         return view('setup.dns');
