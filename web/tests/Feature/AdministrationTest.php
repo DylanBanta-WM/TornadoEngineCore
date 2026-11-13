@@ -44,6 +44,24 @@ class AdministrationTest extends TestCase
         }
     }
 
+    public function test_modules_add_tabs_with_their_own_cards(): void
+    {
+        $view = 'zz-test-tab-card';
+        file_put_contents(resource_path("views/{$view}.blade.php"), '<x-settings-card title="Tab card">On its own tab</x-settings-card>');
+
+        try {
+            app(Administration::class)->tab('zz-test', 'Test tab')->card($view, tab: 'zz-test');
+            $admin = $this->admin();
+
+            $this->actingAs($admin)->get('/administration')->assertSee('Test tab')->assertDontSee('On its own tab');
+            $this->actingAs($admin)->get('/administration/zz-test')->assertOk()->assertSee('On its own tab')->assertDontSee('Claude Code login');
+            $this->actingAs($admin)->get('/administration/no-such-tab')->assertNotFound();
+            $this->actingAs(User::factory()->create())->get('/administration/zz-test')->assertForbidden();
+        } finally {
+            unlink(resource_path("views/{$view}.blade.php"));
+        }
+    }
+
     public function test_staff_cannot_change_settings(): void
     {
         $this->actingAs(User::factory()->create())

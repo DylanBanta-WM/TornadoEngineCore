@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e16ad9777590baa47efd9be51bf7206",
+    "content-hash": "321cb081204707f52a75668b5fa7361b",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6825,16 +6825,16 @@
         },
         {
             "name": "tornado-engine/cron",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Cron.git",
-                "reference": "7279a3e0c7db4c7a1427cd8664c6fb816ba41eda"
+                "reference": "c8326381e07fd1ff92d4f8dcaa52768d0b7bb004"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Cron/zipball/7279a3e0c7db4c7a1427cd8664c6fb816ba41eda",
-                "reference": "7279a3e0c7db4c7a1427cd8664c6fb816ba41eda",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Cron/zipball/c8326381e07fd1ff92d4f8dcaa52768d0b7bb004",
+                "reference": "c8326381e07fd1ff92d4f8dcaa52768d0b7bb004",
                 "shasum": ""
             },
             "require": {
@@ -6844,14 +6844,14 @@
             "type": "library",
             "extra": {
                 "tornado": {
-                    "core": ">=0.4",
+                    "core": ">=0.6",
                     "name": "Cron",
                     "compose": "docker/compose.yml",
                     "provider": "TornadoEngine\\Cron\\CronServiceProvider",
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -6866,9 +6866,9 @@
             "description": "Tornado Engine core-module: scheduled jobs. Modules register jobs; admins choose when they run.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/tree/v0.1.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/tree/v0.2.0"
             },
-            "time": "2026-11-13T17:27:59+00:00"
+            "time": "2026-11-13T18:38:55+00:00"
         },
         {
             "name": "tornado-engine/docs",

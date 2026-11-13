@@ -18,4 +18,7 @@ Route::middleware(['auth', 'can:administration'])->prefix('administration')->gro
     Route::post('/google', [AdministrationController::class, 'google'])->name('administration.google');
     Route::post('/harness', [AdministrationController::class, 'harness'])->name('administration.harness');
     Route::post('/claude', [AdministrationController::class, 'claude'])->name('administration.claude');
+
+    // Tabs that modules add.
+    Route::get('/{tab}', [AdministrationController::class, 'tab'])->name('administration.tab');
 });

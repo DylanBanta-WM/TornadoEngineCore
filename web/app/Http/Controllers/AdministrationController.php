@@ -31,6 +31,13 @@ class AdministrationController extends Controller
         ]);
     }
 
+    public function tab(Administration $administration, string $tab): View
+    {
+        abort_unless($administration->has($tab) && $tab !== Administration::SETTINGS, 404);
+
+        return view('administration.tab', ['tab' => $tab, 'cards' => $administration->cards($tab)]);
+    }
+
     public function address(Request $request): RedirectResponse
     {
         $address = Settings::saveAddress($request->validate(Settings::addressRules())['address']);

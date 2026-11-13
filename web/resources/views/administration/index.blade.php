@@ -3,6 +3,8 @@
 @endphp
 
 <x-admin-layout :title="__('Administration')">
+    <x-administration-tabs current="settings" />
+
     <x-settings-card :title="__('Web address')" :saved="session('status') === 'address'">
         <form method="POST" action="{{ route('administration.address') }}" class="space-y-4">
             @csrf
