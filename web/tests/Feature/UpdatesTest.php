@@ -124,6 +124,18 @@ class UpdatesTest extends TestCase
         $this->assertTrue($local['extra']['merge-plugin']['merge-extra']);
     }
 
+    public function test_a_module_in_web_modules_is_linked_from_there(): void
+    {
+        Process::fake(['*' => Process::result('ok')]);
+        $job = UpdateJob::queue('module', 'dev', 'district/notes', 'modules/notes');
+
+        app(Updater::class)->run($job);
+
+        $this->assertSame('done', $job->fresh()->status);
+        Process::assertRan(fn ($process) => $process->command === ['composer', 'require', 'district/notes:*@dev', '--update-with-dependencies', '--no-interaction', '--no-progress']);
+        $this->assertSame([['type' => 'path', 'url' => 'modules/notes', 'options' => ['symlink' => true]]], json_decode(file_get_contents($this->local), true)['repositories']);
+    }
+
     public function test_a_failed_step_stops_the_job(): void
     {
         Process::fake(["'composer'*" => Process::result('Your requirements could not be resolved', exitCode: 2), '*' => Process::result('')]);

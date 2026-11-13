@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  *     UpdateJob::queue('module', '0.2.0', 'tornado-engine/gam-runner');   // install or update a module
  *     UpdateJob::queue('core', '0.7.0');                                  // update Core
+ *     UpdateJob::queue('module', 'dev', 'district/notes', 'modules/notes');  // install a module from web/modules
  */
 class UpdateJob extends Model
 {

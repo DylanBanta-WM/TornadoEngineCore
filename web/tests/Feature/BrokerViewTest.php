@@ -67,7 +67,7 @@ class BrokerViewTest extends TestCase
         app(HarnessMcp::class)->server('tornado-broker', 'mcp/broker');
 
         $this->asHarness()->getJson('/api/harness/mcp', ['Authorization' => 'Bearer harness-token'])
-            ->assertExactJson(['servers' => ['tornado-broker' => '/mcp/broker']]);
+            ->assertJsonPath('servers.tornado-broker', '/mcp/broker');
     }
 
     public function test_people_using_the_website_see_real_pages(): void

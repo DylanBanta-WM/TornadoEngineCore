@@ -36,7 +36,10 @@ class Updater
 
         $this->localComposer($job->repository);
 
-        $this->step($job, ['composer', 'require', "{$job->package}:>={$job->version}", '--update-with-dependencies', '--no-interaction', '--no-progress'],
+        // A module in web/modules (for example one Chat built) is linked from there.
+        $constraint = str_starts_with((string) $job->repository, 'modules/') ? '*@dev' : ">={$job->version}";
+
+        $this->step($job, ['composer', 'require', "{$job->package}:{$constraint}", '--update-with-dependencies', '--no-interaction', '--no-progress'],
             ['COMPOSER' => 'composer.local.json']);
     }
 
@@ -150,7 +153,9 @@ class Updater
         ];
 
         if ($repository && ! in_array($repository, array_column($local['repositories'] ?? [], 'url'), true)) {
-            $local['repositories'][] = ['type' => 'vcs', 'url' => $repository];
+            $local['repositories'][] = str_starts_with($repository, 'modules/')
+                ? ['type' => 'path', 'url' => $repository, 'options' => ['symlink' => true]]
+                : ['type' => 'vcs', 'url' => $repository];
         }
 
         file_put_contents($path, json_encode($local, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
