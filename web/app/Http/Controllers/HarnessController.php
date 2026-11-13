@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Harness\HarnessMcp;
 use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 
@@ -15,6 +16,14 @@ class HarnessController extends Controller
         Setting::put('harness.last_seen_at', now()->toIso8601String());
 
         return response()->json(['ok' => true]);
+    }
+
+    /**
+     * The MCP servers modules give Claude. The harness adds its address and token.
+     */
+    public function mcp(HarnessMcp $mcp): JsonResponse
+    {
+        return response()->json(['servers' => $mcp->servers()]);
     }
 
     /**

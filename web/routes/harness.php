@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('api/harness')->name('harness.')->group(function () {
     Route::post('/hello', [HarnessController::class, 'hello'])->name('hello');
     Route::get('/claude', [HarnessController::class, 'claude'])->name('claude');
+    Route::get('/mcp', [HarnessController::class, 'mcp'])->name('mcp');
 });

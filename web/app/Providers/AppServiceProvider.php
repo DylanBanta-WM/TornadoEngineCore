@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Administration\Administration;
+use App\Harness\HarnessMcp;
+use App\Harness\HarnessView;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -15,6 +17,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(Administration::class);
+        $this->app->singleton(HarnessView::class);
+        $this->app->singleton(HarnessMcp::class);
     }
 
     /**

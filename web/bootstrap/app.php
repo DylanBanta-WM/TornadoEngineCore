@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AuthenticateHarness;
+use App\Http\Middleware\BrokerView;
 use App\Http\Middleware\EnsureSetupComplete;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
@@ -31,6 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // HTTPS is usually handled by the district's reverse proxy.
         $middleware->trustProxies(at: '*');
+        // Requests from the harness (Claude) are answered in broker view, before anything else runs.
+        $middleware->prepend(BrokerView::class);
         $middleware->web(append: [EnsureSetupComplete::class]);
         $middleware->prependToPriorityList(
             before: AuthenticatesRequests::class,

@@ -3,6 +3,6 @@
 return [
 
     // Tornado Engine Core's version. Modules say which Core versions they work with.
-    'version' => '0.4.1',
+    'version' => '0.5.0',
 
 ];
