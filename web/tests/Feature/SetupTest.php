@@ -6,8 +6,12 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Support\ConnectionCheck;
 use App\Support\GoogleSignIn;
+use App\Support\Setup;
 use App\Support\SignIn;
+use App\Updates\UpdateJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\URL;
 use Laravel\Socialite\Two\User as GoogleUser;
 use Tests\TestCase;
@@ -137,7 +141,9 @@ class SetupTest extends TestCase
         $admin = User::where('email', 'it@school.test')->firstOrFail();
         $this->assertTrue($admin->is_admin);
         $this->assertAuthenticatedAs($admin);
-        $this->get('/setup')->assertSee('Get connect command');
+        // The harness step shows its connect command straight away, with a Copy button.
+        $page = $this->get('/setup')->assertSee('docker compose exec harness harness-connect')->assertSee('Copy');
+        $this->assertSame(session('harness_token'), $this->get('/setup')->viewData('harnessToken'), 'the same command until it connects');
     }
 
     public function test_google_settings_cannot_change_once_there_is_an_admin(): void
@@ -188,11 +194,37 @@ class SetupTest extends TestCase
         $this->actingAs($admin)->post('/setup/claude', [
             'type' => 'subscription',
             'credential' => 'sk-ant-oat01-test',
-        ])->assertRedirect('/dashboard');
+        ])->assertRedirect('/setup');
 
         $this->assertNotSame('sk-ant-oat01-test', Setting::get('harness.claude_credential'));
         $this->assertSame('sk-ant-oat01-test', Setting::getSecret('harness.claude_credential'));
+
+        // Last: the modules to install. Choosing none finishes setup.
+        Http::fake(['*' => Http::response([], 500)]);
+        $this->actingAs($admin)->get('/setup')->assertSee('Choose the modules to install');
+        $this->actingAs($admin)->post('/setup/modules')->assertRedirect('/dashboard');
         $this->actingAs($admin)->get('/dashboard')->assertOk();
         $this->actingAs($admin)->get('/setup')->assertRedirect('/dashboard');
+    }
+
+    public function test_modules_chosen_in_setup_are_queued_for_the_updater(): void
+    {
+        $this->saveGoogle();
+        $admin = User::factory()->create(['is_admin' => true]);
+        Setting::put('harness.last_seen_at', now()->toIso8601String());
+        Setting::putSecret('harness.claude_credential', 'sk-ant-oat01-test');
+        Cache::put('module-finder.found', [[
+            'package' => 'district/reports', 'name' => 'Reports', 'description' => 'Make reports.', 'url' => 'https://github.com/district/reports',
+            'official' => true, 'onPackagist' => true, 'latest' => '0.2.0', 'needsNewerCore' => null, 'requires' => ['district/base'],
+        ], [
+            'package' => 'district/base', 'name' => 'Base', 'description' => null, 'url' => 'https://github.com/district/base',
+            'official' => true, 'onPackagist' => true, 'latest' => '0.7.0', 'needsNewerCore' => null, 'requires' => [],
+        ]], 3600);
+
+        $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Base is also required for Reports to work.');
+        $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/modules');
+
+        $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());
+        $this->assertTrue(Setup::complete());
     }
 }

@@ -13,7 +13,8 @@
                     <span>
                         <span class="font-medium text-gray-900 dark:text-gray-100">{{ $label }}</span>
                         @if ($value === 'subscription')
-                            <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Run') }} <code class="font-mono">docker compose exec harness harness-claude setup-token</code></span>
+                            <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Run this on the server, in the Tornado Engine folder, and paste the token below:') }}</span>
+                            <x-copy-code class="mt-2" text="docker compose exec harness harness-claude setup-token" />
                         @endif
                     </span>
                 </label>
@@ -30,6 +31,6 @@
 
     <x-setup.footer class="justify-between">
         <x-setup.back :href="$back" />
-        <x-primary-button>{{ __('Save and finish') }}</x-primary-button>
+        <x-primary-button>{{ __('Next') }}</x-primary-button>
     </x-setup.footer>
 </form>

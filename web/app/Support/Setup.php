@@ -11,7 +11,7 @@ use App\Models\User;
 class Setup
 {
     /** Every step, in order. Google and Microsoft only appear when they're chosen at Sign-in. */
-    public const STEPS = ['address', 'signin', 'google', 'microsoft', 'admin', 'harness', 'claude'];
+    public const STEPS = ['address', 'signin', 'google', 'microsoft', 'admin', 'harness', 'claude', 'modules'];
 
     /** Steps someone can do before the admin account exists. */
     public const BEFORE_ADMIN = ['address', 'signin', 'google', 'microsoft', 'admin'];
@@ -74,6 +74,10 @@ class Setup
             return 'harness';
         }
 
-        return 'claude';
+        if (Setting::getSecret('harness.claude_credential') === null) {
+            return 'claude';
+        }
+
+        return 'modules';
     }
 }

@@ -42,7 +42,7 @@ class SignInTest extends TestCase
         $this->post('/setup/signin', ['methods' => ['password']])->assertRedirect('/setup');
         $this->get('/setup');
         $this->assertSame('admin', Setup::step(), 'no Google or Microsoft steps');
-        $this->assertSame(['address', 'signin', 'admin', 'harness', 'claude'], Setup::steps());
+        $this->assertSame(['address', 'signin', 'admin', 'harness', 'claude', 'modules'], Setup::steps());
 
         $this->get('/setup')->assertSee('Create account')->assertDontSee('Sign in with Google');
         $this->post('/setup/admin', ['name' => 'Sam Admin', 'email' => 'Sam@school.test', 'password' => 'a-good-password', 'password_confirmation' => 'a-good-password'])

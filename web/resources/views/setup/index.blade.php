@@ -7,6 +7,7 @@
         'admin' => __('Admin account'),
         'harness' => __('Harness'),
         'claude' => __('Claude Code'),
+        'modules' => __('Modules'),
     ];
     $steps = array_intersect_key($labels, array_flip($steps));
     $viewing = array_search($step, array_keys($steps));

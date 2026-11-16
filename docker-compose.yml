@@ -79,6 +79,24 @@ services:
     # edge: it downloads modules and updates.
     networks: [internal, edge]
 
+  # Runs Laravel's scheduler, which starts the jobs admins set up (the Cron module) every minute.
+  scheduler:
+    restart: unless-stopped
+    build:
+      context: ./docker
+      args:
+        APP_UID: ${HOST_UID:-1000}
+        APP_GID: ${HOST_GID:-1000}
+    env_file: .env
+    command: ["php", "artisan", "schedule:work"]
+    volumes:
+      - ./web:/var/www/html
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # edge: jobs that reach the internet.
+    networks: [internal, edge]
+
   # Rebuilds the website's styles when the updater asks (a new module's pages need theirs).
   assets-watcher:
     restart: unless-stopped

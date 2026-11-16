@@ -24,4 +24,5 @@ Route::post('/setup/admin', [SetupController::class, 'storeAdmin'])->name('setup
 Route::middleware('auth')->prefix('setup')->name('setup.')->group(function () {
     Route::post('/harness', [SetupController::class, 'storeHarness'])->name('harness');
     Route::post('/claude', [SetupController::class, 'storeClaude'])->name('claude');
+    Route::post('/modules', [SetupController::class, 'storeModules'])->name('modules');
 });
