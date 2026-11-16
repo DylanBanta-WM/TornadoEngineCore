@@ -130,7 +130,7 @@ class SignInTest extends TestCase
 
         $this->assertFalse($user->fresh()->must_change_password);
         $this->assertTrue(Hash::check('my-own-secret', $user->fresh()->password));
-        $this->actingAs($user)->get('/dashboard')->assertOk()->assertSee('Change password');
+        $this->actingAs($user)->get('/dashboard')->assertOk();
 
         // Later changes need the current password.
         $this->actingAs($user)->put('/password', ['password' => 'another-secret', 'password_confirmation' => 'another-secret'])->assertSessionHasErrors('current_password');

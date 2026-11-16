@@ -99,4 +99,24 @@ class RebuildTest extends TestCase
         $this->assertFileDoesNotExist("{$this->storage}/app/tornado/rebuild.request");
         $this->actingAs(User::factory()->create())->post('/administration/rebuild')->assertForbidden();
     }
+
+    public function test_each_module_shows_only_its_newest_install_or_update(): void
+    {
+        UpdateJob::create(['kind' => 'module', 'package' => 'tornado-engine/gam', 'version' => '0.5.0', 'status' => 'done']);
+        UpdateJob::create(['kind' => 'module', 'package' => 'tornado-engine/gam', 'version' => '0.6.0', 'status' => 'done']);
+        UpdateJob::create(['kind' => 'module', 'package' => 'tornado-engine/chat', 'version' => '0.1.0', 'status' => 'done']);
+        UpdateJob::create(['kind' => 'core', 'version' => '0.12.0', 'status' => 'done']);
+        UpdateJob::create(['kind' => 'core', 'version' => '0.13.0', 'status' => 'done']);
+        $admin = $this->admin();
+
+        $this->actingAs($admin)->get('/modules')->assertSee('tornado-engine/gam 0.6.0')->assertDontSee('tornado-engine/gam 0.5.0')->assertSee('tornado-engine/chat 0.1.0');
+        $this->actingAs($admin)->get('/administration/updates')->assertSee('Tornado Engine Core 0.13.0')->assertDontSee('Tornado Engine Core 0.12.0');
+    }
+
+    public function test_rebuild_notes_go_away_once_the_server_is_rebuilt(): void
+    {
+        UpdateJob::create(['kind' => 'core', 'version' => '0.12.0', 'status' => 'done', 'notes' => ['rebuild' => 'This update changes Tornado Engine\'s containers. On the server, run docker compose up -d --build to finish it.']]);
+
+        $this->actingAs($this->admin())->get('/administration/updates')->assertDontSee('This update changes Tornado Engine')->assertDontSee('needs a rebuild to finish installing');
+    }
 }

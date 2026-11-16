@@ -46,6 +46,7 @@ class ModuleRegistry
                 provider: $tornado['provider'] ?? null,
                 compatible: $core !== '' && $this->satisfies($coreVersion, $core) && ! $missing,
                 missingExtensions: $missing,
+                settings: is_string($tornado['settings'] ?? null) && str_starts_with($tornado['settings'], '/') ? $tornado['settings'] : null,
             );
         }
     }
