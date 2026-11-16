@@ -3,7 +3,7 @@
 return [
 
     // Tornado Engine Core's version. Modules say which Core versions they work with.
-    'version' => '0.14.1',
+    'version' => '0.14.2',
 
     // Official modules and Core releases come from this GitHub account and repository.
     'official_owner' => 'DylanBanta-WM',

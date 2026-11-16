@@ -158,4 +158,15 @@ class UpdatesTest extends TestCase
         $this->assertSame('failed', $job->fresh()->status);
         Process::assertNothingRan();
     }
+
+    public function test_the_updater_stops_after_a_job_so_docker_restarts_it_with_new_code(): void
+    {
+        Process::fake(['*' => Process::result('ok')]);
+        UpdateJob::queue('module', '1.0.0', 'district/one');
+        UpdateJob::queue('module', '1.0.0', 'district/two');
+
+        $this->artisan('tornado:updater')->assertSuccessful();
+
+        $this->assertSame(['done', 'queued'], UpdateJob::orderBy('id')->pluck('status')->all());
+    }
 }

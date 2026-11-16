@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 
 /**
  * The updater service: works through the installs and updates admins queue, one at a time.
+ * It stops after each job and Docker starts it again, so the next job runs the newest code.
  */
 class RunUpdater extends Command
 {
@@ -37,7 +38,12 @@ class RunUpdater extends Command
                 $updater->run($job);
                 $this->line(__('Finished: :status', ['status' => $job->status]));
 
-                continue;
+                if ($this->option('once')) {
+                    continue;
+                }
+
+                // Stop, so Docker starts the updater again with any code the job just installed.
+                return self::SUCCESS;
             }
 
             if ($this->option('once')) {
