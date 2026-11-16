@@ -40,7 +40,13 @@ $yaml = "# Containers that modules bring with them. Written by docker/composer.s
     ."# don't edit by hand. A module lists its compose file under \"extra.tornado.compose\".\n";
 $yaml .= $includes ? "include:\n" : "include: []\n";
 foreach ($includes as $path) {
-    $yaml .= "  - path: ../{$path}\n    env_file: ../.env\n";
+    // A fingerprint of the module's container files, so changing them (not just adding or
+    // removing a module) also asks for a rebuild.
+    $dir = dirname(substr($path, strlen('web/')));
+    $files = is_dir($dir) ? iterator_to_array(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS))) : [];
+    ksort($files);
+    $fingerprint = sha1(implode('', array_map(fn ($file) => $file->getPathname().sha1_file($file->getPathname()), array_values($files))));
+    $yaml .= "  # {$fingerprint}\n  - path: ../{$path}\n    env_file: ../.env\n";
 }
 
 $target = $argv[1] ?? '/tornado/modules.yml';

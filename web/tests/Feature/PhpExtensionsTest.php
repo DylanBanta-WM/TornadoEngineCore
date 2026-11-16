@@ -56,4 +56,20 @@ class PhpExtensionsTest extends TestCase
         $this->assertTrue($modules['district/plain']->compatible);
         $this->assertSame([], $modules['district/plain']->missingExtensions);
     }
+
+    public function test_changing_a_modules_container_files_asks_for_a_rebuild(): void
+    {
+        File::ensureDirectoryExists("{$this->dir}/vendor/district/sidecar/docker");
+        file_put_contents("{$this->dir}/vendor/district/sidecar/docker/compose.yml", "services: {}\n");
+        $installed = json_decode(file_get_contents("{$this->dir}/vendor/composer/installed.json"), true);
+        $installed['packages'][] = ['name' => 'district/sidecar', 'extra' => ['tornado' => ['compose' => 'docker/compose.yml']]];
+        file_put_contents("{$this->dir}/vendor/composer/installed.json", json_encode($installed));
+        $run = fn () => Process::path($this->dir)->run(['php', base_path('../docker/modules.php'), "{$this->dir}/docker/modules.yml"])->output();
+
+        $this->assertStringContainsString('containers changed', $run());
+        $this->assertStringNotContainsString('containers changed', $run(), 'nothing changed');
+
+        file_put_contents("{$this->dir}/vendor/district/sidecar/docker/compose.yml", "services: {a: {image: x}}\n");
+        $this->assertStringContainsString('containers changed', $run());
+    }
 }
