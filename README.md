@@ -32,10 +32,11 @@ Do this before running `docker compose up -d` for the first time.
    - `APP_TIMEZONE`: your district's time zone, for example `America/Chicago`.
    - `HOST_UID` and `HOST_GID`: only if `id -u` and `id -g` aren't 1000.
 
-3. Start Tornado Engine:
+3. Start Tornado Engine, and install its rebuild helper (it lets the website rebuild its containers after installs and updates):
 
    ```bash
    docker compose up -d
+   sudo ./host/install.sh
    ```
 
 To change `WEB_BIND` later, edit `.env` and run `docker compose up -d` again.
@@ -52,7 +53,7 @@ docker compose exec harness harness-claude           # run Claude Code in the ha
 
 Core-modules, such as Nav, are installed automatically.
 
-Install and update modules on the `/modules` page, and update Core under Administration → Updates. The `updater` service does the work. Some need the containers rebuilt (`docker compose up -d --build`); run `sudo ./host/install.sh` once and the website gets a Rebuild button for that.
+Install and update modules on the `/modules` page, and update Core under Administration → Updates. The `updater` service does the work. Some need the containers rebuilt; the website's Rebuild button does it, through the helper installed in Pre-run setup.
 
 You can also list modules in `web/composer.local.json` under `require` and run `docker compose up -d`. Core's own files stay unchanged, so updating Core doesn't conflict with your modules.
 
