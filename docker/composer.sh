@@ -4,17 +4,19 @@
 # Composer runs from it instead: it pulls in composer.json and keeps its own composer.local.lock,
 # so Core's tracked files never change.
 set -e
+# PHP extensions modules need arrive with the next image build (see php-extensions.sh),
+# so Composer doesn't check for them.
 
 if [ -f composer.local.json ]; then
   # Core's own packages first: they include the plugin that reads composer.local.json.
-  [ -d vendor/wikimedia/composer-merge-plugin ] || composer install --no-interaction --no-progress
+  [ -d vendor/wikimedia/composer-merge-plugin ] || composer install --no-interaction --no-progress --ignore-platform-req='ext-*'
   export COMPOSER=composer.local.json
   if [ ! -f composer.local.lock ] || [ composer.local.json -nt composer.local.lock ] || [ composer.json -nt composer.local.lock ]; then
-    composer update --no-interaction --no-progress
+    composer update --no-interaction --no-progress --ignore-platform-req='ext-*'
     php /tornado/modules.php
     exit
   fi
 fi
 
-composer install --no-interaction --no-progress
+composer install --no-interaction --no-progress --ignore-platform-req='ext-*'
 php /tornado/modules.php

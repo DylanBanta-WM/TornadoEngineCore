@@ -12,6 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         php8.4-mysql php8.4-sqlite3 php8.4-xml php8.4-zip composer \
     && rm -rf /var/lib/apt/lists/*
 
+# The same PHP extensions as the website, so modules' tests run here too.
+COPY docker/php-extensions.sh docker/php-extensions.txt /tornado/
+RUN sh /tornado/php-extensions.sh debian
+
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" && npm cache clean --force
 
 RUN groupadd --gid "${HARNESS_GID}" claude \

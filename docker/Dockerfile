@@ -13,4 +13,8 @@ RUN apt-get update \
     && groupmod -o -g "${APP_GID}" www-data \
     && usermod -o -u "${APP_UID}" -g "${APP_GID}" www-data
 
+# PHP extensions modules ask for (see php-extensions.sh). Rebuilt with docker compose up -d --build.
+COPY php-extensions.sh php-extensions.txt /tornado/
+RUN sh /tornado/php-extensions.sh docker
+
 WORKDIR /var/www/html

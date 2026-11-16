@@ -20,6 +20,7 @@ services:
       - ./web:/app
       - ./docker/composer.sh:/tornado/composer.sh:ro
       - ./docker/modules.yml:/tornado/modules.yml
+      - ./docker/php-extensions.txt:/tornado/php-extensions.txt
       - ./docker/modules.php:/tornado/modules.php:ro
 
   assets:

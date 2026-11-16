@@ -39,7 +39,7 @@ class Updater
         // A module in web/modules (for example one Chat built) is linked from there.
         $constraint = str_starts_with((string) $job->repository, 'modules/') ? '*@dev' : ">={$job->version}";
 
-        $this->step($job, ['composer', 'require', "{$job->package}:{$constraint}", '--update-with-dependencies', '--no-interaction', '--no-progress'],
+        $this->step($job, ['composer', 'require', "{$job->package}:{$constraint}", '--update-with-dependencies', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'],
             ['COMPOSER' => 'composer.local.json']);
     }
 
@@ -52,7 +52,8 @@ class Updater
         $tag = 'v'.$job->version;
         $git = fn (array $args) => array_merge(['git', '-C', $repo], $args);
 
-        $changed = trim($this->step($job, $git(['status', '--porcelain', '--untracked-files=no'])));
+        // Files Core writes on each server (modules' containers and PHP extensions) don't count.
+        $changed = trim($this->step($job, $git(['status', '--porcelain', '--untracked-files=no', '--', '.', ':!docker/modules.yml', ':!docker/php-extensions.txt'])));
         if ($changed !== '') {
             throw new RuntimeException(__('Core\'s own files have been changed on this server, so it can\'t update itself. Update it by hand with git.'));
         }
@@ -66,9 +67,9 @@ class Updater
         $this->step($job, $git(['merge', '--ff-only', $tag]));
 
         if (is_file(config('tornado.updater.composer_local') ?? base_path('composer.local.json'))) {
-            $this->step($job, ['composer', 'update', '--no-interaction', '--no-progress'], ['COMPOSER' => 'composer.local.json']);
+            $this->step($job, ['composer', 'update', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'], ['COMPOSER' => 'composer.local.json']);
         } else {
-            $this->step($job, ['composer', 'install', '--no-interaction', '--no-progress']);
+            $this->step($job, ['composer', 'install', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*']);
         }
     }
 
@@ -81,6 +82,9 @@ class Updater
         $containers = $this->step($job, ['php', "{$repo}/docker/modules.php", "{$repo}/docker/modules.yml"]);
         if (str_contains($containers, 'containers changed')) {
             $notes['containers'] = __('This brings containers of its own. On the server, run docker compose up -d to start them.');
+        }
+        if (str_contains($containers, 'PHP extensions changed')) {
+            $notes['rebuild'] = __('This needs PHP extensions the website doesn\'t have yet. On the server, run docker compose up -d --build. Until then it stays off.');
         }
 
         $this->step($job, ['php', 'artisan', 'migrate', '--force']);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8d72906f55c43c0390e4b995cd73a85",
+    "content-hash": "e99e764891c4f21e18692b407007726e",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6779,16 +6779,16 @@
         },
         {
             "name": "tornado-engine/access",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Access.git",
-                "reference": "af7fed13fe54ef3e296df0c62c4dfdbf1bd2b6a7"
+                "reference": "bbf39b5207b4fbe6c172406904642da9f9c82c9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/af7fed13fe54ef3e296df0c62c4dfdbf1bd2b6a7",
-                "reference": "af7fed13fe54ef3e296df0c62c4dfdbf1bd2b6a7",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/bbf39b5207b4fbe6c172406904642da9f9c82c9f",
+                "reference": "bbf39b5207b4fbe6c172406904642da9f9c82c9f",
                 "shasum": ""
             },
             "require": {
@@ -6804,7 +6804,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.3.x-dev"
+                    "dev-main": "0.4.x-dev"
                 }
             },
             "autoload": {
@@ -6819,9 +6819,9 @@
             "description": "Tornado Engine core-module: users, roles, and which pages each person can see.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Access/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.3.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.4.0"
             },
-            "time": "2026-11-13T21:02:30+00:00"
+            "time": "2026-11-13T23:06:45+00:00"
         },
         {
             "name": "tornado-engine/cron",
@@ -6918,16 +6918,16 @@
         },
         {
             "name": "tornado-engine/module-finder",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder.git",
-                "reference": "9d7e9d119de7f67b20abe6af5c39a8efd2277caf"
+                "reference": "564717da6187db0ee0a1388401391141b4628d06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/9d7e9d119de7f67b20abe6af5c39a8efd2277caf",
-                "reference": "9d7e9d119de7f67b20abe6af5c39a8efd2277caf",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/564717da6187db0ee0a1388401391141b4628d06",
+                "reference": "564717da6187db0ee0a1388401391141b4628d06",
                 "shasum": ""
             },
             "require": {
@@ -6944,7 +6944,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.2.x-dev"
+                    "dev-main": "0.3.x-dev"
                 }
             },
             "autoload": {
@@ -6959,9 +6959,9 @@
             "description": "Tornado Engine core-module: finds modules on GitHub, and installs and updates them from the /modules page.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.2.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.3.0"
             },
-            "time": "2026-11-13T21:02:33+00:00"
+            "time": "2026-11-16T13:12:45+00:00"
         },
         {
             "name": "tornado-engine/nav",

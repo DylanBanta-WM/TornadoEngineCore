@@ -91,7 +91,7 @@ class UpdatesTest extends TestCase
         $this->assertSame('done', $job->status, (string) $job->log);
         Process::assertRan(fn ($process) => $process->command === ['git', '-C', '/tornado', 'fetch', '--no-tags', 'https://github.com/DylanBanta-WM/TornadoEngineCore.git', 'refs/tags/v0.8.0:refs/tags/v0.8.0']);
         Process::assertRan(fn ($process) => $process->command === ['git', '-C', '/tornado', 'merge', '--ff-only', 'v0.8.0']);
-        Process::assertRan(fn ($process) => $process->command === ['composer', 'install', '--no-interaction', '--no-progress']);
+        Process::assertRan(fn ($process) => $process->command === ['composer', 'install', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*']);
         Process::assertRan(fn ($process) => $process->command === ['php', 'artisan', 'migrate', '--force']);
         $this->assertArrayHasKey('rebuild', $job->notes);
         $this->assertArrayHasKey('containers', $job->notes);
@@ -117,7 +117,7 @@ class UpdatesTest extends TestCase
         app(Updater::class)->run($job);
 
         $this->assertSame('done', $job->fresh()->status);
-        Process::assertRan(fn ($process) => $process->command === ['composer', 'require', 'someone/tornado-thing:>=0.2.0', '--update-with-dependencies', '--no-interaction', '--no-progress']
+        Process::assertRan(fn ($process) => $process->command === ['composer', 'require', 'someone/tornado-thing:>=0.2.0', '--update-with-dependencies', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*']
             && $process->environment === ['COMPOSER' => 'composer.local.json']);
         $local = json_decode(file_get_contents($this->local), true);
         $this->assertSame([['type' => 'vcs', 'url' => 'https://github.com/someone/TornadoThing']], $local['repositories']);
@@ -132,7 +132,7 @@ class UpdatesTest extends TestCase
         app(Updater::class)->run($job);
 
         $this->assertSame('done', $job->fresh()->status);
-        Process::assertRan(fn ($process) => $process->command === ['composer', 'require', 'district/notes:*@dev', '--update-with-dependencies', '--no-interaction', '--no-progress']);
+        Process::assertRan(fn ($process) => $process->command === ['composer', 'require', 'district/notes:*@dev', '--update-with-dependencies', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*']);
         $this->assertSame([['type' => 'path', 'url' => 'modules/notes', 'options' => ['symlink' => true]]], json_decode(file_get_contents($this->local), true)['repositories']);
     }
 

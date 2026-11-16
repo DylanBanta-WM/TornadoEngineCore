@@ -34,6 +34,8 @@ class ModuleRegistry
             }
 
             $core = (string) ($tornado['core'] ?? '');
+            // It stays off until the image has its PHP extensions (docker compose up -d --build).
+            $missing = array_values(array_filter((array) ($tornado['php-extensions'] ?? []), fn ($extension) => ! extension_loaded((string) $extension)));
 
             $this->modules[$package['name']] = new Module(
                 package: $package['name'],
@@ -42,7 +44,8 @@ class ModuleRegistry
                 core: $core,
                 coreModule: (bool) ($tornado['core-module'] ?? false),
                 provider: $tornado['provider'] ?? null,
-                compatible: $core !== '' && $this->satisfies($coreVersion, $core),
+                compatible: $core !== '' && $this->satisfies($coreVersion, $core) && ! $missing,
+                missingExtensions: $missing,
             );
         }
     }

@@ -15,5 +15,7 @@ final readonly class Module
         public bool $coreModule,
         public ?string $provider,
         public bool $compatible,
+        /** @var list<string> PHP extensions it needs that this server doesn't have yet. */
+        public array $missingExtensions = [],
     ) {}
 }
