@@ -29,7 +29,8 @@ Requires=docker.service
 [Service]
 User=$owner
 WorkingDirectory=$root
-ExecStart=/bin/bash $root/host/rebuilder.sh
+# Relative to WorkingDirectory, so folders with spaces in their names work.
+ExecStart=/bin/bash host/rebuilder.sh
 Restart=always
 RestartSec=5
 
