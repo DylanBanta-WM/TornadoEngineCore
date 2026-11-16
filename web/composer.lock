@@ -6918,16 +6918,16 @@
         },
         {
             "name": "tornado-engine/module-finder",
-            "version": "v0.3.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder.git",
-                "reference": "564717da6187db0ee0a1388401391141b4628d06"
+                "reference": "e7a3e48997d1c63a29133fa7189b2f7787f68c1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/564717da6187db0ee0a1388401391141b4628d06",
-                "reference": "564717da6187db0ee0a1388401391141b4628d06",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/e7a3e48997d1c63a29133fa7189b2f7787f68c1d",
+                "reference": "e7a3e48997d1c63a29133fa7189b2f7787f68c1d",
                 "shasum": ""
             },
             "require": {
@@ -6959,9 +6959,9 @@
             "description": "Tornado Engine core-module: finds modules on GitHub, and installs and updates them from the /modules page.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.3.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.3.1"
             },
-            "time": "2026-11-16T13:12:45+00:00"
+            "time": "2026-11-16T16:58:57+00:00"
         },
         {
             "name": "tornado-engine/nav",

@@ -22,6 +22,9 @@ class Updater
             $job->kind === 'core' ? $this->core($job, $notes) : $this->module($job);
             $this->finish($job, $notes);
             $job->update(['status' => 'done', 'notes' => $notes, 'finished_at' => now()]);
+            if ($notes) {
+                Rebuild::markNeeded();
+            }
         } catch (Throwable $e) {
             $job->addToLog("\n".$e->getMessage()."\n");
             $job->update(['status' => 'failed', 'notes' => $notes, 'finished_at' => now()]);
@@ -61,7 +64,7 @@ class Updater
         $this->step($job, $git(['fetch', '--no-tags', 'https://github.com/'.config('tornado.core_repository').'.git', "refs/tags/{$tag}:refs/tags/{$tag}"]));
 
         if (trim($this->step($job, $git(['diff', '--name-only', 'HEAD', $tag, '--', 'docker', 'docker-compose.yml', 'harness']))) !== '') {
-            $notes['rebuild'] = __('This update changes Tornado Engine\'s containers. On the server, run docker compose up -d --build to finish it.');
+            $notes['rebuild'] = __('Needs a rebuild to finish.');
         }
 
         $this->step($job, $git(['merge', '--ff-only', $tag]));
@@ -81,10 +84,10 @@ class Updater
         $repo = config('tornado.repository_path');
         $containers = $this->step($job, ['php', "{$repo}/docker/modules.php", "{$repo}/docker/modules.yml"]);
         if (str_contains($containers, 'containers changed')) {
-            $notes['containers'] = __('This brings containers of its own. On the server, run docker compose up -d to start them.');
+            $notes['containers'] = __('Needs a rebuild to start its containers.');
         }
         if (str_contains($containers, 'PHP extensions changed')) {
-            $notes['rebuild'] = __('This needs PHP extensions the website doesn\'t have yet. On the server, run docker compose up -d --build. Until then it stays off.');
+            $notes['rebuild'] = __('Needs a rebuild for its PHP extensions. It stays off until then.');
         }
 
         $this->step($job, ['php', 'artisan', 'migrate', '--force']);

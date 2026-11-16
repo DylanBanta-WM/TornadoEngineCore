@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Updates\CoreRelease;
+use App\Updates\Rebuild;
 use App\Updates\UpdateJob;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 
 class UpdatesController extends Controller
@@ -22,6 +24,26 @@ class UpdatesController extends Controller
         UpdateJob::queue('core', $version);
 
         return back()->with('updates_status', __('Updating to :version. This page shows how it goes.', ['version' => $version]));
+    }
+
+    public function rebuild(): RedirectResponse
+    {
+        if (! Rebuild::helper()) {
+            return back()->withErrors(['rebuild' => __('The rebuild helper isn\'t installed on the server.')]);
+        }
+        if (UpdateJob::busy() || Rebuild::running()) {
+            return back()->withErrors(['rebuild' => __('Wait for the install, update or rebuild that\'s running.')]);
+        }
+
+        Rebuild::request();
+
+        return back();
+    }
+
+    /** For the page to follow a rebuild (the website restarts part-way through). */
+    public function rebuildStatus(): JsonResponse
+    {
+        return response()->json(['running' => Rebuild::running(), 'status' => Rebuild::status()]);
     }
 
     public function check(): RedirectResponse

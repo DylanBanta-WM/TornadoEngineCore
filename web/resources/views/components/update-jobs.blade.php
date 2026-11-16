@@ -13,6 +13,10 @@
     ];
 @endphp
 
+@can('administration')
+    <x-rebuild />
+@endcan
+
 @if ($running && ! $updaterUp)
     <p class="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-amber-900 dark:text-amber-200">
         {!! __('The updater isn\'t running, so this will wait. Run :cmd on the server to start it.', ['cmd' => '<code class="font-mono">docker compose up -d</code>']) !!}
