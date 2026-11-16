@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Setting;
 use App\Models\User;
 use App\Support\ConnectionCheck;
+use App\Support\PasswordSignIn;
 use App\Support\Setup;
 use App\Support\SignIn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -150,5 +151,18 @@ class SignInTest extends TestCase
     {
         Setting::put('google.client_id', 'id');
         $this->assertSame(['google'], SignIn::methods());
+    }
+
+    public function test_modules_can_check_passwords_too(): void
+    {
+        $this->site(['google']);
+        $kim = User::factory()->create(['email' => 'kim@school.test']);
+        $on = true;
+        app(PasswordSignIn::class)->add('test', fn ($login, $password) => $login === 'kim' && $password === 'directory-pass' ? $kim : null, fn () => $on);
+
+        $this->get('/login')->assertSee('Email or username');
+        $this->post('/login', ['email' => 'kim', 'password' => 'wrong'])->assertSessionHasErrors('email');
+        $this->post('/login', ['email' => 'kim', 'password' => 'directory-pass'])->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs($kim);
     }
 }

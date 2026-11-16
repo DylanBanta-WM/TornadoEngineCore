@@ -1,4 +1,7 @@
-@php($methods = \App\Support\SignIn::methods())
+@php
+    $methods = \App\Support\SignIn::methods();
+    $passwords = app(\App\Support\PasswordSignIn::class);
+@endphp
 <x-setup-layout>
     <div class="mt-8 overflow-hidden bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <x-setup.header :title="__('Sign in')" />
@@ -16,12 +19,12 @@
             </div>
         @endif
 
-        @if (in_array('password', $methods, true))
-            <form method="POST" action="{{ route('login') }}" class="mt-6 mx-6 sm:mx-8 space-y-4 @if (count($methods) > 1) border-t border-gray-200 dark:border-gray-700 pt-6 @endif">
+        @if ($passwords->shown())
+            <form method="POST" action="{{ route('login') }}" class="mt-6 mx-6 sm:mx-8 space-y-4 @if (in_array('google', $methods, true) || in_array('microsoft', $methods, true)) border-t border-gray-200 dark:border-gray-700 pt-6 @endif">
                 @csrf
                 <div>
-                    <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                    <x-input-label for="email" :value="$passwords->active() ? __('Email or username') : __('Email')" />
+                    <x-text-input id="email" class="block mt-1 w-full" :type="$passwords->active() ? 'text' : 'email'" name="email" :value="old('email')" required autofocus autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
                 <div>
