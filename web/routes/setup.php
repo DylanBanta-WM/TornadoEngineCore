@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/setup', [SetupController::class, 'index'])->name('setup');
 Route::get('/dns-setup', DnsSetupController::class)->name('dns-setup');
 Route::post('/setup/address', [SetupController::class, 'storeAddress'])->name('setup.address');
+Route::post('/setup/signin', [SetupController::class, 'storeSignin'])->name('setup.signin');
 Route::post('/setup/google', [SetupController::class, 'storeGoogle'])->name('setup.google');
+Route::post('/setup/microsoft', [SetupController::class, 'storeMicrosoft'])->name('setup.microsoft');
+Route::post('/setup/admin', [SetupController::class, 'storeAdmin'])->name('setup.admin');
 
 Route::middleware('auth')->prefix('setup')->name('setup.')->group(function () {
     Route::post('/harness', [SetupController::class, 'storeHarness'])->name('harness');

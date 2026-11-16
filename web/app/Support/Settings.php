@@ -60,6 +60,22 @@ class Settings
     /**
      * Makes a new harness token (the old one stops working) and returns it.
      */
+    public static function microsoftRules(): array
+    {
+        return [
+            'tenant_id' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9.-]+$/i'],
+            'client_id' => ['required', 'string', 'max:255'],
+            'client_secret' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    public static function saveMicrosoft(array $data): void
+    {
+        Setting::put('microsoft.tenant_id', strtolower(trim($data['tenant_id'])));
+        Setting::put('microsoft.client_id', trim($data['client_id']));
+        Setting::putSecret('microsoft.client_secret', trim($data['client_secret']));
+    }
+
     public static function newHarnessToken(): string
     {
         $token = Str::random(48);

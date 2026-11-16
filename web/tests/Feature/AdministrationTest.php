@@ -26,7 +26,7 @@ class AdministrationTest extends TestCase
         $this->actingAs($this->admin())->get('/administration')
             ->assertOk()
             ->assertSee('Web address')
-            ->assertSee('Google sign-in')
+            ->assertSee('Sign-in')
             ->assertSee('Harness')
             ->assertSee('Claude Code login');
     }

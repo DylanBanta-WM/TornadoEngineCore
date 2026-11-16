@@ -10,8 +10,17 @@ use App\Models\User;
  */
 class Setup
 {
-    /** The steps, in order. */
-    public const STEPS = ['address', 'google', 'admin', 'harness', 'claude'];
+    /** Every step, in order. Google and Microsoft only appear when they're chosen at Sign-in. */
+    public const STEPS = ['address', 'signin', 'google', 'microsoft', 'admin', 'harness', 'claude'];
+
+    /** Steps someone can do before the admin account exists. */
+    public const BEFORE_ADMIN = ['address', 'signin', 'google', 'microsoft', 'admin'];
+
+    /** @return list<string> the steps for the sign-in methods chosen so far */
+    public static function steps(): array
+    {
+        return array_values(array_filter(self::STEPS, fn ($step) => ! in_array($step, ['google', 'microsoft'], true) || SignIn::enabled($step)));
+    }
 
     public static function complete(): bool
     {
@@ -45,8 +54,16 @@ class Setup
             return 'address';
         }
 
-        if (! GoogleSignIn::configured()) {
+        if (! SignIn::chosen()) {
+            return 'signin';
+        }
+
+        if (SignIn::enabled('google') && ! GoogleSignIn::configured()) {
             return 'google';
+        }
+
+        if (SignIn::enabled('microsoft') && ! MicrosoftSignIn::configured()) {
+            return 'microsoft';
         }
 
         if (! User::where('is_admin', true)->exists()) {

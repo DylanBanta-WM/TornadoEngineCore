@@ -20,6 +20,37 @@ class ConnectionCheck
      * Asks Google to swap a made-up sign-in code using this client. Google says "invalid_grant"
      * (the code is wrong) only once it has accepted the client ID and secret.
      */
+    /**
+     * Whether Microsoft accepts an app registration: a token request with a made-up code fails
+     * with invalid_grant when the tenant, client ID and secret are right.
+     */
+    public function microsoft(string $tenant, string $clientId, string $clientSecret, string $redirectUri): ?string
+    {
+        try {
+            $response = Http::asForm()->timeout(15)->post('https://login.microsoftonline.com/'.rawurlencode($tenant).'/oauth2/v2.0/token', [
+                'grant_type' => 'authorization_code',
+                'code' => 'tornado-engine-check',
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'redirect_uri' => $redirectUri,
+                'scope' => 'openid',
+            ]);
+        } catch (ConnectionException) {
+            return __('Couldn\'t reach Microsoft to check the app registration.');
+        }
+
+        $codes = (array) $response->json('error_codes', []);
+
+        return match (true) {
+            $response->json('error') === 'invalid_grant' => null,
+            in_array(90002, $codes) || in_array(900023, $codes) => __('Microsoft doesn\'t know this tenant ID.'),
+            in_array(700016, $codes) => __('Microsoft doesn\'t know this client ID in that tenant.'),
+            in_array(7000215, $codes) || in_array(7000222, $codes) => __('Microsoft didn\'t accept this client secret (use the secret\'s Value, not its ID).'),
+            in_array(50011, $codes) || in_array(500113, $codes) => __('Add :uri as a Web redirect URI in the app registration.', ['uri' => $redirectUri]),
+            default => __('Microsoft couldn\'t check this app registration.'),
+        };
+    }
+
     public function google(string $clientId, string $clientSecret, string $redirectUri): ?string
     {
         try {

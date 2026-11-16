@@ -20,6 +20,23 @@
         </form>
     </x-settings-card>
 
+    <x-settings-card :title="__('Sign-in')" :saved="session('status') === 'signin'">
+        <form method="POST" action="{{ route('administration.signin') }}" class="space-y-3">
+            @csrf
+            @foreach (\App\Support\SignIn::METHODS as $method => $label)
+                <label class="flex min-h-11 items-center gap-3">
+                    <input type="checkbox" name="methods[]" value="{{ $method }}" class="rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500" @checked(in_array($method, old('methods', $methods), true))>
+                    <span>{{ __($label) }}</span>
+                </label>
+            @endforeach
+            <x-input-error :messages="$errors->get('methods')" />
+            <div class="flex justify-end">
+                <x-primary-button>{{ __('Save') }}</x-primary-button>
+            </div>
+        </form>
+    </x-settings-card>
+
+    @if (in_array('google', $methods, true) || $clientId)
     <x-settings-card :title="__('Google sign-in')" :saved="session('status') === 'google'">
         <p>{!! __('Authorized redirect URI: :uri', ['uri' => '<code class="'.$code.'">'.e($callbackUrl).'</code>']) !!}</p>
 
@@ -66,6 +83,52 @@
             </form>
         </div>
     </x-settings-card>
+
+    @endif
+
+    @if (in_array('microsoft', $methods, true) || $microsoftConfigured)
+    <x-settings-card :title="__('Microsoft sign-in')" :saved="session('status') === 'microsoft'">
+        <p>{!! __('Redirect URI: :uri', ['uri' => '<code class="'.$code.'">'.e($microsoftCallbackUrl).'</code>']) !!}</p>
+
+        <div x-data="{ editing: @js(! $microsoftConfigured || $errors->hasAny(['tenant_id', 'microsoft_keys'])) }" class="space-y-4">
+            @if ($microsoftConfigured)
+                <div x-show="! editing" class="space-y-4">
+                    <dl class="space-y-1">
+                        <div><dt class="inline font-medium text-gray-900 dark:text-gray-100">{{ __('Tenant:') }}</dt> <dd class="inline break-all">{{ $tenant }}</dd></div>
+                        <div><dt class="inline font-medium text-gray-900 dark:text-gray-100">{{ __('Client ID and secret:') }}</dt> <dd class="inline">{{ __('saved') }}</dd></div>
+                    </dl>
+                    <div class="flex justify-end">
+                        <x-danger-button type="button" x-on:click="editing = true">{{ __('Clear') }}</x-danger-button>
+                    </div>
+                </div>
+            @endif
+
+            <form x-show="editing" @if ($microsoftConfigured) x-cloak @endif method="POST" action="{{ route('administration.microsoft') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <x-input-label for="tenant_id" :value="__('Directory (tenant) ID')" />
+                    <x-text-input id="tenant_id" class="mt-1 block w-full" type="text" name="tenant_id" :value="old('tenant_id', $tenant)" required />
+                    <x-input-error :messages="$errors->get('tenant_id')" class="mt-2" />
+                </div>
+                <div>
+                    <x-input-label for="ms_client_id" :value="__('Application (client) ID')" />
+                    <x-text-input id="ms_client_id" class="mt-1 block w-full" type="text" name="client_id" required autocomplete="off" />
+                </div>
+                <div>
+                    <x-input-label for="ms_client_secret" :value="__('Client secret value')" />
+                    <x-text-input id="ms_client_secret" class="mt-1 block w-full" type="password" name="client_secret" required autocomplete="off" />
+                </div>
+                <x-input-error :messages="$errors->get('microsoft_keys')" />
+                <div class="flex justify-end gap-3">
+                    @if ($microsoftConfigured)
+                        <x-secondary-button type="button" x-on:click="editing = false">{{ __('Cancel') }}</x-secondary-button>
+                    @endif
+                    <x-primary-button>{{ __('Check and save') }}</x-primary-button>
+                </div>
+            </form>
+        </div>
+    </x-settings-card>
+    @endif
 
     <x-settings-card :title="__('Harness')">
         <p>

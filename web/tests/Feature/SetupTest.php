@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Support\ConnectionCheck;
 use App\Support\GoogleSignIn;
+use App\Support\SignIn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
 use Laravel\Socialite\Two\User as GoogleUser;
@@ -92,11 +93,15 @@ class SetupTest extends TestCase
     {
         $this->get('/')->assertRedirect('/setup');
         $this->get('/dashboard')->assertRedirect('/setup');
+        $this->get('/setup')->assertOk()->assertSee('How will people sign in?');
+
+        $this->post('/setup/signin', ['methods' => ['google']])->assertRedirect('/setup');
         $this->get('/setup')->assertOk()->assertSee('Google Cloud Console')->assertSee(GoogleSignIn::callbackUrl());
     }
 
     public function test_setup_saves_the_google_sign_in(): void
     {
+        SignIn::save(['google']);
         $this->post('/setup/google', [
             'domain' => 'School.Test',
             'client_id' => 'id.apps.googleusercontent.com',
@@ -111,6 +116,7 @@ class SetupTest extends TestCase
 
     public function test_setup_wont_save_google_keys_that_fail_the_check(): void
     {
+        SignIn::save(['google']);
         $this->mock(ConnectionCheck::class)->shouldReceive('google')->andReturn('Google didn\'t accept this client ID and secret.');
 
         $this->from('/setup')->post('/setup/google', ['domain' => 'school.test', 'client_id' => 'bad', 'client_secret' => 'bad'])

@@ -1,11 +1,14 @@
 @php
-    $steps = [
+    $labels = [
         'address' => __('Web address'),
-        'google' => __('Google sign-in'),
+        'signin' => __('Sign-in'),
+        'google' => __('Google'),
+        'microsoft' => __('Microsoft'),
         'admin' => __('Admin account'),
         'harness' => __('Harness'),
         'claude' => __('Claude Code'),
     ];
+    $steps = array_intersect_key($labels, array_flip($steps));
     $viewing = array_search($step, array_keys($steps));
     $reached = array_search($current, array_keys($steps));
 @endphp
@@ -13,7 +16,7 @@
 <x-setup-layout>
     <x-setup.bind-warning />
 
-    <ol class="mt-8 grid grid-cols-5">
+    <ol class="mt-8 grid" style="grid-template-columns: repeat({{ count($steps) }}, minmax(0, 1fr))">
         @foreach ($steps as $key => $label)
             <li class="relative flex flex-col items-center text-center">
                 @unless ($loop->first)

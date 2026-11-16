@@ -17,6 +17,8 @@ Route::middleware(['auth', 'can:administration'])->prefix('administration')->gro
     Route::get('/', [AdministrationController::class, 'index'])->name('administration');
     Route::post('/address', [AdministrationController::class, 'address'])->name('administration.address');
     Route::post('/google', [AdministrationController::class, 'google'])->name('administration.google');
+    Route::post('/signin', [AdministrationController::class, 'signin'])->name('administration.signin');
+    Route::post('/microsoft', [AdministrationController::class, 'microsoft'])->name('administration.microsoft');
     Route::post('/harness', [AdministrationController::class, 'harness'])->name('administration.harness');
     Route::post('/claude', [AdministrationController::class, 'claude'])->name('administration.claude');
 

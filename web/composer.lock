@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e99e764891c4f21e18692b407007726e",
+    "content-hash": "6a24447f7d77a0a8fd122dc53cfb7786",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6779,16 +6779,16 @@
         },
         {
             "name": "tornado-engine/access",
-            "version": "v0.4.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Access.git",
-                "reference": "bbf39b5207b4fbe6c172406904642da9f9c82c9f"
+                "reference": "b3d52a82885d739c67a95dcf8591df7340bd76a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/bbf39b5207b4fbe6c172406904642da9f9c82c9f",
-                "reference": "bbf39b5207b4fbe6c172406904642da9f9c82c9f",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/b3d52a82885d739c67a95dcf8591df7340bd76a3",
+                "reference": "b3d52a82885d739c67a95dcf8591df7340bd76a3",
                 "shasum": ""
             },
             "require": {
@@ -6804,7 +6804,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.4.x-dev"
+                    "dev-main": "0.6.x-dev"
                 }
             },
             "autoload": {
@@ -6819,9 +6819,9 @@
             "description": "Tornado Engine core-module: users, roles, and which pages each person can see.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Access/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.4.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.6.0"
             },
-            "time": "2026-11-13T23:06:45+00:00"
+            "time": "2026-11-16T14:01:06+00:00"
         },
         {
             "name": "tornado-engine/cron",
@@ -6965,16 +6965,16 @@
         },
         {
             "name": "tornado-engine/nav",
-            "version": "v0.4.0",
+            "version": "v0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav.git",
-                "reference": "556432a8cb7c3ce72b0816eee75967cf1ee07c60"
+                "reference": "bcc07aa0cb63f7d0fa64ea72497dafa714fa6499"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/556432a8cb7c3ce72b0816eee75967cf1ee07c60",
-                "reference": "556432a8cb7c3ce72b0816eee75967cf1ee07c60",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/bcc07aa0cb63f7d0fa64ea72497dafa714fa6499",
+                "reference": "bcc07aa0cb63f7d0fa64ea72497dafa714fa6499",
                 "shasum": ""
             },
             "require": {
@@ -6990,7 +6990,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.4.x-dev"
+                    "dev-main": "0.5.x-dev"
                 }
             },
             "autoload": {
@@ -7005,9 +7005,9 @@
             "description": "Tornado Engine core-module: the site's navigation menu. Other modules add their items to it.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.4.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.5.0"
             },
-            "time": "2026-11-13T21:02:25+00:00"
+            "time": "2026-11-16T14:01:04+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
