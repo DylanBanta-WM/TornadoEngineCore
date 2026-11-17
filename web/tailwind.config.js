@@ -10,6 +10,8 @@ export default {
         // Modules' views
         './vendor/tornado-engine/*/resources/views/**/*.blade.php',
         './modules/*/resources/views/**/*.blade.php',
+        // The district's own views (Administration → Overrides)
+        './local/views/**/*.blade.php',
     ],
 
     theme: {

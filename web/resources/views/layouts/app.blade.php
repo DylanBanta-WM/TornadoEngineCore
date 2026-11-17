@@ -13,9 +13,12 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @if (\App\Overrides\Overrides::cssBuilt())
+            @vite('local/local.css')
+        @endif
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div @class(['flex flex-col bg-gray-100 dark:bg-gray-900', 'h-dvh' => $fill, 'min-h-screen' => ! $fill])>
             {{-- The Nav module's menu if it's installed, otherwise Core's own. --}}
             @includeFirst(['nav::bar', 'layouts.navigation'])
 
@@ -29,9 +32,18 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main @class(['flex-1', 'flex min-h-0 flex-col' => $fill])>
                 {{ $slot }}
             </main>
+
+            {{-- Modules add to the footer with App\Layout\Footer. --}}
+            @if ($footer = app(\App\Layout\Footer::class)->views())
+                <footer>
+                    @foreach ($footer as $view)
+                        @include($view)
+                    @endforeach
+                </footer>
+            @endif
         </div>
 
         @include('tour')

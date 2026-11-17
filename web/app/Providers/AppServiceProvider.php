@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Administration\Administration;
 use App\Harness\HarnessMcp;
 use App\Harness\HarnessView;
+use App\Layout\Footer;
 use App\Models\User;
+use App\Overrides\Overrides;
 use App\Support\PasswordSignIn;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -18,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(Administration::class);
+        $this->app->singleton(Footer::class);
+        $this->app->singleton(Overrides::class);
         $this->app->singleton(PasswordSignIn::class);
         $this->app->singleton(HarnessView::class);
         $this->app->singleton(HarnessMcp::class);
@@ -34,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Core's own updates, run by the updater service.
         app(Administration::class)->tab('updates', __('Updates'), order: 90)->card('administration.updates', tab: 'updates');
+        app(Administration::class)->tab('overrides', __('Overrides'), order: 95)->card('administration.overrides', tab: 'overrides');
+
+        // A district's own views (web/local), in front of Core's and modules', once every module has registered its own.
+        $this->app->booted(fn () => app(Overrides::class)->register());
     }
 }

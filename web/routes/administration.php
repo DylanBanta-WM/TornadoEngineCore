@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministrationController;
+use App\Http\Controllers\OverridesController;
 use App\Http\Controllers\UpdatesController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,10 @@ Route::middleware(['auth', 'can:administration'])->prefix('administration')->gro
     Route::post('/updates/core', [UpdatesController::class, 'core'])->name('administration.updates.core');
     Route::post('/updates/check', [UpdatesController::class, 'check'])->name('administration.updates.check');
     Route::post('/rebuild', [UpdatesController::class, 'rebuild'])->name('administration.rebuild');
+
+    Route::post('/overrides', [OverridesController::class, 'create'])->name('administration.overrides.create');
+    Route::post('/overrides/view', [OverridesController::class, 'save'])->name('administration.overrides.save');
+    Route::post('/overrides/css', [OverridesController::class, 'css'])->name('administration.overrides.css');
     Route::get('/rebuild/status', [UpdatesController::class, 'rebuildStatus'])->name('administration.rebuild.status');
 
     // Tabs that modules add.

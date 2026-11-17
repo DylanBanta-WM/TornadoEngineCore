@@ -28,6 +28,13 @@
         @endif
     </p>
 
+    @if ($review = app(\App\Overrides\Overrides::class)->needingReview())
+        <p class="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-amber-900 dark:text-amber-200">
+            {{ trans_choice('An update changed a view you\'ve overridden.|Updates changed :count views you\'ve overridden.', $review, ['count' => $review]) }}
+            <a href="{{ url('/administration/overrides') }}" class="font-medium underline">{{ __('Review') }}</a>
+        </p>
+    @endif
+
     @if ($turnsOff)
         <p class="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-amber-900 dark:text-amber-200">
             {{ __('These modules don\'t support Core :version yet and will be turned off until they\'re updated: :modules.', ['version' => $available, 'modules' => implode(', ', array_map(fn ($module) => $module->name, $turnsOff))]) }}
