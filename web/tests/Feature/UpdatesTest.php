@@ -169,4 +169,30 @@ class UpdatesTest extends TestCase
 
         $this->assertSame(['done', 'queued'], UpdateJob::orderBy('id')->pluck('status')->all());
     }
+
+    public function test_a_new_module_list_starts_from_cores_lock(): void
+    {
+        Process::fake(['*' => Process::result('ok')]);
+        $lock = preg_replace('/\.json$/', '.lock', $this->local);
+
+        app(Updater::class)->run(UpdateJob::queue('module', '1.0.0', 'tornado-engine/thing'));
+
+        $this->assertFileEquals(base_path('composer.lock'), $lock);
+        @unlink($lock);
+    }
+
+    public function test_composer_is_tried_again_when_network_storage_is_busy(): void
+    {
+        config(['tornado.updater.retry_wait' => 0]);
+        Process::fake(["'composer'*" => Process::sequence()
+            ->push(Process::result("Could not delete vendor/guzzlehttp/guzzle/.nfs0000000049b037", exitCode: 1))
+            ->push(Process::result('ok')), '*' => Process::result('ok')]);
+        $job = UpdateJob::queue('module', '1.0.0', 'tornado-engine/thing');
+
+        app(Updater::class)->run($job);
+
+        $this->assertSame('done', $job->fresh()->status, (string) $job->fresh()->log);
+        $this->assertStringContainsString('Network storage was busy. Trying again.', $job->fresh()->log);
+        @unlink(preg_replace('/\.json$/', '.lock', $this->local));
+    }
 }

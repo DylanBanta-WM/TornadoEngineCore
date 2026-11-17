@@ -135,9 +135,19 @@ class Updater
     {
         $job->addToLog("\n$ ".implode(' ', $command)."\n");
 
-        $result = Process::path(base_path())->env($env)->timeout(1800)->run($command);
-        $output = $result->output().$result->errorOutput();
-        $job->addToLog($output);
+        // On network storage (NFS), a file a running process still has open leaves a .nfs file
+        // behind that can't be deleted for a moment; Composer then fails. Wait and try again.
+        for ($try = 1; ; $try++) {
+            $result = Process::path(base_path())->env($env)->timeout(1800)->run($command);
+            $output = $result->output().$result->errorOutput();
+            $job->addToLog($output);
+
+            if ($result->successful() || $try >= 3 || ! str_contains($output, '.nfs')) {
+                break;
+            }
+            $job->addToLog("\n".__('Network storage was busy. Trying again.')."\n");
+            sleep((int) config('tornado.updater.retry_wait', 10));
+        }
 
         if (! $result->successful()) {
             throw new RuntimeException(__('This step failed, so the rest didn\'t run.'));
@@ -153,6 +163,13 @@ class Updater
     private function localComposer(?string $repository): void
     {
         $path = config('tornado.updater.composer_local') ?? base_path('composer.local.json');
+
+        // A new list starts from Core's own lock, so installing one module doesn't update everything.
+        $lock = preg_replace('/\.json$/', '.lock', $path);
+        if (! is_file($path) && ! is_file($lock) && is_file(base_path('composer.lock'))) {
+            copy(base_path('composer.lock'), $lock);
+        }
+
         $local = is_file($path) ? json_decode(file_get_contents($path), true) : [
             'require' => new \stdClass,
             'extra' => ['merge-plugin' => ['include' => ['composer.json'], 'merge-dev' => true, 'merge-extra' => true, 'merge-scripts' => true]],
