@@ -52,7 +52,7 @@
                         <p>{{ $line }}</p>
                     @endforeach
                     @isset($tour['step']['link'])
-                        <p><a href="{{ route($tour['step']['link'][0]) }}" class="font-medium text-indigo-600 dark:text-indigo-400 underline">{{ $tour['step']['link'][1] }}</a></p>
+                        <p><a href="{{ route(...(array) $tour['step']['link'][0]) }}" class="font-medium text-indigo-600 dark:text-indigo-400 underline">{{ $tour['step']['link'][1] }}</a></p>
                     @endisset
                 </div>
                 <div class="mt-4 flex items-center justify-between gap-2">

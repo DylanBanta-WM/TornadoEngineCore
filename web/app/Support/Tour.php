@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 class Tour
 {
     /**
-     * @return array<string, array{route: string, text: string, targets?: list<string>, open?: list<string>, closest?: string, link?: array{0: string, 1: string}}>
+     * @return array<string, array{route: string, text: string, targets?: list<string>, open?: list<string>, closest?: string, link?: array{0: string|list<string>, 1: string}}>
      */
     public static function steps(): array
     {
@@ -60,7 +60,7 @@ class Tour
             'share' => [
                 'route' => 'modules.index',
                 'text' => __('Made a module other districts could use? Share it.'),
-                'link' => ['docs.index', __('Submission guidelines are in Docs')],
+                'link' => [['docs.show', 'sharing-modules'], __('Sharing a module')],
             ],
             'docs' => [
                 'route' => 'docs.index',
@@ -72,7 +72,7 @@ class Tour
             ],
         ];
 
-        return array_filter($steps, fn ($step) => Route::has($step['route']) && (! isset($step['link']) || Route::has($step['link'][0])));
+        return array_filter($steps, fn ($step) => Route::has($step['route']) && (! isset($step['link']) || Route::has(((array) $step['link'][0])[0])));
     }
 
     public static function start(User $user): void

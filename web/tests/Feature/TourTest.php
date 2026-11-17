@@ -43,7 +43,7 @@ class TourTest extends TestCase
         $this->actingAs($admin)->get('/modules')->assertSee('Core modules are always installed.')->assertSee('Community modules are made by others.');
 
         $this->actingAs($admin)->post('/tour/next');
-        $this->actingAs($admin)->get('/modules')->assertSee('Made a module other districts could use? Share it.')->assertSee('Submission guidelines are in Docs');
+        $this->actingAs($admin)->get('/modules')->assertSee('Made a module other districts could use? Share it.')->assertSee('Sharing a module')->assertSee('/docs/sharing-modules');
 
         $this->actingAs($admin)->post('/tour/back')->assertRedirect('/modules');
         $this->assertSame('modules', $admin->fresh()->tour_step);
