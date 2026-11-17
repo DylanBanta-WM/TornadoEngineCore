@@ -40,6 +40,8 @@ services:
       args:
         APP_UID: ${HOST_UID:-1000}
         APP_GID: ${HOST_GID:-1000}
+    # The uploads volume starts out owned by root; the website writes to it as www-data.
+    command: ["sh", "-c", "chown www-data:www-data /var/www/html/storage/app/uploads && exec php-fpm"]
     env_file: .env
     volumes:
       - ./web:/var/www/html
