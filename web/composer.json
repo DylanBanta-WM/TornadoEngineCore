@@ -15,11 +15,11 @@
         "laravel/framework": "^13.17",
         "laravel/socialite": "^5.32",
         "laravel/tinker": "^3.0",
-        "tornado-engine/access": ">=0.8",
+        "tornado-engine/access": ">=0.8.2",
         "tornado-engine/cron": ">=0.6",
         "tornado-engine/module-finder": ">=0.6.1",
         "tornado-engine/docs": ">=0.4",
-        "tornado-engine/nav": ">=0.6.1",
+        "tornado-engine/nav": ">=0.6.2",
         "wikimedia/composer-merge-plugin": "^2.1",
         "tornado-engine/broker": ">=0.9",
         "tornado-engine/chat": ">=0.2"

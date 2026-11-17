@@ -10,6 +10,7 @@ use App\Support\MicrosoftSignIn;
 use App\Support\Settings;
 use App\Support\Setup;
 use App\Support\SignIn;
+use App\Support\Tour;
 use App\Updates\UpdateJob;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -179,6 +180,7 @@ class SetupController extends Controller
         }
 
         Setting::put('setup.completed_at', now()->toIso8601String());
+        Tour::start($request->user());
 
         return $queued && Route::has('modules.index')
             ? redirect()->route('modules.index')

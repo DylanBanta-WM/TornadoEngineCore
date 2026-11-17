@@ -185,7 +185,7 @@ class UpdatesTest extends TestCase
     {
         config(['tornado.updater.retry_wait' => 0]);
         Process::fake(["'composer'*" => Process::sequence()
-            ->push(Process::result("Could not delete vendor/guzzlehttp/guzzle/.nfs0000000049b037", exitCode: 1))
+            ->push(Process::result('Could not delete vendor/guzzlehttp/guzzle/.nfs0000000049b037', exitCode: 1))
             ->push(Process::result('ok')), '*' => Process::result('ok')]);
         $job = UpdateJob::queue('module', '1.0.0', 'tornado-engine/thing');
 

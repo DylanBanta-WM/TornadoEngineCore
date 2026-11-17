@@ -33,5 +33,7 @@
                 {{ $slot }}
             </main>
         </div>
+
+        @include('tour')
     </body>
 </html>

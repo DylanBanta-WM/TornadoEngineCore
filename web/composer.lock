@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "489ead720e23704916b5a16cb4f92b4d",
+    "content-hash": "78b62f96009ce11ed9738cec3c87478f",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6854,16 +6854,16 @@
         },
         {
             "name": "tornado-engine/access",
-            "version": "v0.8.0",
+            "version": "v0.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Access.git",
-                "reference": "f30fff2116760cd5498999525a3224292cf386ff"
+                "reference": "f1850afffe29d33ea0ec181c7bbae32038648974"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/f30fff2116760cd5498999525a3224292cf386ff",
-                "reference": "f30fff2116760cd5498999525a3224292cf386ff",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/f1850afffe29d33ea0ec181c7bbae32038648974",
+                "reference": "f1850afffe29d33ea0ec181c7bbae32038648974",
                 "shasum": ""
             },
             "require": {
@@ -6895,9 +6895,9 @@
             "description": "Tornado Engine core-module: users, roles, and which pages each person can see.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Access/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.8.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.8.2"
             },
-            "time": "2026-11-17T13:46:00+00:00"
+            "time": "2026-11-17T14:34:07+00:00"
         },
         {
             "name": "tornado-engine/broker",
@@ -7139,16 +7139,16 @@
         },
         {
             "name": "tornado-engine/nav",
-            "version": "v0.6.1",
+            "version": "v0.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav.git",
-                "reference": "d818a38fdc2e211440bb75938cb0d2acb9da18de"
+                "reference": "61970720738d91435df9ef3a006023ea70a49d8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/d818a38fdc2e211440bb75938cb0d2acb9da18de",
-                "reference": "d818a38fdc2e211440bb75938cb0d2acb9da18de",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/61970720738d91435df9ef3a006023ea70a49d8c",
+                "reference": "61970720738d91435df9ef3a006023ea70a49d8c",
                 "shasum": ""
             },
             "require": {
@@ -7179,9 +7179,9 @@
             "description": "Tornado Engine core-module: the site's navigation menu. Other modules add their items to it.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.6.1"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.6.2"
             },
-            "time": "2026-11-16T18:16:12+00:00"
+            "time": "2026-11-17T14:43:07+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

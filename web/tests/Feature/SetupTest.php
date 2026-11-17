@@ -203,6 +203,7 @@ class SetupTest extends TestCase
         Http::fake(['*' => Http::response([], 500)]);
         $this->actingAs($admin)->get('/setup')->assertSee('Choose the modules to install');
         $this->actingAs($admin)->post('/setup/modules')->assertRedirect('/dashboard');
+        $this->assertSame('admin-menu', $admin->fresh()->tour_step, 'the tour starts');
         $this->actingAs($admin)->get('/dashboard')->assertOk();
         $this->actingAs($admin)->get('/setup')->assertRedirect('/dashboard');
     }
