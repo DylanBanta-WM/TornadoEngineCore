@@ -221,7 +221,7 @@ class SetupTest extends TestCase
             'official' => true, 'onPackagist' => true, 'latest' => '0.7.0', 'needsNewerCore' => null, 'requires' => [],
         ]], 3600);
 
-        $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Base is also required for Reports to work.');
+        $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Requirements: Base Module (will auto install)');
         $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/modules');
 
         $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());

@@ -13,7 +13,7 @@
                     <p class="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">{{ __('These modules aren\'t made by Tornado Engine. Install them at your own risk: a module runs with full access to your website and its data. Always read a module\'s code before you install and trust it.') }}</p>
                 @endunless
                 @foreach ($list as $module)
-                    @php($needs = array_values(array_filter(array_map(fn ($package) => $allModules[$package] ?? null, $module->requires))))
+                    @php($needs = \TornadoEngine\ModuleFinder\Finder::requirements($module, $allModules))
                     <label class="flex items-start gap-3 rounded-md border border-gray-200 dark:border-gray-700 p-3 text-sm has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
                         <input type="checkbox" name="packages[]" value="{{ $module->package }}" class="mt-0.5 rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500">
                         <span class="min-w-0">
@@ -22,7 +22,7 @@
                                 <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ $module->description }}</span>
                             @endif
                             @if ($needs)
-                                <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ trans_choice(':modules is also required for :name to work.|:modules are also required for :name to work.', count($needs), ['modules' => implode(', ', array_map(fn ($need) => $need->name, $needs)), 'name' => $module->name]) }}</span>
+                                <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Requirements: :modules', ['modules' => $needs]) }}</span>
                             @endif
                             @if ($module->url)
                                 <a href="{{ $module->url }}" target="_blank" rel="noopener" class="mt-1 inline-block text-indigo-600 dark:text-indigo-400 underline">{{ __('View the code') }}</a>
