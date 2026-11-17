@@ -7,7 +7,7 @@
     $labels = ['changed' => __('The module changed it'), 'gone' => __('The module no longer has it')];
 @endphp
 
-<x-settings-card :title="__('Views')">
+<x-settings-card wide :title="__('Views')">
     @if (session('overrides_status'))
         <p class="rounded-md bg-green-50 dark:bg-green-900/30 px-4 py-3 text-green-800 dark:text-green-300">{{ session('overrides_status') }}</p>
     @endif

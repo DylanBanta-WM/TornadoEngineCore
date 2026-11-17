@@ -9,7 +9,7 @@
     $jobs = \App\Updates\UpdateJob::with('user')->where('kind', 'core')->latest('id')->take(5)->get();
 @endphp
 
-<x-settings-card :title="__('Tornado Engine Core')">
+<x-settings-card wide :title="__('Tornado Engine Core')">
     @if (session('updates_status'))
         <p class="rounded-md bg-green-50 dark:bg-green-900/30 px-4 py-3 text-green-800 dark:text-green-300">{{ session('updates_status') }}</p>
     @endif
