@@ -51,6 +51,7 @@ class ModuleRegistry
                 missingExtensions: $missing,
                 settings: is_string($tornado['settings'] ?? null) && str_starts_with($tornado['settings'], '/') ? $tornado['settings'] : null,
                 needsSetup: (bool) ($tornado['needs-setup'] ?? false),
+                prompt: is_string($tornado['prompt'] ?? null) && trim($tornado['prompt']) !== '' ? trim($tornado['prompt']) : null,
                 requires: $requires,
                 path: isset($package['install-path']) ? (realpath(dirname($installedJson).'/'.$package['install-path']) ?: null) : null,
             );

@@ -342,6 +342,7 @@ Tools are built as modules, never as changes to Core. Each module is its own git
 - To add to the footer on every page, register a view: `app(\App\Layout\Footer::class)->add('{name}::footer')` (Core 0.19+). Don't rewrite Core's pages.
 - Districts change how Core and modules look with overrides in `web/local` (Administration → Overrides, or `php artisan tornado:override`), never by editing them. Keep views small and focused, so an override replaces only what it needs to.
 - A page that should fill the screen (scrolling inside itself) uses `<x-app-layout fill>`, and its top element `flex-1 min-h-0`.
+- Tell Claude what your module offers the tools it builds with `"prompt"` in the `tornado` section (one or two sentences, for example which class or method to use). It's shown in Chat's system prompt, and admins can edit it on the module's settings page.
 - A module with a settings page lists it as `"settings": "/administration/{name}"` in the `tornado` section; add `"needs-setup": true` if it doesn't work until they're filled in, and `/modules` opens them after it's installed.
 
 ### Composer when `web/composer.local.json` exists

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9c2ba761a776fd316a49a5069412afd",
+    "content-hash": "bd6e9729aca631d14707d16e1ece1d5e",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6854,16 +6854,16 @@
         },
         {
             "name": "tornado-engine/access",
-            "version": "v0.10.0",
+            "version": "v0.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Access.git",
-                "reference": "136250e25d6c131ce089dddfad2f2d06257ec4b3"
+                "reference": "595a26de90f75aa672c7aba08277e4329fcb7806"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/136250e25d6c131ce089dddfad2f2d06257ec4b3",
-                "reference": "136250e25d6c131ce089dddfad2f2d06257ec4b3",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Access/zipball/595a26de90f75aa672c7aba08277e4329fcb7806",
+                "reference": "595a26de90f75aa672c7aba08277e4329fcb7806",
                 "shasum": ""
             },
             "require": {
@@ -6875,6 +6875,7 @@
                 "tornado": {
                     "core": ">=0.21",
                     "name": "Access",
+                    "prompt": "Permissions: $access->permission(...), checked the usual Laravel way (Gate, can:). People and their roles are in Access.",
                     "provider": "TornadoEngine\\Access\\AccessServiceProvider",
                     "settings": "/access/users",
                     "core-module": true
@@ -6895,9 +6896,9 @@
             "description": "Tornado Engine core-module: users, roles, and which pages each person can see.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Access/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.10.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Access/tree/v0.10.1"
             },
-            "time": "2026-11-17T19:19:07+00:00"
+            "time": "2026-11-17T19:41:29+00:00"
         },
         {
             "name": "tornado-engine/broker",
@@ -6951,16 +6952,16 @@
         },
         {
             "name": "tornado-engine/chat",
-            "version": "v0.10.0",
+            "version": "v0.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Chat.git",
-                "reference": "9400007d7e1b23201f0c4b467b3bbd44f2194422"
+                "reference": "72369a6abf9a630d1a8e8a70d062d2d845fbc7f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/9400007d7e1b23201f0c4b467b3bbd44f2194422",
-                "reference": "9400007d7e1b23201f0c4b467b3bbd44f2194422",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/72369a6abf9a630d1a8e8a70d062d2d845fbc7f4",
+                "reference": "72369a6abf9a630d1a8e8a70d062d2d845fbc7f4",
                 "shasum": ""
             },
             "require": {
@@ -6972,14 +6973,14 @@
             "type": "library",
             "extra": {
                 "tornado": {
-                    "core": ">=0.21",
+                    "core": ">=0.22",
                     "name": "Chat",
                     "provider": "TornadoEngine\\Chat\\ChatServiceProvider",
                     "settings": "/administration/chat",
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.10.x-dev"
+                    "dev-main": "0.11.x-dev"
                 }
             },
             "autoload": {
@@ -6994,22 +6995,22 @@
             "description": "Tornado Engine core-module: talk with Claude from the website, and have it build new tools as modules.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.10.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.11.0"
             },
-            "time": "2026-11-17T19:19:28+00:00"
+            "time": "2026-11-17T19:41:52+00:00"
         },
         {
             "name": "tornado-engine/cron",
-            "version": "v0.6.0",
+            "version": "v0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Cron.git",
-                "reference": "e66289346bfe58862abd4e9bf019b93b5c5e9bb8"
+                "reference": "7efcc28c5e97fb1b68e1f4411db549ace9def3c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Cron/zipball/e66289346bfe58862abd4e9bf019b93b5c5e9bb8",
-                "reference": "e66289346bfe58862abd4e9bf019b93b5c5e9bb8",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Cron/zipball/7efcc28c5e97fb1b68e1f4411db549ace9def3c1",
+                "reference": "7efcc28c5e97fb1b68e1f4411db549ace9def3c1",
                 "shasum": ""
             },
             "require": {
@@ -7021,6 +7022,7 @@
                 "tornado": {
                     "core": ">=0.15",
                     "name": "Cron",
+                    "prompt": "Scheduled jobs: $cron->job(...), which admins can see and change in Administration → Scheduled jobs.",
                     "provider": "TornadoEngine\\Cron\\CronServiceProvider",
                     "settings": "/administration/cron",
                     "core-module": true
@@ -7041,22 +7043,22 @@
             "description": "Tornado Engine core-module: scheduled jobs. Modules register jobs; admins choose when they run.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/tree/v0.6.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Cron/tree/v0.6.1"
             },
-            "time": "2026-11-16T19:57:20+00:00"
+            "time": "2026-11-17T19:41:33+00:00"
         },
         {
             "name": "tornado-engine/docs",
-            "version": "v0.5.1",
+            "version": "v0.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Docs.git",
-                "reference": "91648d150d37c35f31397388380ff431919d6bd1"
+                "reference": "a835474f77a23448e39d727b1cbcf314c9b5e63b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/91648d150d37c35f31397388380ff431919d6bd1",
-                "reference": "91648d150d37c35f31397388380ff431919d6bd1",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Docs/zipball/a835474f77a23448e39d727b1cbcf314c9b5e63b",
+                "reference": "a835474f77a23448e39d727b1cbcf314c9b5e63b",
                 "shasum": ""
             },
             "require": {
@@ -7068,6 +7070,7 @@
                 "tornado": {
                     "core": ">=0.3",
                     "name": "Docs",
+                    "prompt": "Help pages: $docs->add(...).",
                     "provider": "TornadoEngine\\Docs\\DocsServiceProvider",
                     "core-module": true
                 },
@@ -7087,9 +7090,9 @@
             "description": "Tornado Engine core-module: documentation pages in Administration. Other modules add their own docs.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.5.1"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Docs/tree/v0.5.2"
             },
-            "time": "2026-11-17T17:58:46+00:00"
+            "time": "2026-11-17T19:41:35+00:00"
         },
         {
             "name": "tornado-engine/module-finder",
@@ -7140,16 +7143,16 @@
         },
         {
             "name": "tornado-engine/nav",
-            "version": "v0.6.2",
+            "version": "v0.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav.git",
-                "reference": "61970720738d91435df9ef3a006023ea70a49d8c"
+                "reference": "f4e8c77d83be067b37c8069147bd2d0ee44b911d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/61970720738d91435df9ef3a006023ea70a49d8c",
-                "reference": "61970720738d91435df9ef3a006023ea70a49d8c",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/f4e8c77d83be067b37c8069147bd2d0ee44b911d",
+                "reference": "f4e8c77d83be067b37c8069147bd2d0ee44b911d",
                 "shasum": ""
             },
             "require": {
@@ -7161,6 +7164,7 @@
                 "tornado": {
                     "core": ">=0.2",
                     "name": "Nav",
+                    "prompt": "Menu items and dashboard cards: $nav->add(...) and $nav->tool(...).",
                     "provider": "TornadoEngine\\Nav\\NavServiceProvider",
                     "core-module": true
                 },
@@ -7180,22 +7184,22 @@
             "description": "Tornado Engine core-module: the site's navigation menu. Other modules add their items to it.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.6.2"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.6.3"
             },
-            "time": "2026-11-17T14:43:07+00:00"
+            "time": "2026-11-17T19:41:31+00:00"
         },
         {
             "name": "tornado-engine/uploads",
-            "version": "v0.4.0",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads.git",
-                "reference": "899f34724e3a61bf7eafbd472b0a6f582dcd6902"
+                "reference": "9556fdca2e778024f2852aaf4642caa1b94fc6d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Uploads/zipball/899f34724e3a61bf7eafbd472b0a6f582dcd6902",
-                "reference": "899f34724e3a61bf7eafbd472b0a6f582dcd6902",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Uploads/zipball/9556fdca2e778024f2852aaf4642caa1b94fc6d3",
+                "reference": "9556fdca2e778024f2852aaf4642caa1b94fc6d3",
                 "shasum": ""
             },
             "require": {
@@ -7208,6 +7212,7 @@
                 "tornado": {
                     "core": ">=0.21",
                     "name": "Uploads",
+                    "prompt": "Files people attach are copies made for you: their text with student information replaced by the broker, and images with it covered. Never look for the originals. Other modules accept uploads through route('uploads.store').",
                     "provider": "TornadoEngine\\Uploads\\UploadsServiceProvider",
                     "settings": "/administration/uploads",
                     "core-module": true
@@ -7228,9 +7233,9 @@
             "description": "Tornado Engine core-module: upload files, and give Claude filtered copies (text run through the broker; images only when marked as having no student information).",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads/tree/v0.4.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads/tree/v0.4.1"
             },
-            "time": "2026-11-17T19:19:26+00:00"
+            "time": "2026-11-17T19:41:50+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

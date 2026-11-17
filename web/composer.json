@@ -22,7 +22,7 @@
         "tornado-engine/nav": ">=0.6.2",
         "wikimedia/composer-merge-plugin": "^2.1",
         "tornado-engine/broker": ">=0.11",
-        "tornado-engine/chat": ">=0.10",
+        "tornado-engine/chat": ">=0.11",
         "tornado-engine/uploads": ">=0.4"
     },
     "require-dev": {

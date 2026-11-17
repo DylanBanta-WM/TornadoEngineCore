@@ -6,6 +6,7 @@ use App\Administration\Administration;
 use App\Harness\HarnessMcp;
 use App\Harness\HarnessView;
 use App\Layout\Footer;
+use App\Layout\ModuleSettings;
 use App\Models\User;
 use App\Overrides\Overrides;
 use App\Support\PasswordSignIn;
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Administration::class);
         $this->app->singleton(Footer::class);
+        $this->app->singleton(ModuleSettings::class);
         $this->app->singleton(Overrides::class);
         $this->app->singleton(PasswordSignIn::class);
         $this->app->singleton(HarnessView::class);

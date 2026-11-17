@@ -25,5 +25,7 @@ final readonly class Module
         public array $requires = [],
         /** Its folder (links followed), e.g. web/modules/notes for a module linked from there. */
         public ?string $path = null,
+        /** What Claude should know about it when building tools ("prompt" in extra.tornado); editable in its settings. */
+        public ?string $prompt = null,
     ) {}
 }

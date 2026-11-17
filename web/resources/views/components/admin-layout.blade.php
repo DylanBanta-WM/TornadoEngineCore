@@ -9,6 +9,13 @@
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             {{ $slot }}
+
+            {{-- On a module's settings page: cards other modules add for every module (App\Layout\ModuleSettings). --}}
+            @if (($settingsCards = app(\App\Layout\ModuleSettings::class)) && $settingsCards->views() && ($settingsModule = $settingsCards->moduleAt(request()->path())))
+                @foreach ($settingsCards->views() as $view)
+                    @include($view, ['module' => $settingsModule])
+                @endforeach
+            @endif
         </div>
     </div>
 </x-app-layout>
