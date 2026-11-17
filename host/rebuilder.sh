@@ -20,6 +20,8 @@ while true; do
     status running
     docker compose up -d --build --remove-orphans > "$dir/rebuild.log" 2>&1
     code=$?
+    # nginx's config files are mounted one by one, so a container keeps the old file until it's recreated.
+    [ $code -eq 0 ] && { docker compose up -d --force-recreate --no-deps nginx-web nginx-harness >> "$dir/rebuild.log" 2>&1; code=$?; }
     status "$([ $code -eq 0 ] && echo done || echo failed)" "$code" "$(date -Is)"
   fi
   sleep 3
