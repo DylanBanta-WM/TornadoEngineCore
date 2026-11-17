@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78b62f96009ce11ed9738cec3c87478f",
+    "content-hash": "0cce0cbfc8dabe4129dccbc59a37aac9",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -7092,16 +7092,16 @@
         },
         {
             "name": "tornado-engine/module-finder",
-            "version": "v0.6.1",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder.git",
-                "reference": "b4176a2a8d8b5c1649eb3927a2ad8b724b0c3792"
+                "reference": "f4aa52150fd28690f10cf475303abed07ad0e70f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/b4176a2a8d8b5c1649eb3927a2ad8b724b0c3792",
-                "reference": "b4176a2a8d8b5c1649eb3927a2ad8b724b0c3792",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/f4aa52150fd28690f10cf475303abed07ad0e70f",
+                "reference": "f4aa52150fd28690f10cf475303abed07ad0e70f",
                 "shasum": ""
             },
             "require": {
@@ -7112,13 +7112,13 @@
             "type": "library",
             "extra": {
                 "tornado": {
-                    "core": ">=0.7",
+                    "core": ">=0.18",
                     "name": "Module Finder",
                     "provider": "TornadoEngine\\ModuleFinder\\ModuleFinderServiceProvider",
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.6.x-dev"
+                    "dev-main": "0.8.x-dev"
                 }
             },
             "autoload": {
@@ -7133,9 +7133,9 @@
             "description": "Tornado Engine core-module: finds modules on GitHub, and installs and updates them from the /modules page.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.6.1"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.8.0"
             },
-            "time": "2026-11-17T13:46:19+00:00"
+            "time": "2026-11-17T15:37:43+00:00"
         },
         {
             "name": "tornado-engine/nav",

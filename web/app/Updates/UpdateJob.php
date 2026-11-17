@@ -15,15 +15,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UpdateJob extends Model
 {
-    protected $fillable = ['kind', 'package', 'version', 'repository', 'status', 'log', 'notes', 'user_id', 'finished_at'];
+    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'status', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
 
-    public static function queue(string $kind, string $version, ?string $package = null, ?string $repository = null): self
+    public static function queue(string $kind, string $version, ?string $package = null, ?string $repository = null, bool $install = false): self
     {
         return self::create([
             'kind' => $kind,
             'package' => $package,
             'version' => ltrim($version, 'v'),
             'repository' => $repository,
+            'install' => $install,
             'user_id' => auth()->id(),
         ]);
     }
@@ -63,6 +64,6 @@ class UpdateJob extends Model
 
     protected function casts(): array
     {
-        return ['notes' => 'array', 'finished_at' => 'datetime'];
+        return ['notes' => 'array', 'install' => 'boolean', 'finished_at' => 'datetime', 'opened_at' => 'datetime'];
     }
 }

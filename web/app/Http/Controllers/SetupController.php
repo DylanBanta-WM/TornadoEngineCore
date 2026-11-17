@@ -174,7 +174,7 @@ class SetupController extends Controller
         foreach ($chosen as $package) {
             $listing = $listings[$package] ?? null;
             if ($listing && $listing->url && $listing->latest && $listing->installed === null) {
-                UpdateJob::queue('module', $listing->latest, $listing->package, $listing->onPackagist ? null : $listing->url);
+                UpdateJob::queue('module', $listing->latest, $listing->package, $listing->onPackagist ? null : $listing->url, install: true);
                 $queued++;
             }
         }

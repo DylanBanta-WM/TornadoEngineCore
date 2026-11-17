@@ -339,6 +339,7 @@ Tools are built as modules, never as changes to Core. Each module is its own git
 - `core` is open-ended (`>=0.3`). When Core changes in a way that breaks a module, release a new version of that module with an updated `core` range, and make Core require that new version in its `composer.json`.
 - Release by tagging a version (`v0.1.0`) and pushing; Packagist's GitHub webhook publishes it. Don't trigger Packagist updates with your API token: Packagist then marks the package "Legacy Auto-Update". If a release is slow to appear, resend the latest push from the repo's webhook settings on GitHub.
 - Give the GitHub repository the topic `tornado-engine-module` so it's listed on `/modules`.
+- A module with a settings page lists it as `"settings": "/administration/{name}"` in the `tornado` section; add `"needs-setup": true` if it doesn't work until they're filled in, and `/modules` opens them after it's installed.
 
 ### Composer when `web/composer.local.json` exists
 
