@@ -25,8 +25,11 @@ class ModuleRegistry
             // Read the module's own composer.json when it's there, so a module being developed
             // in modules/ is seen as it is now, not as it was when Composer last installed it.
             $own = dirname($installedJson).'/'.($package['install-path'] ?? '').'/composer.json';
+            $requires = array_keys((array) ($package['require'] ?? []));
             if (isset($package['install-path']) && is_file($own)) {
-                $tornado = json_decode(file_get_contents($own), true)['extra']['tornado'] ?? $tornado;
+                $composer = json_decode(file_get_contents($own), true);
+                $tornado = $composer['extra']['tornado'] ?? $tornado;
+                $requires = array_keys((array) ($composer['require'] ?? $package['require'] ?? []));
             }
 
             if (! is_array($tornado)) {
@@ -48,6 +51,8 @@ class ModuleRegistry
                 missingExtensions: $missing,
                 settings: is_string($tornado['settings'] ?? null) && str_starts_with($tornado['settings'], '/') ? $tornado['settings'] : null,
                 needsSetup: (bool) ($tornado['needs-setup'] ?? false),
+                requires: $requires,
+                path: isset($package['install-path']) ? (realpath(dirname($installedJson).'/'.$package['install-path']) ?: null) : null,
             );
         }
     }

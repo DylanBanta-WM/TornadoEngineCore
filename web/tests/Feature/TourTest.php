@@ -40,7 +40,7 @@ class TourTest extends TestCase
         $this->actingAs($admin)->get('/access/users')->assertSee('Access-Google')->assertSee('Access-Microsoft-AD');
 
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/modules');
-        $this->actingAs($admin)->get('/modules')->assertSee('Core modules are always installed.')->assertSee('Community modules are made by others.');
+        $this->actingAs($admin)->get('/modules')->assertSee('Core modules are always installed.')->assertSee('Other districts&#039; modules aren&#039;t reviewed.', false);
 
         $this->actingAs($admin)->post('/tour/next');
         $this->actingAs($admin)->get('/modules')->assertSee('Made a module other districts could use? Share it.')->assertSee('Sharing a module')->assertSee('/docs/sharing-modules');

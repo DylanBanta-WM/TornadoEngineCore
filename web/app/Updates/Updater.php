@@ -7,7 +7,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Runs an install or update inside the updater service: Composer (or git for Core), then the
+ * Runs an install, update or uninstall inside the updater service: Composer (or git for Core), then the
  * modules' containers list, migrations, the styles, and cleared caches. Each step's output goes
  * into the job's log; the first step that fails stops the job.
  */
@@ -19,7 +19,11 @@ class Updater
         $notes = [];
 
         try {
-            $job->kind === 'core' ? $this->core($job, $notes) : $this->module($job);
+            match ($job->kind) {
+                'core' => $this->core($job, $notes),
+                'remove' => $this->remove($job),
+                default => $this->module($job),
+            };
             $this->finish($job, $notes);
             $job->update(['status' => 'done', 'notes' => $notes, 'finished_at' => now()]);
             if ($notes) {
@@ -33,10 +37,7 @@ class Updater
 
     private function module(UpdateJob $job): void
     {
-        if (! preg_match('#^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9](([_.]|-{1,2})?[a-z0-9]+)*$#', (string) $job->package)) {
-            throw new RuntimeException(__('That isn\'t a Composer package name.'));
-        }
-
+        $this->checkPackage($job);
         $this->localComposer($job->repository);
 
         // A module in web/modules (for example one Chat built) is linked from there.
@@ -44,6 +45,47 @@ class Updater
 
         $this->step($job, ['composer', 'require', "{$job->package}:{$constraint}", '--update-with-dependencies', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'],
             ['COMPOSER' => 'composer.local.json']);
+    }
+
+    /**
+     * Uninstalls a module: rolls back its migrations first when its data goes too, then takes it
+     * out of composer.local.json. A module linked from web/modules keeps its folder there.
+     */
+    private function remove(UpdateJob $job): void
+    {
+        $this->checkPackage($job);
+
+        $path = config('tornado.updater.composer_local') ?? base_path('composer.local.json');
+        $local = is_file($path) ? json_decode(file_get_contents($path), true) : [];
+        if (! isset($local['require'][$job->package])) {
+            throw new RuntimeException(__('It isn\'t listed in composer.local.json, so it can\'t be uninstalled from here.'));
+        }
+
+        $migrations = "vendor/{$job->package}/database/migrations";
+        if ($job->delete_data && is_dir(base_path($migrations))) {
+            $this->step($job, ['php', 'artisan', 'migrate:reset', "--path={$migrations}", '--force']);
+        }
+
+        $this->step($job, ['composer', 'remove', $job->package, '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'],
+            ['COMPOSER' => 'composer.local.json']);
+
+        // Its GitHub repository, if it was listed for it, isn't needed any more.
+        if ($job->repository && ! str_starts_with($job->repository, 'modules/')) {
+            // Objects, not arrays, so an empty "require" stays {}.
+            $local = json_decode(file_get_contents($path));
+            $repositories = array_values(array_filter($local->repositories ?? [], fn ($repo) => ($repo->url ?? null) !== $job->repository));
+            if (count($repositories) !== count($local->repositories ?? [])) {
+                $local->repositories = $repositories;
+                file_put_contents($path, json_encode($local, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+            }
+        }
+    }
+
+    private function checkPackage(UpdateJob $job): void
+    {
+        if (! preg_match('#^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9](([_.]|-{1,2})?[a-z0-9]+)*$#', (string) $job->package)) {
+            throw new RuntimeException(__('That isn\'t a Composer package name.'));
+        }
     }
 
     /**

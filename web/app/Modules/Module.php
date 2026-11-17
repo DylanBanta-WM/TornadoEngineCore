@@ -21,5 +21,9 @@ final readonly class Module
         public ?string $settings = null,
         /** It needs its settings filled in before it works ("needs-setup" in extra.tornado). */
         public bool $needsSetup = false,
+        /** @var list<string> Packages it requires (its Composer "require"). */
+        public array $requires = [],
+        /** Its folder (links followed), e.g. web/modules/notes for a module linked from there. */
+        public ?string $path = null,
     ) {}
 }

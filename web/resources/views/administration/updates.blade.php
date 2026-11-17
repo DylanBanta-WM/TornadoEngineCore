@@ -47,11 +47,9 @@
             <x-secondary-button type="submit">{{ __('Check now') }}</x-secondary-button>
         </form>
         @if ($available && ! $pending)
-            <form method="POST" action="{{ route('administration.updates.core') }}"
-                  onsubmit="return confirm(@js(__('Update Tornado Engine Core to :version? The website may be slow or unavailable for a few minutes.', ['version' => $available])))">
-                @csrf
-                <x-primary-button :disabled="$busy">{{ __('Update to :version', ['version' => $available]) }}</x-primary-button>
-            </form>
+            <x-confirm :action="route('administration.updates.core')" :message="__('Update Tornado Engine Core to :version? The website may be slow or unavailable for a few minutes.', ['version' => $available])" :confirm="__('Update to :version', ['version' => $available])">
+                <x-slot name="trigger"><x-primary-button type="button" :disabled="$busy">{{ __('Update to :version', ['version' => $available]) }}</x-primary-button></x-slot>
+            </x-confirm>
         @endif
     </div>
 

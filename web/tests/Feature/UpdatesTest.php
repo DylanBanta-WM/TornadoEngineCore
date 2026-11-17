@@ -195,4 +195,75 @@ class UpdatesTest extends TestCase
         $this->assertStringContainsString('Network storage was busy. Trying again.', $job->fresh()->log);
         @unlink(preg_replace('/\.json$/', '.lock', $this->local));
     }
+
+    private function localWith(array $require, array $repositories = []): void
+    {
+        file_put_contents($this->local, json_encode(['require' => $require, 'repositories' => $repositories]));
+    }
+
+    public function test_uninstalling_removes_the_module_through_composer_local_json(): void
+    {
+        Process::fake(['*' => Process::result('ok')]);
+        $this->localWith(['someone/tornado-thing' => '>=0.2.0'], [['type' => 'path', 'url' => 'modules/*'], ['type' => 'vcs', 'url' => 'https://github.com/someone/TornadoThing']]);
+        $job = UpdateJob::remove('someone/tornado-thing', repository: 'https://github.com/someone/TornadoThing');
+
+        app(Updater::class)->run($job);
+
+        $this->assertSame('done', $job->fresh()->status, (string) $job->fresh()->log);
+        $this->assertSame('Uninstall someone/tornado-thing', $job->fresh()->label());
+        Process::assertRan(fn ($process) => $process->command === ['composer', 'remove', 'someone/tornado-thing', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*']
+            && $process->environment === ['COMPOSER' => 'composer.local.json']);
+        Process::assertDidntRun(fn ($process) => in_array('migrate:reset', $process->command, true));
+        Process::assertRan(fn ($process) => $process->command === ['php', 'artisan', 'optimize:clear']);
+        $this->assertSame([['type' => 'path', 'url' => 'modules/*']], json_decode(file_get_contents($this->local), true)['repositories']);
+    }
+
+    public function test_uninstalling_with_its_data_rolls_back_its_migrations_first(): void
+    {
+        $commands = [];
+        Process::fake(['*' => function ($process) use (&$commands) {
+            $commands[] = $process->command;
+
+            return Process::result('ok');
+        }]);
+        $this->localWith(['tornado-engine/gam-runner' => '*']);
+        $job = UpdateJob::remove('tornado-engine/gam-runner', deleteData: true);
+
+        app(Updater::class)->run($job);
+
+        $this->assertSame('done', $job->fresh()->status, (string) $job->fresh()->log);
+        $this->assertSame('Uninstall tornado-engine/gam-runner and delete its data', $job->fresh()->label());
+        $reset = array_search(['php', 'artisan', 'migrate:reset', '--path=vendor/tornado-engine/gam-runner/database/migrations', '--force'], $commands, true);
+        $remove = array_search(['composer', 'remove', 'tornado-engine/gam-runner', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'], $commands, true);
+        $this->assertNotFalse($reset);
+        $this->assertGreaterThan($reset, $remove);
+    }
+
+    public function test_only_modules_in_composer_local_json_can_be_uninstalled(): void
+    {
+        Process::fake();
+        $this->localWith(['tornado-engine/gam' => '*']);
+        $job = UpdateJob::remove('tornado-engine/nav', deleteData: true);
+
+        app(Updater::class)->run($job);
+
+        $this->assertSame('failed', $job->fresh()->status);
+        $this->assertStringContainsString('isn\'t listed in composer.local.json', $job->fresh()->log);
+        Process::assertNothingRan();
+    }
+
+    public function test_uninstalling_is_tried_again_when_network_storage_is_busy(): void
+    {
+        config(['tornado.updater.retry_wait' => 0]);
+        Process::fake(["*'remove'*" => Process::sequence()
+            ->push(Process::result('Could not delete vendor/someone/thing/.nfs0000000049b037', exitCode: 1))
+            ->push(Process::result('ok')), '*' => Process::result('ok')]);
+        $this->localWith(['someone/thing' => '*']);
+        $job = UpdateJob::remove('someone/thing');
+
+        app(Updater::class)->run($job);
+
+        $this->assertSame('done', $job->fresh()->status, (string) $job->fresh()->log);
+        $this->assertStringContainsString('Network storage was busy. Trying again.', $job->fresh()->log);
+    }
 }

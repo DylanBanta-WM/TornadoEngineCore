@@ -15,14 +15,15 @@
         "laravel/framework": "^13.17",
         "laravel/socialite": "^5.32",
         "laravel/tinker": "^3.0",
-        "tornado-engine/access": ">=0.8.2",
+        "tornado-engine/access": ">=0.9",
         "tornado-engine/cron": ">=0.6",
-        "tornado-engine/module-finder": ">=0.8",
-        "tornado-engine/docs": ">=0.4",
+        "tornado-engine/module-finder": ">=0.9",
+        "tornado-engine/docs": ">=0.5.1",
         "tornado-engine/nav": ">=0.6.2",
         "wikimedia/composer-merge-plugin": "^2.1",
         "tornado-engine/broker": ">=0.9",
-        "tornado-engine/chat": ">=0.2"
+        "tornado-engine/chat": ">=0.8",
+        "tornado-engine/uploads": ">=0.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -54,7 +54,7 @@ class Tour
                 'text' => implode("\n", [
                     __('Core modules are always installed.'),
                     __('Official modules are made by Tornado Engine.'),
-                    __('Community modules are made by others. Read their code before you install one.'),
+                    __('Other districts\' modules aren\'t reviewed. Read their code before you install one.'),
                 ]),
             ],
             'share' => [

@@ -43,6 +43,8 @@ services:
     env_file: .env
     volumes:
       - ./web:/var/www/html
+      # Uploaded files: kept out of the harness (it sees ./web), so Claude never reads the originals.
+      - uploads:/var/www/html/storage/app/uploads
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -91,6 +93,8 @@ services:
     command: ["php", "artisan", "schedule:work"]
     volumes:
       - ./web:/var/www/html
+      # Uploaded files: kept out of the harness (it sees ./web), so Claude never reads the originals.
+      - uploads:/var/www/html/storage/app/uploads
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -235,4 +239,5 @@ networks:
 
 volumes:
   mariadb:
+  uploads:
   harness-home:

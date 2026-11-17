@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * An install or update an admin asked for. The updater service runs them one at a time.
+ * An install, update or uninstall an admin asked for. The updater service runs them one at a time.
  *
  *     UpdateJob::queue('module', '0.2.0', 'tornado-engine/gam-runner');   // install or update a module
  *     UpdateJob::queue('core', '0.7.0');                                  // update Core
  *     UpdateJob::queue('module', 'dev', 'district/notes', 'modules/notes');  // install a module from web/modules
+ *     UpdateJob::remove('district/notes', deleteData: true);                 // uninstall a module (and roll back its migrations)
  */
 class UpdateJob extends Model
 {
-    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'status', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
+    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'delete_data', 'status', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
 
     public static function queue(string $kind, string $version, ?string $package = null, ?string $repository = null, bool $install = false): self
     {
@@ -25,6 +26,19 @@ class UpdateJob extends Model
             'version' => ltrim($version, 'v'),
             'repository' => $repository,
             'install' => $install,
+            'user_id' => auth()->id(),
+        ]);
+    }
+
+    /** Uninstalls a module. A repository (vcs URL) is taken out of composer.local.json too. */
+    public static function remove(string $package, bool $deleteData = false, ?string $repository = null): self
+    {
+        return self::create([
+            'kind' => 'remove',
+            'package' => $package,
+            'version' => '',
+            'repository' => $repository,
+            'delete_data' => $deleteData,
             'user_id' => auth()->id(),
         ]);
     }
@@ -39,7 +53,7 @@ class UpdateJob extends Model
     public static function pendingFor(?string $package): ?self
     {
         return self::whereIn('status', ['queued', 'running'])
-            ->where('kind', $package ? 'module' : 'core')
+            ->whereIn('kind', $package ? ['module', 'remove'] : ['core'])
             ->when($package, fn ($query) => $query->where('package', $package))
             ->first();
     }
@@ -51,9 +65,13 @@ class UpdateJob extends Model
 
     public function label(): string
     {
-        return $this->kind === 'core'
-            ? __('Tornado Engine Core :version', ['version' => $this->version])
-            : __(':package :version', ['package' => $this->package, 'version' => $this->version]);
+        return match ($this->kind) {
+            'core' => __('Tornado Engine Core :version', ['version' => $this->version]),
+            'remove' => $this->delete_data
+                ? __('Uninstall :package and delete its data', ['package' => $this->package])
+                : __('Uninstall :package', ['package' => $this->package]),
+            default => __(':package :version', ['package' => $this->package, 'version' => $this->version]),
+        };
     }
 
     public function addToLog(string $text): void
@@ -64,6 +82,6 @@ class UpdateJob extends Model
 
     protected function casts(): array
     {
-        return ['notes' => 'array', 'install' => 'boolean', 'finished_at' => 'datetime', 'opened_at' => 'datetime'];
+        return ['notes' => 'array', 'install' => 'boolean', 'delete_data' => 'boolean', 'finished_at' => 'datetime', 'opened_at' => 'datetime'];
     }
 }

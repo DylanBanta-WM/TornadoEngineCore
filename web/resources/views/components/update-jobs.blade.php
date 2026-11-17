@@ -1,9 +1,9 @@
 @props(['jobs'])
 
-{{-- Recent installs and updates, with their logs. Reloads the page while one is running. --}}
+{{-- Recent installs, updates and uninstalls, with their logs. Reloads the page while one is running. --}}
 @php
-    // The newest install or update of each module (and of Core); $jobs come newest first.
-    $jobs = $jobs->unique(fn ($job) => $job->kind.':'.$job->package)->values();
+    // The newest install, update or uninstall of each module (and of Core); $jobs come newest first.
+    $jobs = $jobs->unique(fn ($job) => ($job->kind === 'core' ? 'core' : 'module').':'.$job->package)->values();
     // Rebuild notes only matter until the server is rebuilt.
     $rebuildNeeded = \App\Updates\Rebuild::needed();
     $running = $jobs->contains(fn ($job) => in_array($job->status, ['queued', 'running'], true));
