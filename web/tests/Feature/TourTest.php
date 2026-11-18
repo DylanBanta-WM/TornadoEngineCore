@@ -19,58 +19,72 @@ class TourTest extends TestCase
         return $admin;
     }
 
+    /** Next or Back from the tour card on the page at $from. */
+    private function step(User $admin, string $way, string $from): array
+    {
+        return $this->actingAs($admin)->postJson("/tour/{$way}", ['from' => $from])->assertOk()->json('tour') ?? [];
+    }
+
     public function test_the_tour_walks_across_pages(): void
     {
         $admin = $this->admin();
 
         $this->actingAs($admin)->get('/dashboard')
-            ->assertSee('Tour · 1 of')
             ->assertSee('Admin pages are in the Administration menu.')
-            ->assertSee('data-tour="nav-group-administration"', false);
-
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
-        $this->actingAs($admin)->get('/dashboard')->assertSee('Notifications: modules that still need setting up')->assertSee('data-tour="notifications"', false);
-
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
-        $this->actingAs($admin)->get('/dashboard')->assertSee('Users and roles: who can sign in')->assertSee('data-tour="nav-item-access.users.index"', false)
             ->assertSee('nav-group-administration', false);
 
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/access/users');
-        $this->actingAs($admin)->get('/access/users')
-            ->assertSee('Email patterns: roles by email address.')
-            ->assertSee('Give people roles here by hand')
-            ->assertSee('data-tour="access-tab-users"', false);
+        // The Administration menu, then Users and roles in it, on the same page.
+        $tour = $this->step($admin, 'next', '/dashboard');
+        $this->assertSame(['users-and-roles', true], [$tour['key'], $tour['here']]);
+        $this->assertContains('[data-tour="nav-item-access.users.index"]', $tour['targets']);
+        $this->assertContains('[data-tour="nav-group-administration"]', $tour['open']);
 
-        // Modules, Docs and Chat: first where they are in the menu, then the page.
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
-        $this->actingAs($admin)->get('/dashboard')->assertSee('Modules: add features to Tornado Engine.');
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/modules');
-        $this->actingAs($admin)->get('/modules')->assertSee('Core modules are always installed.')->assertSee('Other districts&#039; modules aren&#039;t reviewed.', false);
+        $tour = $this->step($admin, 'next', '/dashboard');
+        $this->assertSame(['access', false, url('/access/users')], [$tour['key'], $tour['here'], $tour['url']]);
+        $this->assertContains('Email patterns: roles by email address.', $tour['lines']);
 
-        $this->actingAs($admin)->post('/tour/next');
-        $this->actingAs($admin)->get('/modules')->assertSee('Made a module other districts could use? Share it.')->assertSee('Sharing a module')->assertSee('/docs/sharing-modules');
+        // The Users and roles step stays on each of its tabs.
+        foreach (['/access/users', '/access/roles', '/access/patterns', '/access/exclusions'] as $page) {
+            $this->assertTrue(Tour::state($admin->fresh(), $page)['here'], $page);
+        }
+        $this->assertFalse(Tour::state($admin->fresh(), '/modules')['here']);
 
-        $this->actingAs($admin)->post('/tour/back')->assertRedirect('/modules');
-        $this->assertSame('modules', $admin->fresh()->tour_step);
+        $tour = $this->step($admin, 'next', '/access/roles');
+        $this->assertSame(['modules-menu', false], [$tour['key'], $tour['here']]);
 
-        $this->actingAs($admin)->post('/tour/next');
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
-        $this->actingAs($admin)->get('/dashboard')->assertSee('Docs: guides for setting up');
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/docs');
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/chat');
-        $this->actingAs($admin)->get('/chat')->assertSee('Ask Claude for a new tool')->assertSee('Finish');
+        // One step for the Modules page, sharing included.
+        $tour = $this->step($admin, 'next', '/dashboard');
+        $this->assertSame('modules', $tour['key']);
+        $this->assertContains('Made a module other districts could use? Share it.', $tour['lines']);
+        $this->assertSame(['url' => url('/docs/sharing-modules'), 'label' => 'Sharing a module'], $tour['link']);
 
-        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
+        $this->assertSame('modules-menu', $this->step($admin, 'back', '/modules')['key']);
+        $this->step($admin, 'next', '/dashboard');
+
+        $this->assertSame('docs-menu', $this->step($admin, 'next', '/modules')['key']);
+        $this->assertSame('docs', $this->step($admin, 'next', '/dashboard')['key']);
+        $this->assertSame('chat-menu', $this->step($admin, 'next', '/docs')['key']);
+        $this->assertSame('chat', $this->step($admin, 'next', '/dashboard')['key']);
+
+        // The bell last.
+        $tour = $this->step($admin, 'next', '/chat');
+        $this->assertSame(['notifications', false], [$tour['key'], $tour['here']]);
+        $this->assertSame($tour['total'], $tour['number']);
+
+        $this->assertSame([], $this->step($admin, 'next', '/dashboard'));
         $this->assertNull($admin->fresh()->tour_step);
-        $this->actingAs($admin)->get('/dashboard')->assertDontSee('Tour ·');
+        $this->actingAs($admin)->get('/dashboard')->assertDontSee('Admin pages are in');
+
+        // Without JavaScript, Next still goes to the step's page.
+        Tour::start($admin);
+        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
     }
 
-    public function test_on_another_page_it_offers_to_continue_and_skip_ends_it(): void
+    public function test_skip_ends_it(): void
     {
         $admin = $this->admin();
 
-        $this->actingAs($admin)->get('/modules')->assertSee('Continue tour')->assertDontSee('Admin pages are in');
+        $this->assertFalse(Tour::state($admin, '/modules')['here']);
         $this->actingAs($admin)->get('/tour')->assertRedirect('/dashboard');
 
         $this->actingAs($admin)->from('/modules')->post('/tour/skip')->assertRedirect('/modules');
@@ -81,6 +95,6 @@ class TourTest extends TestCase
     {
         $this->admin();
 
-        $this->actingAs(User::factory()->create(['is_admin' => true]))->get('/dashboard')->assertDontSee('Tour ·');
+        $this->actingAs(User::factory()->create(['is_admin' => true]))->get('/dashboard')->assertDontSee('Admin pages are in');
     }
 }

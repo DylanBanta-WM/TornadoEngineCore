@@ -3,7 +3,9 @@
 namespace App\Support;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use TornadoEngine\Nav\Nav;
 use TornadoEngine\Nav\NavGroup;
 
@@ -30,15 +32,11 @@ class Tour
                 'targets' => ['[data-tour="nav-group-administration"]', '[data-tour="menu-button"]'],
                 'text' => __('Admin pages are in the Administration menu.'),
             ],
-            'notifications' => [
-                'route' => 'dashboard',
-                'needs' => 'notifications.setup',
-                'targets' => ['[data-tour="notifications"]'],
-                'text' => __('Notifications: modules that still need setting up, and anything else that needs you.'),
-            ],
             'users-and-roles' => self::menu('access.users.index', __('Users and roles: who can sign in, and what they can open.')),
             'access' => [
                 'route' => 'access.users.index',
+                // Stays on every Users and roles tab.
+                'active' => 'access.*',
                 'targets' => ['[data-tour="access-tab-users"]'],
                 'closest' => 'nav',
                 'text' => implode("\n", array_merge([
@@ -57,11 +55,8 @@ class Tour
                     __('Core modules are always installed.'),
                     __('Official modules are made by Tornado Engine.'),
                     __('Other districts\' modules aren\'t reviewed. Read their code before you install one.'),
+                    __('Made a module other districts could use? Share it.'),
                 ]),
-            ],
-            'share' => [
-                'route' => 'modules.index',
-                'text' => __('Made a module other districts could use? Share it.'),
                 'link' => [['docs.show', 'sharing-modules'], __('Sharing a module')],
             ],
             'docs-menu' => self::menu('docs.index', __('Docs: guides for setting up and using Tornado Engine.')),
@@ -74,9 +69,21 @@ class Tour
                 'route' => 'chat.index',
                 'text' => __('Ask Claude for a new tool, and it builds it.'),
             ],
+            'notifications' => [
+                'route' => 'dashboard',
+                'needs' => 'notifications.setup',
+                'targets' => ['[data-tour="notifications"]'],
+                'text' => __('Notifications: modules that still need setting up, and anything else that needs you.'),
+            ],
         ];
 
-        return array_filter($steps, fn ($step) => Route::has($step['route']) && Route::has($step['needs'] ?? $step['route']) && (! isset($step['link']) || Route::has(((array) $step['link'][0])[0])));
+        foreach ($steps as &$step) {
+            if (isset($step['link']) && ! Route::has(((array) $step['link'][0])[0])) {
+                unset($step['link']);
+            }
+        }
+
+        return array_filter($steps, fn ($step) => Route::has($step['route']) && Route::has($step['needs'] ?? $step['route']));
     }
 
     /**
@@ -101,6 +108,38 @@ class Tour
             'open' => [...$open, '[data-tour="menu-button"]'],
             'targets' => ['[data-tour="nav-item-'.$route.'"]', '[data-tour="nav-link-'.$route.'"]', '[data-tour="nav-mobile-'.$route.'"]'],
             'text' => $text,
+        ];
+    }
+
+    /**
+     * The current step for the page at $path, as the tour card shows it.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function state(?User $user, string $path): ?array
+    {
+        $tour = self::current($user);
+        if (! $tour) {
+            return null;
+        }
+        $step = $tour['step'];
+        try {
+            $name = app('router')->getRoutes()->match(Request::create($path))->getName();
+        } catch (\Throwable) {
+            $name = null;
+        }
+
+        return [
+            'key' => $tour['key'],
+            'number' => $tour['number'],
+            'total' => $tour['total'],
+            'here' => $name !== null && Str::is($step['active'] ?? $step['route'], $name),
+            'url' => route($step['route']),
+            'lines' => explode("\n", $step['text']),
+            'link' => isset($step['link']) ? ['url' => route(...(array) $step['link'][0]), 'label' => $step['link'][1]] : null,
+            'targets' => $step['targets'] ?? [],
+            'open' => $step['open'] ?? [],
+            'closest' => $step['closest'] ?? null,
         ];
     }
 

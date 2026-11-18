@@ -232,7 +232,7 @@ class SetupTest extends TestCase
         $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Requirements: Base Module (will auto install)')
             ->assertDontSee('Someone Extra')->assertDontSee('value="district/base"', false)
             ->assertDontSee('value="tornado-engine/docs"', false);
-        $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/modules');
+        $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/dashboard');
 
         $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());
         $this->assertTrue(Setup::complete());

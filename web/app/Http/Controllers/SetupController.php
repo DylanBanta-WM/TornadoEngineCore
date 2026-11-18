@@ -16,7 +16,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use TornadoEngine\ModuleFinder\Finder;
@@ -192,9 +191,8 @@ class SetupController extends Controller
         Setting::put('setup.completed_at', now()->toIso8601String());
         Tour::start($request->user());
 
-        return $queued && Route::has('modules.index')
-            ? redirect()->route('modules.index')
-            : redirect()->route('dashboard');
+        // The tour starts on the dashboard; modules install meanwhile.
+        return redirect()->route('dashboard');
     }
 
     /**
