@@ -35,8 +35,9 @@ class Tour
             'users-and-roles' => self::menu('access.users.index', __('Users and roles: who can sign in, and what they can open.')),
             'access' => [
                 'route' => 'access.users.index',
-                // Stays on every Users and roles tab.
+                // Stays on every Users and roles tab, and clicking the tabs just moves between them.
                 'active' => 'access.*',
+                'click' => false,
                 'targets' => ['[data-tour="access-tab-users"]'],
                 'closest' => 'nav',
                 'text' => implode("\n", array_merge([
@@ -140,6 +141,7 @@ class Tour
             'targets' => $step['targets'] ?? [],
             'open' => $step['open'] ?? [],
             'closest' => $step['closest'] ?? null,
+            'click' => $step['click'] ?? true,
         ];
     }
 

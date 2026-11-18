@@ -15,4 +15,5 @@ Route::middleware('auth')->prefix('tour')->name('tour.')->group(function () {
     Route::post('/next', [TourController::class, 'next'])->name('next');
     Route::post('/back', [TourController::class, 'back'])->name('back');
     Route::post('/skip', [TourController::class, 'skip'])->name('skip');
+    Route::post('/restart', [TourController::class, 'restart'])->name('restart');
 });

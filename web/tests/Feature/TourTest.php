@@ -80,6 +80,26 @@ class TourTest extends TestCase
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
     }
 
+    public function test_it_can_be_taken_again_from_the_profile(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->get('/profile')->assertSee('Take the tour again');
+        $this->actingAs($admin)->post('/tour/restart')->assertRedirect('/dashboard');
+        $this->assertSame('admin-menu', $admin->fresh()->tour_step);
+
+        $this->actingAs(User::factory()->create())->get('/profile')->assertDontSee('Take the tour again');
+    }
+
+    public function test_the_users_and_roles_tabs_dont_count_as_next(): void
+    {
+        $admin = $this->admin();
+        $admin->forceFill(['tour_step' => 'access'])->save();
+
+        $this->assertFalse(Tour::state($admin, '/access/roles')['click']);
+        $this->assertTrue(Tour::state($admin->forceFill(['tour_step' => 'admin-menu']), '/dashboard')['click']);
+    }
+
     public function test_skip_ends_it(): void
     {
         $admin = $this->admin();

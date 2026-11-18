@@ -7,6 +7,10 @@
     <div class="fixed inset-x-4 bottom-4 z-50 sm:inset-x-auto sm:end-6 sm:bottom-6 sm:w-96"
          x-data="{
              tour: @js($tour),
+             nextUrl: @js(route('tour.next')),
+             backUrl: @js(route('tour.back')),
+             nextLabel: @js(__('Next')),
+             finishLabel: @js(__('Finish')),
              ring: null,
              bound: null,
              busy: false,
@@ -25,7 +29,7 @@
              place() {
                  const el = this.tour?.here ? this.target() : null;
                  if (! el) { this.ring = null; return; }
-                 this.bind(el);
+                 if (this.tour.click !== false) this.bind(el);
                  const box = el.getBoundingClientRect();
                  this.ring = { top: box.top - 6, left: box.left - 6, width: box.width + 12, height: box.height + 12 };
              },
@@ -62,7 +66,7 @@
                      if (this.tour?.key !== key) return;
                      const link = event.target.closest('a[href]');
                      if (link) event.preventDefault();
-                     this.go(@js(route('tour.next')), link?.href ?? null);
+                     this.go(this.nextUrl, link?.href ?? null);
                  }, { capture: true });
              },
          }"
@@ -90,8 +94,8 @@
                             <button class="min-h-11 px-1 text-gray-600 dark:text-gray-400 underline">{{ __('Skip tour') }}</button>
                         </form>
                         <div class="flex gap-2">
-                            <x-secondary-button type="button" x-show="tour.number > 1" x-on:click="go(@js(route('tour.back')))">{{ __('Back') }}</x-secondary-button>
-                            <x-primary-button type="button" x-on:click="go(@js(route('tour.next')))" ::disabled="busy"><span x-text="tour.number === tour.total ? @js(__('Finish')) : @js(__('Next'))"></span></x-primary-button>
+                            <x-secondary-button type="button" x-show="tour.number > 1" x-on:click="go(backUrl)">{{ __('Back') }}</x-secondary-button>
+                            <x-primary-button type="button" x-on:click="go(nextUrl)" ::disabled="busy"><span x-text="tour.number === tour.total ? finishLabel : nextLabel"></span></x-primary-button>
                         </div>
                     </div>
                 </div>

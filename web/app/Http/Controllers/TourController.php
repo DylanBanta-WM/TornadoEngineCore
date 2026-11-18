@@ -41,6 +41,14 @@ class TourController extends Controller
         return $this->resume($request);
     }
 
+    /** Takes the tour again (from someone's profile). */
+    public function restart(Request $request): RedirectResponse
+    {
+        Tour::start($request->user());
+
+        return $this->resume($request);
+    }
+
     public function skip(Request $request): RedirectResponse
     {
         Tour::end($request->user());
