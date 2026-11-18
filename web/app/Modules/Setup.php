@@ -9,7 +9,7 @@ use Throwable;
 /**
  * Modules whose settings must be filled in before they work ("needs-setup"), and the way through them:
  * after installing a module, its settings open, but first those of the modules it needs that aren't set up.
- * Saving one opens the next (App\Http\Middleware\AdvanceSetup); after the last, the dashboard.
+ * Saving one opens the next (App\Http\Middleware\AdvanceSetup); the last one stays on its page.
  */
 class Setup
 {
@@ -104,9 +104,10 @@ class Setup
         $all = $this->modules->all();
         $rest = array_values(array_filter(array_slice($chain, 1), fn ($package) => isset($all[$package]) && ! $this->done($all[$package], fresh: true)));
         if ($rest === []) {
+            // The last one: stay on its page.
             session()->forget('setup.chain');
 
-            return route('dashboard');
+            return url($module->settings);
         }
         session()->put('setup.chain', $rest);
 

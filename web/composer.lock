@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db472f13f2b06cf995c01edb727bdf99",
+    "content-hash": "835b6eb2ce385913279ee93d68e15060",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -6902,16 +6902,16 @@
         },
         {
             "name": "tornado-engine/broker",
-            "version": "v0.11.0",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Broker.git",
-                "reference": "ae3c8c92fb07c797705629e331cc8792e666867b"
+                "reference": "ed338dfe8ca6735ef14a438743428723a88f1d5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Broker/zipball/ae3c8c92fb07c797705629e331cc8792e666867b",
-                "reference": "ae3c8c92fb07c797705629e331cc8792e666867b",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Broker/zipball/ed338dfe8ca6735ef14a438743428723a88f1d5c",
+                "reference": "ed338dfe8ca6735ef14a438743428723a88f1d5c",
                 "shasum": ""
             },
             "require": {
@@ -6931,7 +6931,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.11.x-dev"
+                    "dev-main": "0.14.x-dev"
                 }
             },
             "autoload": {
@@ -6946,9 +6946,9 @@
             "description": "Tornado Engine core-module: people in chosen roles reach Claude only as pseudonyms.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Broker/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Broker/tree/v0.11.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Broker/tree/v0.14.0"
             },
-            "time": "2026-11-17T19:19:23+00:00"
+            "time": "2026-11-18T18:37:29+00:00"
         },
         {
             "name": "tornado-engine/chat",

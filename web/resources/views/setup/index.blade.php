@@ -5,6 +5,7 @@
         'google' => __('Google'),
         'microsoft' => __('Microsoft'),
         'admin' => __('Admin account'),
+        'broker' => __('Broker'),
         'harness' => __('Harness'),
         'claude' => __('Claude Code'),
         'modules' => __('Modules'),

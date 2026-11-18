@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 | First-time Setup Routes
 |--------------------------------------------------------------------------
 |
-| The web address, Google sign-in, the admin account, the harness, its Claude Code login
+| The web address, sign-in, the admin account, the broker's roles, the harness, its Claude Code login
 |
 */
 
@@ -22,6 +22,7 @@ Route::post('/setup/microsoft', [SetupController::class, 'storeMicrosoft'])->nam
 Route::post('/setup/admin', [SetupController::class, 'storeAdmin'])->name('setup.admin');
 
 Route::middleware('auth')->prefix('setup')->name('setup.')->group(function () {
+    Route::post('/broker', [SetupController::class, 'storeBroker'])->name('broker');
     Route::post('/harness', [SetupController::class, 'storeHarness'])->name('harness');
     Route::post('/claude', [SetupController::class, 'storeClaude'])->name('claude');
     Route::post('/modules', [SetupController::class, 'storeModules'])->name('modules');

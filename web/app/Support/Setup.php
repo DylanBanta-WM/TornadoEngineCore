@@ -4,14 +4,15 @@ namespace App\Support;
 
 use App\Models\Setting;
 use App\Models\User;
+use TornadoEngine\Broker\Broker;
 
 /**
- * First-time setup: the web address, Google sign-in, the admin account, the harness, then its Claude Code login.
+ * First-time setup: the web address, sign-in, the admin account, the broker's roles, the harness, then its Claude Code login.
  */
 class Setup
 {
-    /** Every step, in order. Google and Microsoft only appear when they're chosen at Sign-in. */
-    public const STEPS = ['address', 'signin', 'google', 'microsoft', 'admin', 'harness', 'claude', 'modules'];
+    /** Every step, in order. Google and Microsoft only appear when they're chosen at Sign-in, the broker when it's installed. */
+    public const STEPS = ['address', 'signin', 'google', 'microsoft', 'admin', 'broker', 'harness', 'claude', 'modules'];
 
     /** Steps someone can do before the admin account exists. */
     public const BEFORE_ADMIN = ['address', 'signin', 'google', 'microsoft', 'admin'];
@@ -19,7 +20,11 @@ class Setup
     /** @return list<string> the steps for the sign-in methods chosen so far */
     public static function steps(): array
     {
-        return array_values(array_filter(self::STEPS, fn ($step) => ! in_array($step, ['google', 'microsoft'], true) || SignIn::enabled($step)));
+        return array_values(array_filter(self::STEPS, fn ($step) => match ($step) {
+            'google', 'microsoft' => SignIn::enabled($step),
+            'broker' => class_exists(Broker::class),
+            default => true,
+        }));
     }
 
     public static function complete(): bool
@@ -68,6 +73,10 @@ class Setup
 
         if (! User::where('is_admin', true)->exists()) {
             return 'admin';
+        }
+
+        if (class_exists(Broker::class) && Setting::get('setup.broker_at') === null) {
+            return 'broker';
         }
 
         if (Setting::get('harness.last_seen_at') === null) {

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
+use TornadoEngine\Broker\Broker;
 use TornadoEngine\ModuleFinder\Finder;
 
 class SetupController extends Controller
@@ -146,6 +147,23 @@ class SetupController extends Controller
             return back()->withErrors(['google_keys' => $problem])->withInput($request->only('domain'));
         }
         Settings::saveGoogle($data);
+
+        return redirect()->route('setup');
+    }
+
+    /**
+     * The roles the broker gives pseudonyms (the Broker module saves them), then its first refresh.
+     */
+    public function storeBroker(Request $request): RedirectResponse
+    {
+        abort_unless($this->mayChange($request, 'broker'), 403);
+
+        Broker::saveRoles((array) $request->input('roles', []));
+        [$ok, $message] = app(Broker::class)->refresh();
+        if (! $ok) {
+            return back()->withErrors(['roles' => $message])->withInput();
+        }
+        Setting::put('setup.broker_at', now()->toIso8601String());
 
         return redirect()->route('setup');
     }
