@@ -28,7 +28,7 @@ Do this before running `docker compose up -d` for the first time.
      - This server's IP, for example `10.0.0.30`, if your Nginx RP is a different machine.
 
      If you leave it at `0.0.0.0`, any computer on the network can reach the site directly, bypassing the Nginx RP and HTTPS.
-   - `WEB_PORT`: only if port 8090 is already in use.
+   - `WEB_PORT`: only if port 8090 is already in use. Check with `ss -tulpn | grep :8090`
    - `APP_TIMEZONE`: your district's time zone, for example `America/Chicago`.
    - `HOST_UID` and `HOST_GID`: only if `id -u` and `id -g` aren't 1000.
 
