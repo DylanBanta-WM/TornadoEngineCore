@@ -17,7 +17,7 @@
         "laravel/tinker": "^3.0",
         "tornado-engine/access": ">=0.10",
         "tornado-engine/cron": ">=0.6",
-        "tornado-engine/module-finder": ">=0.11",
+        "tornado-engine/module-finder": ">=0.12",
         "tornado-engine/docs": ">=0.5.1",
         "tornado-engine/nav": ">=0.7",
         "wikimedia/composer-merge-plugin": "^2.1",

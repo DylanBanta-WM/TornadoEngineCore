@@ -5,34 +5,36 @@
         {{ __('Choose the modules to install. You can install more later from the Modules page.') }}
     </x-setup.header>
 
-    @foreach ([__('Official') => $modules->filter(fn ($module) => $module->official), __('Community') => $modules->reject(fn ($module) => $module->official)] as $title => $list)
-        @if ($list->isNotEmpty())
-            <fieldset class="mt-6 px-6 sm:px-8 space-y-3">
-                <legend class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ $title }}</legend>
-                @unless ($loop->first)
-                    <p class="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">{{ __('These modules aren\'t made by Tornado Engine. Install them at your own risk: a module runs with full access to your website and its data. Always read a module\'s code before you install and trust it.') }}</p>
-                @endunless
-                @foreach ($list as $module)
-                    @php($needs = \TornadoEngine\ModuleFinder\Finder::requirements($module, $allModules))
-                    <label class="flex items-start gap-3 rounded-md border border-gray-200 dark:border-gray-700 p-3 text-sm has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
+    @if ($modules->isNotEmpty())
+        <fieldset class="mt-6 px-6 sm:px-8 space-y-3">
+            <legend class="sr-only">{{ __('Modules') }}</legend>
+            @foreach ($modules as $module)
+                @php($needs = \TornadoEngine\ModuleFinder\Finder::requirements($module, $allModules))
+                <label class="flex items-start gap-3 rounded-md border border-gray-200 dark:border-gray-700 p-3 text-sm has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
+                    @if ($module->installed !== null)
+                        <input type="checkbox" checked disabled class="mt-0.5 rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900">
+                    @else
                         <input type="checkbox" name="packages[]" value="{{ $module->package }}" class="mt-0.5 rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500">
-                        <span class="min-w-0">
-                            <span class="font-medium text-gray-900 dark:text-gray-100">{{ $module->name }}</span>
-                            @if ($module->description)
-                                <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ $module->description }}</span>
-                            @endif
-                            @if ($needs)
-                                <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Requirements: :modules', ['modules' => $needs]) }}</span>
-                            @endif
-                            @if ($module->url)
-                                <a href="{{ $module->url }}" target="_blank" rel="noopener" class="mt-1 inline-block text-indigo-600 dark:text-indigo-400 underline">{{ __('View the code') }}</a>
-                            @endif
-                        </span>
-                    </label>
-                @endforeach
-            </fieldset>
-        @endif
-    @endforeach
+                    @endif
+                    <span class="min-w-0">
+                        <span class="font-medium text-gray-900 dark:text-gray-100">{{ $module->name }}</span>
+                        @if ($module->installed !== null)
+                            <span class="ms-2 rounded bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs text-gray-700 dark:text-gray-300">{{ __('Installed') }}</span>
+                        @endif
+                        @if ($module->description)
+                            <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ $module->description }}</span>
+                        @endif
+                        @if ($needs && $module->installed === null)
+                            <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Requirements: :modules', ['modules' => $needs]) }}</span>
+                        @endif
+                        @if ($module->url)
+                            <a href="{{ $module->url }}" target="_blank" rel="noopener" class="mt-1 inline-block text-indigo-600 dark:text-indigo-400 underline">{{ __('View the code') }}</a>
+                        @endif
+                    </span>
+                </label>
+            @endforeach
+        </fieldset>
+    @endif
 
     @if ($modules->isEmpty())
         <p class="mt-6 px-6 sm:px-8 text-sm text-gray-600 dark:text-gray-400">{{ __('Couldn\'t reach GitHub to list modules. You can install them later from the Modules page.') }}</p>

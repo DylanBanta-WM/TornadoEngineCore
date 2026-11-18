@@ -51,7 +51,8 @@ class SetupController extends Controller
             ? collect(app(Finder::class)->listings()) : collect();
 
         return view('setup.index', [
-            'modules' => $listings->filter(fn ($listing) => $listing->installed === null && $listing->url && $listing->latest),
+            // Official modules that ask to be offered here ("suggest" in extra.tornado), installed ones too.
+            'modules' => $listings->filter(fn ($listing) => $listing->official && ($listing->suggested ?? false) && $listing->url && ($listing->latest || $listing->installed !== null)),
             'allModules' => $listings->all(),
             'step' => $step,
             'current' => $current,
@@ -173,7 +174,7 @@ class SetupController extends Controller
         $queued = 0;
         foreach ($chosen as $package) {
             $listing = $listings[$package] ?? null;
-            if ($listing && $listing->url && $listing->latest && $listing->installed === null) {
+            if ($listing && $listing->official && ($listing->suggested ?? false) && $listing->url && $listing->latest && $listing->installed === null) {
                 UpdateJob::queue('module', $listing->latest, $listing->package, $listing->onPackagist ? null : $listing->url, install: true);
                 $queued++;
             }

@@ -214,15 +214,24 @@ class SetupTest extends TestCase
         $admin = User::factory()->create(['is_admin' => true]);
         Setting::put('harness.last_seen_at', now()->toIso8601String());
         Setting::putSecret('harness.claude_credential', 'sk-ant-oat01-test');
-        Cache::put('module-finder.found', [[
+        Cache::put('module-finder.found.v2', [[
             'package' => 'district/reports', 'name' => 'Reports', 'description' => 'Make reports.', 'url' => 'https://github.com/district/reports',
-            'official' => true, 'onPackagist' => true, 'latest' => '0.2.0', 'needsNewerCore' => null, 'requires' => ['district/base'],
+            'official' => true, 'onPackagist' => true, 'latest' => '0.2.0', 'needsNewerCore' => null, 'requires' => ['district/base'], 'suggested' => true,
         ], [
             'package' => 'district/base', 'name' => 'Base', 'description' => null, 'url' => 'https://github.com/district/base',
             'official' => true, 'onPackagist' => true, 'latest' => '0.7.0', 'needsNewerCore' => null, 'requires' => [],
+        ], [
+            'package' => 'someone/extra', 'name' => 'Someone Extra', 'description' => null, 'url' => 'https://github.com/someone/extra',
+            'official' => false, 'onPackagist' => true, 'latest' => '1.0.0', 'needsNewerCore' => null, 'requires' => [], 'suggested' => true,
+        ], [
+            'package' => 'tornado-engine/docs', 'name' => 'Docs', 'description' => null, 'url' => 'https://github.com/x/docs',
+            'official' => true, 'onPackagist' => true, 'latest' => '0.5.2', 'needsNewerCore' => null, 'requires' => [], 'suggested' => true,
         ]], 3600);
 
-        $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Requirements: Base Module (will auto install)');
+        // Only official modules that ask to be suggested; installed ones show as installed.
+        $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Requirements: Base Module (will auto install)')
+            ->assertDontSee('Someone Extra')->assertDontSee('value="district/base"', false)
+            ->assertSee('Docs')->assertSee('Installed')->assertDontSee('value="tornado-engine/docs"', false);
         $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/modules');
 
         $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());

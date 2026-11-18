@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c15a1358acfadf4bda8ee4fdd0866b17",
+    "content-hash": "4c656b3d9fc0e40325f01f3af211e222",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -7096,16 +7096,16 @@
         },
         {
             "name": "tornado-engine/module-finder",
-            "version": "v0.11.0",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder.git",
-                "reference": "104321fba0f7ea072161933105687d00495dec3f"
+                "reference": "01fa59802fc56bb77f617412fe56aee485fd1c99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/104321fba0f7ea072161933105687d00495dec3f",
-                "reference": "104321fba0f7ea072161933105687d00495dec3f",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/01fa59802fc56bb77f617412fe56aee485fd1c99",
+                "reference": "01fa59802fc56bb77f617412fe56aee485fd1c99",
                 "shasum": ""
             },
             "require": {
@@ -7122,7 +7122,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.10.x-dev"
+                    "dev-main": "0.12.x-dev"
                 }
             },
             "autoload": {
@@ -7137,9 +7137,9 @@
             "description": "Tornado Engine core-module: finds modules on GitHub, and installs and updates them from the /modules page.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.11.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.12.0"
             },
-            "time": "2026-11-18T13:29:53+00:00"
+            "time": "2026-11-18T16:14:04+00:00"
         },
         {
             "name": "tornado-engine/nav",
