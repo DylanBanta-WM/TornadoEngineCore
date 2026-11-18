@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdvanceSetup;
 use App\Http\Middleware\AuthenticateHarness;
 use App\Http\Middleware\BrokerView;
 use App\Http\Middleware\EnsurePasswordChanged;
@@ -35,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         // Requests from the harness (Claude) are answered in broker view, before anything else runs.
         $middleware->prepend(BrokerView::class);
-        $middleware->web(append: [EnsureSetupComplete::class, EnsurePasswordChanged::class]);
+        $middleware->web(append: [EnsureSetupComplete::class, EnsurePasswordChanged::class, AdvanceSetup::class]);
         $middleware->prependToPriorityList(
             before: AuthenticatesRequests::class,
             prepend: EnsureSetupComplete::class,

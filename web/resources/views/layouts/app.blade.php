@@ -31,6 +31,8 @@
                 </header>
             @endisset
 
+            @include('layouts.setup-banner')
+
             <!-- Page Content -->
             <main @class(['flex-1', 'flex min-h-0 flex-col' => $fill])>
                 {{ $slot }}

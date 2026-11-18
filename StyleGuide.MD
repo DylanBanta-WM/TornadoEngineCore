@@ -339,11 +339,11 @@ Tools are built as modules, never as changes to Core. Each module is its own git
 - `core` is open-ended (`>=0.3`). When Core changes in a way that breaks a module, release a new version of that module with an updated `core` range, and make Core require that new version in its `composer.json`.
 - Release by tagging a version (`v0.1.0`) and pushing; Packagist's GitHub webhook publishes it. Don't trigger Packagist updates with your API token: Packagist then marks the package "Legacy Auto-Update". If a release is slow to appear, resend the latest push from the repo's webhook settings on GitHub.
 - Give the GitHub repository the topic `tornado-engine-module` so it's listed on `/modules`.
-- To add to the footer on every page, register a view: `app(\App\Layout\Footer::class)->add('{name}::footer')` (Core 0.19+). Don't rewrite Core's pages.
+- To add to the footer on every page, register a view: `app(\App\Layout\Footer::class)->add('{name}::footer')` (Core 0.19+). Don't rewrite Core's pages. Beside the user menu: `app(\App\Layout\Navbar::class)->add('{name}::navbar')` (Core 0.24+).
 - Districts change how Core and modules look with overrides in `web/local` (Administration → Overrides, or `php artisan tornado:override`), never by editing them. Keep views small and focused, so an override replaces only what it needs to.
 - A page that should fill the screen (scrolling inside itself) uses `<x-app-layout fill>`, and its top element `flex-1 min-h-0`.
 - Tell Claude what your module offers the tools it builds with `"prompt"` in the `tornado` section (one or two sentences, for example which class or method to use). It's shown in Chat's system prompt, and admins can edit it on the module's settings page.
-- A module with a settings page lists it as `"settings": "/administration/{name}"` in the `tornado` section; add `"needs-setup": true` if it doesn't work until they're filled in, and `/modules` opens them after it's installed.
+- A module with a settings page lists it as `"settings": "/administration/{name}"` in the `tornado` section; add `"needs-setup": true` if it doesn't work until they're filled in, and `/modules` opens them after it's installed (after the settings of modules it requires that aren't set up yet; saving one opens the next). Add `"setup-done": "Class@method"` (Core 0.24+) that returns whether it's set up; without it, saving its settings page once counts. Modules not set up are listed under the notification bell.
 
 ### Composer when `web/composer.local.json` exists
 

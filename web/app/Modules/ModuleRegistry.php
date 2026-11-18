@@ -53,6 +53,7 @@ class ModuleRegistry
                 needsSetup: (bool) ($tornado['needs-setup'] ?? false),
                 prompt: is_string($tornado['prompt'] ?? null) && trim($tornado['prompt']) !== '' ? trim($tornado['prompt']) : null,
                 requires: $requires,
+                setupDone: is_string($tornado['setup-done'] ?? null) && str_contains($tornado['setup-done'], '@') ? $tornado['setup-done'] : null,
                 path: isset($package['install-path']) ? (realpath(dirname($installedJson).'/'.$package['install-path']) ?: null) : null,
             );
         }

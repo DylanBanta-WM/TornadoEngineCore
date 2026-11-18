@@ -27,5 +27,7 @@ final readonly class Module
         public ?string $path = null,
         /** What Claude should know about it when building tools ("prompt" in extra.tornado); editable in its settings. */
         public ?string $prompt = null,
+        /** "Class@method" that says whether it's set up ("setup-done" in extra.tornado); without one, saving its settings once counts. */
+        public ?string $setupDone = null,
     ) {}
 }
