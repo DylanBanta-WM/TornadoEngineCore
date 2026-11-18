@@ -74,7 +74,7 @@ class SetupController extends Controller
 
     public function storeAddress(Request $request): RedirectResponse
     {
-        abort_if(User::where('is_admin', true)->exists(), 403);
+        abort_unless($this->mayChange($request, 'address'), 403);
 
         $address = Settings::saveAddress($request->validate(Settings::addressRules())['address']);
 
@@ -84,12 +84,21 @@ class SetupController extends Controller
 
     public function storeSignin(Request $request): RedirectResponse
     {
-        abort_if(User::where('is_admin', true)->exists(), 403);
+        abort_unless($this->mayChange($request, 'signin'), 403);
 
         $data = $request->validate([
             'methods' => ['required', 'array', 'min:1'],
             'methods.*' => ['in:'.implode(',', array_keys(SignIn::METHODS))],
         ], ['methods.required' => __('Choose at least one.')]);
+
+        // Once the admin account exists, keep a way for it to sign in.
+        $admin = User::where('is_admin', true)->first();
+        if ($admin) {
+            $uses = array_keys(array_filter(['google' => $admin->google_id !== null, 'microsoft' => ($admin->microsoft_id ?? null) !== null, 'password' => $admin->password !== null]));
+            if ($uses && ! array_intersect($uses, $data['methods'])) {
+                return back()->withErrors(['methods' => __('Keep :method: the admin account signs in with it.', ['method' => SignIn::METHODS[$uses[0]] ?? $uses[0]])])->withInput();
+            }
+        }
         SignIn::save($data['methods']);
 
         return redirect()->route('setup');
@@ -97,7 +106,7 @@ class SetupController extends Controller
 
     public function storeMicrosoft(Request $request, ConnectionCheck $check): RedirectResponse
     {
-        abort_unless(in_array(Setup::step(), ['microsoft', 'admin'], true) && SignIn::enabled('microsoft'), 403);
+        abort_unless($this->mayChange($request, 'microsoft'), 403);
 
         $data = $request->validate(Settings::microsoftRules());
         if ($problem = $check->microsoft($data['tenant_id'], $data['client_id'], $data['client_secret'], MicrosoftSignIn::callbackUrl())) {
@@ -131,7 +140,7 @@ class SetupController extends Controller
 
     public function storeGoogle(Request $request, ConnectionCheck $check): RedirectResponse
     {
-        abort_unless(in_array(Setup::step(), ['google', 'admin'], true), 403);
+        abort_unless($this->mayChange($request, 'google'), 403);
 
         $data = $request->validate(Settings::googleRules());
         if ($problem = $check->google($data['client_id'], $data['client_secret'], GoogleSignIn::callbackUrl())) {
@@ -144,14 +153,14 @@ class SetupController extends Controller
 
     public function storeHarness(Request $request): RedirectResponse
     {
-        abort_unless($request->user()->is_admin && in_array(Setup::step(), ['harness', 'claude'], true), 403);
+        abort_unless($this->mayChange($request, 'harness'), 403);
 
         return redirect()->route('setup')->with('harness_token', Settings::newHarnessToken());
     }
 
     public function storeClaude(Request $request, ConnectionCheck $check): RedirectResponse
     {
-        abort_unless($request->user()->is_admin && Setup::step() === 'claude' && ! Setup::complete(), 403);
+        abort_unless($this->mayChange($request, 'claude'), 403);
 
         $data = $request->validate(Settings::claudeRules());
         if ($problem = $check->claude($data['type'], trim($data['credential']))) {
@@ -186,5 +195,23 @@ class SetupController extends Controller
         return $queued && Route::has('modules.index')
             ? redirect()->route('modules.index')
             : redirect()->route('dashboard');
+    }
+
+    /**
+     * A step can be saved while it's the current one, or again from going back to it (until setup is done).
+     * Once the admin account exists, only the admin can.
+     */
+    private function mayChange(Request $request, string $step): bool
+    {
+        if (Setup::complete()) {
+            return false;
+        }
+        $steps = Setup::steps();
+        $index = array_search($step, $steps, true);
+        if ($index === false || $index > array_search(Setup::step(), $steps, true)) {
+            return false;
+        }
+
+        return ! User::where('is_admin', true)->exists() || (bool) $request->user()?->is_admin;
     }
 }

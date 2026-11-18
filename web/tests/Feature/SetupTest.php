@@ -237,4 +237,25 @@ class SetupTest extends TestCase
         $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());
         $this->assertTrue(Setup::complete());
     }
+
+    public function test_going_back_to_an_earlier_step_after_the_admin_exists_can_save_it_again(): void
+    {
+        $this->saveGoogle();
+        SignIn::save(['google', 'password']);
+        $admin = User::factory()->create(['is_admin' => true, 'google_id' => 'g-1', 'password' => null]);
+
+        // Saving the sign-in step again works (it used to be refused).
+        $this->actingAs($admin)->from('/setup?step=signin')->post('/setup/signin', ['methods' => ['google', 'password']])->assertRedirect('/setup');
+        $this->assertSame(['google', 'password'], SignIn::methods());
+
+        // But not without the way the admin signs in.
+        $this->actingAs($admin)->from('/setup?step=signin')->post('/setup/signin', ['methods' => ['password']])->assertRedirect('/setup?step=signin')->assertSessionHasErrors('methods');
+        $this->assertSame(['google', 'password'], SignIn::methods());
+
+        // Someone else can't change it now that there's an admin.
+        $this->actingAs(User::factory()->create())->post('/setup/signin', ['methods' => ['password']])->assertForbidden();
+
+        // A later step can't be saved before it's reached.
+        $this->actingAs($admin)->post('/setup/claude', ['type' => 'subscription', 'credential' => 'x'])->assertForbidden();
+    }
 }
