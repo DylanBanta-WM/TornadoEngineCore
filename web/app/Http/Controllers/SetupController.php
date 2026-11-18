@@ -51,8 +51,8 @@ class SetupController extends Controller
             ? collect(app(Finder::class)->listings()) : collect();
 
         return view('setup.index', [
-            // Official modules that ask to be offered here ("suggest" in extra.tornado), installed ones too.
-            'modules' => $listings->filter(fn ($listing) => $listing->official && ($listing->suggested ?? false) && $listing->url && ($listing->latest || $listing->installed !== null)),
+            // Official modules that ask to be offered here ("suggest" in extra.tornado), and aren't installed.
+            'modules' => $listings->filter(fn ($listing) => $listing->official && ($listing->suggested ?? false) && $listing->url && $listing->latest && $listing->installed === null),
             'allModules' => $listings->all(),
             'step' => $step,
             'current' => $current,

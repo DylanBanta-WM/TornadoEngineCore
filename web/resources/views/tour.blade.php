@@ -8,6 +8,19 @@
          @if ($here)
              x-data="{
                  ring: null,
+                 bound: null,
+                 // Clicking what the step points at counts as Next (then goes where it leads, if it's a link).
+                 bind(el) {
+                     if (! el || this.bound === el) return;
+                     this.bound = el;
+                     el.addEventListener('click', async (event) => {
+                         event.preventDefault();
+                         event.stopImmediatePropagation();
+                         const href = event.target.closest('a')?.href;
+                         const response = await fetch(@js(route('tour.next')), { method: 'POST', headers: { 'X-CSRF-TOKEN': @js(csrf_token()), Accept: 'text/html' } });
+                         window.location.href = href || response.url;
+                     }, { capture: true, once: true });
+                 },
                  find(selectors) {
                      for (const selector of selectors) {
                          const el = document.querySelector(selector);
@@ -19,6 +32,7 @@
                      let el = this.find(@js($tour['step']['targets'] ?? []));
                      if (el && @js($tour['step']['closest'] ?? null)) el = el.closest(@js($tour['step']['closest'] ?? '')) ?? el;
                      if (! el) { this.ring = null; return; }
+                     this.bind(el);
                      const box = el.getBoundingClientRect();
                      this.ring = { top: box.top - 6, left: box.left - 6, width: box.width + 12, height: box.height + 12 };
                  },

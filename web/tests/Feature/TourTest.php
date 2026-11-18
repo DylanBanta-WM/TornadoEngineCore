@@ -29,16 +29,21 @@ class TourTest extends TestCase
             ->assertSee('data-tour="nav-group-administration"', false);
 
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
-        $this->actingAs($admin)->get('/dashboard')->assertSee('Users and roles: who can sign in')->assertSee('data-tour="nav-item-access.users.index"', false);
+        $this->actingAs($admin)->get('/dashboard')->assertSee('Notifications: modules that still need setting up')->assertSee('data-tour="notifications"', false);
+
+        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
+        $this->actingAs($admin)->get('/dashboard')->assertSee('Users and roles: who can sign in')->assertSee('data-tour="nav-item-access.users.index"', false)
+            ->assertSee('nav-group-administration', false);
 
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/access/users');
         $this->actingAs($admin)->get('/access/users')
             ->assertSee('Email patterns: roles by email address.')
+            ->assertSee('Give people roles here by hand')
             ->assertSee('data-tour="access-tab-users"', false);
 
-        $this->actingAs($admin)->post('/tour/next');
-        $this->actingAs($admin)->get('/access/users')->assertSee('Access-Google')->assertSee('Access-Microsoft-AD');
-
+        // Modules, Docs and Chat: first where they are in the menu, then the page.
+        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
+        $this->actingAs($admin)->get('/dashboard')->assertSee('Modules: add features to Tornado Engine.');
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/modules');
         $this->actingAs($admin)->get('/modules')->assertSee('Core modules are always installed.')->assertSee('Other districts&#039; modules aren&#039;t reviewed.', false);
 
@@ -49,7 +54,10 @@ class TourTest extends TestCase
         $this->assertSame('modules', $admin->fresh()->tour_step);
 
         $this->actingAs($admin)->post('/tour/next');
+        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
+        $this->actingAs($admin)->get('/dashboard')->assertSee('Docs: guides for setting up');
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/docs');
+        $this->actingAs($admin)->post('/tour/next')->assertRedirect('/dashboard');
         $this->actingAs($admin)->post('/tour/next')->assertRedirect('/chat');
         $this->actingAs($admin)->get('/chat')->assertSee('Ask Claude for a new tool')->assertSee('Finish');
 

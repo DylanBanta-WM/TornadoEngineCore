@@ -11,20 +11,13 @@
             @foreach ($modules as $module)
                 @php($needs = \TornadoEngine\ModuleFinder\Finder::requirements($module, $allModules))
                 <label class="flex items-start gap-3 rounded-md border border-gray-200 dark:border-gray-700 p-3 text-sm has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
-                    @if ($module->installed !== null)
-                        <input type="checkbox" checked disabled class="mt-0.5 rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900">
-                    @else
-                        <input type="checkbox" name="packages[]" value="{{ $module->package }}" class="mt-0.5 rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500">
-                    @endif
+                    <input type="checkbox" name="packages[]" value="{{ $module->package }}" class="mt-0.5 rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500">
                     <span class="min-w-0">
                         <span class="font-medium text-gray-900 dark:text-gray-100">{{ $module->name }}</span>
-                        @if ($module->installed !== null)
-                            <span class="ms-2 rounded bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs text-gray-700 dark:text-gray-300">{{ __('Installed') }}</span>
-                        @endif
                         @if ($module->description)
                             <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ $module->description }}</span>
                         @endif
-                        @if ($needs && $module->installed === null)
+                        @if ($needs)
                             <span class="block mt-1 text-gray-600 dark:text-gray-400">{{ __('Requirements: :modules', ['modules' => $needs]) }}</span>
                         @endif
                         @if ($module->url)

@@ -19,12 +19,12 @@
         "tornado-engine/cron": ">=0.6",
         "tornado-engine/module-finder": ">=0.12",
         "tornado-engine/docs": ">=0.5.1",
-        "tornado-engine/nav": ">=0.7",
+        "tornado-engine/nav": ">=0.7.1",
         "wikimedia/composer-merge-plugin": "^2.1",
         "tornado-engine/broker": ">=0.11",
         "tornado-engine/chat": ">=0.11",
         "tornado-engine/uploads": ">=0.4",
-        "tornado-engine/notifications": ">=0.1"
+        "tornado-engine/notifications": ">=0.1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

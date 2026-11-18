@@ -228,10 +228,10 @@ class SetupTest extends TestCase
             'official' => true, 'onPackagist' => true, 'latest' => '0.5.2', 'needsNewerCore' => null, 'requires' => [], 'suggested' => true,
         ]], 3600);
 
-        // Only official modules that ask to be suggested; installed ones show as installed.
+        // Only official modules that ask to be suggested, and aren't installed.
         $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Requirements: Base Module (will auto install)')
             ->assertDontSee('Someone Extra')->assertDontSee('value="district/base"', false)
-            ->assertSee('Docs')->assertSee('Installed')->assertDontSee('value="tornado-engine/docs"', false);
+            ->assertDontSee('value="tornado-engine/docs"', false);
         $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/modules');
 
         $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());

@@ -4,6 +4,8 @@ namespace App\Support;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use TornadoEngine\Nav\Nav;
+use TornadoEngine\Nav\NavGroup;
 
 /**
  * The tour after first-time setup: a few steps across pages, each pointing at something on the
@@ -28,13 +30,14 @@ class Tour
                 'targets' => ['[data-tour="nav-group-administration"]', '[data-tour="menu-button"]'],
                 'text' => __('Admin pages are in the Administration menu.'),
             ],
-            'users-and-roles' => [
+            'notifications' => [
                 'route' => 'dashboard',
-                'open' => ['[data-tour="nav-group-administration"]', '[data-tour="menu-button"]'],
-                'targets' => ['[data-tour="nav-item-access.users.index"]', '[data-tour="nav-mobile-access.users.index"]'],
-                'text' => __('Users and roles: who can sign in, and what they can open.'),
+                'needs' => 'notifications.setup',
+                'targets' => ['[data-tour="notifications"]'],
+                'text' => __('Notifications: modules that still need setting up, and anything else that needs you.'),
             ],
-            'access-tabs' => [
+            'users-and-roles' => self::menu('access.users.index', __('Users and roles: who can sign in, and what they can open.')),
+            'access' => [
                 'route' => 'access.users.index',
                 'targets' => ['[data-tour="access-tab-users"]'],
                 'closest' => 'nav',
@@ -43,12 +46,11 @@ class Tour
                     __('Roles: what each role can open.'),
                     __('Email patterns: roles by email address.'),
                     __('Excluded: people imports leave out.'),
-                ], array_values($tabs))),
+                ], array_values($tabs), [
+                    __('Give people roles here by hand, or from Google, Active Directory or Entra ID with the Access modules on the Modules page.'),
+                ])),
             ],
-            'access-imports' => [
-                'route' => 'access.users.index',
-                'text' => __('Give people roles here by hand, or from Google OUs and Groups with Access-Google, and from Microsoft AD or Entra ID with Access-Microsoft-AD and Access-Microsoft-Entra. You can install those on the Modules page.'),
-            ],
+            'modules-menu' => self::menu('modules.index', __('Modules: add features to Tornado Engine.')),
             'modules' => [
                 'route' => 'modules.index',
                 'text' => implode("\n", [
@@ -62,17 +64,44 @@ class Tour
                 'text' => __('Made a module other districts could use? Share it.'),
                 'link' => [['docs.show', 'sharing-modules'], __('Sharing a module')],
             ],
+            'docs-menu' => self::menu('docs.index', __('Docs: guides for setting up and using Tornado Engine.')),
             'docs' => [
                 'route' => 'docs.index',
-                'text' => __('Guides for setting up and using Tornado Engine.'),
+                'text' => __('Modules add their own guides here too.'),
             ],
+            'chat-menu' => self::menu('chat.index', __('Chat: talk with Claude.')),
             'chat' => [
                 'route' => 'chat.index',
                 'text' => __('Ask Claude for a new tool, and it builds it.'),
             ],
         ];
 
-        return array_filter($steps, fn ($step) => Route::has($step['route']) && (! isset($step['link']) || Route::has(((array) $step['link'][0])[0])));
+        return array_filter($steps, fn ($step) => Route::has($step['route']) && Route::has($step['needs'] ?? $step['route']) && (! isset($step['link']) || Route::has(((array) $step['link'][0])[0])));
+    }
+
+    /**
+     * A step on the dashboard pointing at a page's place in the menu (opening its dropdown first).
+     *
+     * @return array<string, mixed>
+     */
+    private static function menu(string $route, string $text): array
+    {
+        $open = [];
+        if (class_exists(Nav::class)) {
+            foreach (app(Nav::class)->for(auth()->user()) as $entry) {
+                if ($entry instanceof NavGroup && collect($entry->items)->contains(fn ($item) => $item->route === $route)) {
+                    $open[] = '[data-tour="nav-group-'.$entry->key.'"]';
+                }
+            }
+        }
+
+        return [
+            'route' => 'dashboard',
+            'needs' => $route,
+            'open' => [...$open, '[data-tour="menu-button"]'],
+            'targets' => ['[data-tour="nav-item-'.$route.'"]', '[data-tour="nav-link-'.$route.'"]', '[data-tour="nav-mobile-'.$route.'"]'],
+            'text' => $text,
+        ];
     }
 
     public static function start(User $user): void
