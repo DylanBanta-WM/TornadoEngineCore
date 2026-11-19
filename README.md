@@ -14,24 +14,15 @@ Tools for school IT teams, built privacy first.
 
 Do this before running `docker compose up -d` for the first time.
 
-1. Copy the settings file:
+1. Make the settings file and install the rebuild helper (it lets the website rebuild its containers after installs and updates):
 
    ```bash
-   cp .env.example .env
+   sudo ./host/install.sh
    ```
 
+   This makes `.env` with a new `APP_KEY` and `DB_PASSWORD`, so you don't set those yourself.
+
 2. In `.env`, set:
-   - `APP_KEY`: run this and paste its whole output, from `base64:` through the `=` at the end:
-
-     ```bash
-     echo "base64:$(openssl rand -base64 32)"
-     ```
-
-   - `DB_PASSWORD`: a long random password. This makes one (paste its whole output, `=` included):
-
-     ```bash
-     openssl rand -base64 32
-     ```
    - `WEB_BIND`: the address your Nginx RP (reverse proxy) uses to reach Tornado Engine.
      - `127.0.0.1` if the Nginx RP runs on this machine.
      - This server's IP, for example `10.0.0.30`, if your Nginx RP is a different machine.
@@ -41,11 +32,10 @@ Do this before running `docker compose up -d` for the first time.
    - `APP_TIMEZONE`: your district's time zone, for example `America/Chicago`.
    - `HOST_UID` and `HOST_GID`: only if `id -u` and `id -g` aren't 1000.
 
-3. Start Tornado Engine, and install its rebuild helper (it lets the website rebuild its containers after installs and updates):
+3. Start Tornado Engine:
 
    ```bash
    docker compose up -d
-   sudo ./host/install.sh
    ```
 
 To change `WEB_BIND` later, edit `.env` and run `docker compose up -d` again.
