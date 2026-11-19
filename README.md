@@ -2,6 +2,25 @@
 
 Tools for school IT teams, built privacy first.
 
+AI coding tools like Claude Code, Codex and Copilot read the files around them for context. On a school district's server, those files can include student names, emails and passwords, which would then be sent to the AI company. Tornado Engine lets a district build its own tools with AI without that happening.
+
+## How it works
+
+- **The harness.** Claude runs in its own container and only sees one workspace: the website's code and its modules. It can't see the rest of the server.
+- **The privacy broker.** When Claude needs directory data, the broker replaces people in the roles you choose (Students by default) with pseudonyms before Claude sees anything. Claude sees, for example:
+
+  | Real                       | What Claude sees                  |
+  |----------------------------|-----------------------------------|
+  | `jane.doe@district.org`    | `p-3f9a1c2b7e@student`            |
+  | `Jane Doe`                 | `[name p-3f9a1c2b7e]`             |
+  | `Jane`, `Doe`              | `[given p-3f9a1c2b7e]`, `[family p-3f9a1c2b7e]` |
+  | Student ID `204417`        | `[id p-3f9a1c2b7e-ab12]`          |
+  | A phone number             | `[phone v-8d0e4f1a6c]`            |
+
+  The same person always gets the same pseudonym, so Claude can still sort, count and build reports. When the answer is shown to people on the website, the broker turns every pseudonym back into the real value.
+- **Modules.** Everything is a module, and a district installs only what it needs: for example GAM for Google Workspace, Access-Microsoft-AD and Access-Microsoft-Entra for Microsoft, and GitHub for sharing modules with other districts.
+- **Chat.** Describe a tool in plain English and Claude builds it as a new module in your website, following the same rules. Attached spreadsheets, documents and images go through the broker too. Images have the names in their text covered in black, and faces and logos are pointed out so you can choose what to cover. This is careful but not guaranteed, so avoid uploading student information you don't need to.
+
 ## Privacy first
 
 1. The AI assistant never runs on the host. It runs in a harness container with only its own workspace, and reaches real data only through the privacy broker, as pseudonyms.
@@ -39,6 +58,19 @@ Do this before running `docker compose up -d` for the first time.
    ```
 
 To change `WEB_BIND` later, edit `.env` and run `docker compose up -d` again.
+
+## First-time setup
+
+Open the site in a browser. Setup asks, in order, for:
+
+1. The site's web address.
+2. How people sign in: Google, Microsoft or website passwords.
+3. The admin account.
+4. Which roles the broker gives pseudonyms (Students by default).
+5. Connecting the harness, and signing Claude in.
+6. The modules to install.
+
+A short tour follows. To take it again, use the button on your profile page.
 
 ## Running
 
