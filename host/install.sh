@@ -5,7 +5,7 @@
 #    empty. Values already set are left alone (the database keeps the password it was made with); an
 #    APP_KEY pasted without its "base64:" prefix gets it. No secrets are printed.
 #  - Installs the host helper (rebuilder.sh) as a systemd service, so the Rebuild button on the website works.
-# Remove the helper with: sudo ./host/install.sh --remove
+# Remove only the helper with: sudo ./host/install.sh --remove (host/uninstall.sh removes everything).
 set -euo pipefail
 [ "$(id -u)" -eq 0 ] || { echo "Run it with sudo." >&2; exit 1; }
 
@@ -62,15 +62,16 @@ cat > "/etc/systemd/system/$unit" <<UNIT
 Description=Tornado Engine rebuilder ($root)
 After=docker.service
 Requires=docker.service
+# Not started without its folder (deleted without host/uninstall.sh), so it doesn't keep retrying.
+ConditionPathExists=$root/docker-compose.yml
 
 [Service]
 User=$owner
 WorkingDirectory=$root
 Environment="TORNADO_ROOT=$root"
-# Read into memory, so no file in the folder stays open (on network storage a deleted, open file can't be
-# removed). It idles while the containers are down and stops for good if the folder is deleted.
+# Read into memory, so no file in the folder stays open (on network storage a deleted, open file can't be removed).
 ExecStart=/bin/bash -c 'exec /bin/bash -c "\$\$(cat host/rebuilder.sh)" rebuilder'
-Restart=on-failure
+Restart=always
 RestartSec=5
 
 [Install]

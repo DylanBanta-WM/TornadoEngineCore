@@ -58,6 +58,14 @@ You can also list modules in `web/composer.local.json` under `require` and run `
 
 To work on a module, clone its repo into `web/modules/`. That copy is used instead of the published one.
 
+## Uninstalling
+
+```bash
+sudo ./host/uninstall.sh
+```
+
+This deletes the containers, the database, uploaded files, the Docker images and the rebuild helper. Add `--keep-images` to keep the Docker images. Then delete the folder.
+
 ### Harness internet access
 
 All three options are safe: the assistant only ever sees student and staff data through the privacy broker, as pseudonyms. Logged and Strict add security on top of that.
