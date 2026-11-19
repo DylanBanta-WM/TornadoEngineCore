@@ -64,7 +64,7 @@ To change `WEB_BIND` later, edit `.env` and run `docker compose up -d` again.
 Open the site in a browser. Setup asks, in order, for:
 
 1. The site's web address.
-2. How people sign in: Google, Microsoft or website passwords.
+2. How people sign in: Google, Microsoft or website passwords (and the keys for Google or Microsoft, if you choose them).
 3. The admin account.
 4. Which roles the broker gives pseudonyms (Students by default).
 5. Connecting the harness, and signing Claude in.
