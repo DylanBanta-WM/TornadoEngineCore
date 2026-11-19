@@ -66,9 +66,11 @@ Requires=docker.service
 [Service]
 User=$owner
 WorkingDirectory=$root
-# Relative to WorkingDirectory, so folders with spaces in their names work.
-ExecStart=/bin/bash host/rebuilder.sh
-Restart=always
+Environment="TORNADO_ROOT=$root"
+# Read into memory, so no file in the folder stays open (on network storage a deleted, open file can't be
+# removed). It idles while the containers are down and stops for good if the folder is deleted.
+ExecStart=/bin/bash -c 'exec /bin/bash -c "\$\$(cat host/rebuilder.sh)" rebuilder'
+Restart=on-failure
 RestartSec=5
 
 [Install]
