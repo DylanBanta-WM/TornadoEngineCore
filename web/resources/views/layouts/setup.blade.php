@@ -7,6 +7,9 @@
 
         <title>{{ __('Set up') }} · {{ config('app.name') }}</title>
 
+        <link rel="icon" type="image/png" href="{{ asset('images/tornado-icon.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/tornado-touch.png') }}">
+
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
@@ -25,7 +28,8 @@
                             {{ __('Back to setup') }}
                         </a>
                     @endif
-                    <p class="text-center text-sm font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">{{ config('app.name') }}</p>
+                    <div class="flex justify-center">@include('logo', ['class' => 'size-16'])</div>
+                    <p class="mt-2 text-center text-sm font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">{{ config('app.name') }}</p>
                 </div>
 
                 {{ $slot }}

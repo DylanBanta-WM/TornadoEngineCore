@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "835b6eb2ce385913279ee93d68e15060",
+    "content-hash": "e95f4e65d26ad13f59eccdf19aa86a6e",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -7143,16 +7143,16 @@
         },
         {
             "name": "tornado-engine/nav",
-            "version": "v0.7.1",
+            "version": "v0.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Nav.git",
-                "reference": "f463cee28053a9faf1ac0a794aa29d328facc8ed"
+                "reference": "b909d4f8de2a4a1d918f02a6d8913eb515066932"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/f463cee28053a9faf1ac0a794aa29d328facc8ed",
-                "reference": "f463cee28053a9faf1ac0a794aa29d328facc8ed",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Nav/zipball/b909d4f8de2a4a1d918f02a6d8913eb515066932",
+                "reference": "b909d4f8de2a4a1d918f02a6d8913eb515066932",
                 "shasum": ""
             },
             "require": {
@@ -7184,9 +7184,9 @@
             "description": "Tornado Engine core-module: the site's navigation menu. Other modules add their items to it.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.7.1"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Nav/tree/v0.7.2"
             },
-            "time": "2026-11-18T16:54:15+00:00"
+            "time": "2026-11-19T17:54:52+00:00"
         },
         {
             "name": "tornado-engine/notifications",
