@@ -8,6 +8,7 @@ use App\Support\ConnectionCheck;
 use App\Support\GoogleSignIn;
 use App\Support\Setup;
 use App\Support\SignIn;
+use App\Updates\Rebuild;
 use App\Updates\UpdateJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -252,10 +253,30 @@ class SetupTest extends TestCase
         $this->actingAs($admin)->get('/setup')->assertSee('Reports')->assertSee('Requirements: Base Module (will auto install)')
             ->assertDontSee('Someone Extra')->assertDontSee('value="district/base"', false)
             ->assertDontSee('value="tornado-engine/docs"', false);
-        $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/dashboard');
+        $this->actingAs($admin)->post('/setup/modules', ['packages' => ['district/reports', 'evil/package']])->assertRedirect('/setup/installing');
 
         $this->assertSame(['district/reports'], UpdateJob::pluck('package')->all());
         $this->assertTrue(Setup::complete());
+
+        // A wait while they install, then the dashboard (where the tour starts).
+        $this->actingAs($admin)->get('/setup/installing')->assertOk()->assertSee('One more minute, we&#039;re getting everything set up for you.', false);
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false]);
+        UpdateJob::query()->update(['status' => 'done']);
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => true, 'url' => url('/dashboard')]);
+
+        // An install that needs the containers rebuilt: the helper is asked, and the wait goes on until it's done.
+        Rebuild::markNeeded();
+        @mkdir(storage_path('app/tornado'), 0775, true);
+        file_put_contents(storage_path('app/tornado/rebuild.heartbeat'), now()->toIso8601String());
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false]);
+        $this->assertFileExists(storage_path('app/tornado/rebuild.request'));
+        @unlink(storage_path('app/tornado/rebuild.request'));
+        file_put_contents(storage_path('app/tornado/rebuild.status'), json_encode(['state' => 'done', 'started' => now()->toIso8601String(), 'finished' => now()->addSecond()->toIso8601String(), 'exit' => 0]));
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertJson(['done' => true]);
+        @unlink(storage_path('app/tornado/rebuild.status'));
+        @unlink(storage_path('app/tornado/rebuild.heartbeat'));
+
+        $this->actingAs(User::factory()->create())->get('/setup/installing')->assertForbidden();
     }
 
     public function test_going_back_to_an_earlier_step_after_the_admin_exists_can_save_it_again(): void

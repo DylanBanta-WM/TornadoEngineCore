@@ -11,7 +11,9 @@ use App\Support\Settings;
 use App\Support\Setup;
 use App\Support\SignIn;
 use App\Support\Tour;
+use App\Updates\Rebuild;
 use App\Updates\UpdateJob;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -209,8 +211,32 @@ class SetupController extends Controller
         Setting::put('setup.completed_at', now()->toIso8601String());
         Tour::start($request->user());
 
-        // The tour starts on the dashboard; modules install meanwhile.
-        return redirect()->route('dashboard');
+        // The tour starts on the dashboard, once the chosen modules are installed.
+        return $queued ? redirect()->route('setup.installing') : redirect()->route('dashboard');
+    }
+
+    /** After setup: a wait while the modules chosen in setup install (and the containers rebuild, if they need to). */
+    public function installing(): View
+    {
+        return view('setup.installing');
+    }
+
+    /** For the waiting page: whether everything is ready. Starts the rebuild an install needs, when the helper can do it. */
+    public function installingStatus(): JsonResponse
+    {
+        if (UpdateJob::busy()) {
+            return response()->json(['done' => false]);
+        }
+        if (Rebuild::running()) {
+            return response()->json(['done' => false]);
+        }
+        if (Rebuild::needed() && Rebuild::helper()) {
+            Rebuild::request();
+
+            return response()->json(['done' => false]);
+        }
+
+        return response()->json(['done' => true, 'url' => route('dashboard')]);
     }
 
     /**

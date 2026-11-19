@@ -26,4 +26,6 @@ Route::middleware('auth')->prefix('setup')->name('setup.')->group(function () {
     Route::post('/harness', [SetupController::class, 'storeHarness'])->name('harness');
     Route::post('/claude', [SetupController::class, 'storeClaude'])->name('claude');
     Route::post('/modules', [SetupController::class, 'storeModules'])->name('modules');
+    Route::get('/installing', [SetupController::class, 'installing'])->middleware('can:administration')->name('installing');
+    Route::get('/installing/status', [SetupController::class, 'installingStatus'])->middleware('can:administration')->name('installing.status');
 });
