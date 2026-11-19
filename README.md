@@ -21,8 +21,17 @@ Do this before running `docker compose up -d` for the first time.
    ```
 
 2. In `.env`, set:
-   - `APP_KEY`: the output of `echo "base64:$(openssl rand -base64 32)"`.
-   - `DB_PASSWORD`: a long random password, for example from `openssl rand -base64 32`.
+   - `APP_KEY`: run this and paste its whole output, from `base64:` through the `=` at the end:
+
+     ```bash
+     echo "base64:$(openssl rand -base64 32)"
+     ```
+
+   - `DB_PASSWORD`: a long random password. This makes one (paste its whole output, `=` included):
+
+     ```bash
+     openssl rand -base64 32
+     ```
    - `WEB_BIND`: the address your Nginx RP (reverse proxy) uses to reach Tornado Engine.
      - `127.0.0.1` if the Nginx RP runs on this machine.
      - This server's IP, for example `10.0.0.30`, if your Nginx RP is a different machine.
