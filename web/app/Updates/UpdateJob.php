@@ -20,8 +20,10 @@ class UpdateJob extends Model
 
     public static function queue(string $kind, string $version, ?string $package = null, ?string $repository = null, bool $install = false): self
     {
+        // The status is set here, not left to the column's default, so the returned job has it.
         return self::create([
             'kind' => $kind,
+            'status' => 'queued',
             'package' => $package,
             'version' => ltrim($version, 'v'),
             'repository' => $repository,
@@ -35,6 +37,7 @@ class UpdateJob extends Model
     {
         return self::create([
             'kind' => 'remove',
+            'status' => 'queued',
             'package' => $package,
             'version' => '',
             'repository' => $repository,

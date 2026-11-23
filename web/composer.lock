@@ -6952,16 +6952,16 @@
         },
         {
             "name": "tornado-engine/chat",
-            "version": "v0.18.0",
+            "version": "v0.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Chat.git",
-                "reference": "b7a0a66424cae725c6f73006d16ded7d00ddfc46"
+                "reference": "4f80b3b60e9ed546d8b8921aaeb36c8a99bc5292"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/b7a0a66424cae725c6f73006d16ded7d00ddfc46",
-                "reference": "b7a0a66424cae725c6f73006d16ded7d00ddfc46",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/4f80b3b60e9ed546d8b8921aaeb36c8a99bc5292",
+                "reference": "4f80b3b60e9ed546d8b8921aaeb36c8a99bc5292",
                 "shasum": ""
             },
             "require": {
@@ -6995,9 +6995,9 @@
             "description": "Tornado Engine core-module: talk with Claude from the website, and have it build new tools as modules.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.18.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.18.1"
             },
-            "time": "2026-11-23T15:37:52+00:00"
+            "time": "2026-11-23T17:57:48+00:00"
         },
         {
             "name": "tornado-engine/cron",
