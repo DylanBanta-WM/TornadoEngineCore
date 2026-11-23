@@ -6902,16 +6902,16 @@
         },
         {
             "name": "tornado-engine/broker",
-            "version": "v0.14.0",
+            "version": "v0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Broker.git",
-                "reference": "ed338dfe8ca6735ef14a438743428723a88f1d5c"
+                "reference": "31c6c95484ebc04b1e6d155564d2cc0d487f8a6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Broker/zipball/ed338dfe8ca6735ef14a438743428723a88f1d5c",
-                "reference": "ed338dfe8ca6735ef14a438743428723a88f1d5c",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Broker/zipball/31c6c95484ebc04b1e6d155564d2cc0d487f8a6d",
+                "reference": "31c6c95484ebc04b1e6d155564d2cc0d487f8a6d",
                 "shasum": ""
             },
             "require": {
@@ -6931,7 +6931,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.14.x-dev"
+                    "dev-main": "0.15.x-dev"
                 }
             },
             "autoload": {
@@ -6946,9 +6946,9 @@
             "description": "Tornado Engine core-module: people in chosen roles reach Claude only as pseudonyms.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Broker/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Broker/tree/v0.14.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Broker/tree/v0.15.0"
             },
-            "time": "2026-11-18T18:37:29+00:00"
+            "time": "2026-11-23T14:33:06+00:00"
         },
         {
             "name": "tornado-engine/chat",
