@@ -1,28 +1,25 @@
-@php
-    $roles = \TornadoEngine\Access\Models\Role::orderBy('name')->get();
-    // Students until roles are chosen.
-    $chosen = \App\Models\Setting::get('broker.pseudonym_roles') === null
-        ? $roles->where('name', 'Student')->pluck('id')->all()
-        : \TornadoEngine\Broker\Broker::pseudonymRoleIds();
-    $chosen = array_map('intval', old('roles', $chosen));
-@endphp
-
 <form method="POST" action="{{ route('setup.broker') }}">
     @csrf
-    <x-setup.header :title="__('Which roles get pseudonyms?')">
+    <x-setup.header :title="__('The privacy broker')">
         {{ \TornadoEngine\Broker\Broker::about() }}
     </x-setup.header>
 
-    <fieldset class="mt-6 px-6 sm:px-8 space-y-3">
-        <legend class="sr-only">{{ __('Roles given a pseudonym') }}</legend>
-        @foreach ($roles as $role)
-            <label class="flex min-h-11 items-center gap-3 rounded-md border border-gray-200 dark:border-gray-700 px-3 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-950/40">
-                <input type="checkbox" name="roles[]" value="{{ $role->id }}" class="rounded text-indigo-600 border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-indigo-500" @checked(in_array($role->id, $chosen, true))>
-                <span class="text-gray-900 dark:text-gray-100">{{ $role->name }}</span>
-            </label>
-        @endforeach
-        <x-input-error :messages="$errors->get('roles')" />
-    </fieldset>
+    <div class="mt-6 px-6 sm:px-8">
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Claude sees, for example:') }}</p>
+        <div class="mt-2 overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-sm">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach (['Jane Doe' => '[name p-3f9a1c2b7e]', 'jane.doe@district.org' => 'p-3f9a1c2b7e@student', '204417' => '[id p-3f9a1c2b7e-ab12]'] as $real => $seen)
+                        <tr>
+                            <td class="px-3 py-2 font-mono text-gray-700 dark:text-gray-300">{{ $real }}</td>
+                            <td class="px-3 py-2 font-mono text-gray-900 dark:text-gray-100">{{ $seen }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <x-input-error :messages="$errors->get('broker')" class="mt-2" />
+    </div>
 
     <x-setup.footer class="justify-between">
         <x-setup.back :href="$back" />

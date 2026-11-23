@@ -160,10 +160,10 @@ class SetupController extends Controller
     {
         abort_unless($this->mayChange($request, 'broker'), 403);
 
-        Broker::saveRoles((array) $request->input('roles', []));
+        // Everyone in the directories is given a pseudonym; this loads them.
         [$ok, $message] = app(Broker::class)->refresh();
         if (! $ok) {
-            return back()->withErrors(['roles' => $message])->withInput();
+            return back()->withErrors(['broker' => $message]);
         }
         Setting::put('setup.broker_at', now()->toIso8601String());
 

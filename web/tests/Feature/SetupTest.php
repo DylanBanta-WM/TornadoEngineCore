@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\URL;
 use Laravel\Socialite\Two\User as GoogleUser;
 use Tests\TestCase;
-use TornadoEngine\Access\Models\Role;
 use TornadoEngine\Broker\Broker;
+use TornadoEngine\Broker\Models\Person;
 
 class SetupTest extends TestCase
 {
@@ -158,7 +158,7 @@ class SetupTest extends TestCase
         $admin = User::where('email', 'it@school.test')->firstOrFail();
         $this->assertTrue($admin->is_admin);
         $this->assertAuthenticatedAs($admin);
-        $this->get('/setup')->assertSee('Which roles get pseudonyms?');
+        $this->get('/setup')->assertSee('The privacy broker');
         $this->saveBroker();
         // The harness step shows its connect command straight away, with a Copy button.
         $page = $this->get('/setup')->assertSee('docker compose exec harness harness-connect')->assertSee('Copy');
@@ -300,42 +300,31 @@ class SetupTest extends TestCase
         $this->actingAs($admin)->post('/setup/claude', ['type' => 'subscription', 'credential' => 'x'])->assertForbidden();
     }
 
-    public function test_after_the_admin_account_the_admin_chooses_the_roles_given_pseudonyms(): void
+    public function test_after_the_admin_account_setup_explains_the_broker_and_loads_it(): void
     {
         $this->saveGoogle();
         $admin = User::factory()->create(['is_admin' => true]);
-        $student = Role::where('name', 'Student')->value('id');
-        $staff = Role::where('name', 'Staff')->value('id');
         Http::fake(['*' => Http::response([], 500)]);
 
         $this->assertSame(['address', 'signin', 'google', 'admin', 'broker', 'harness', 'claude', 'modules'], Setup::steps());
         $this->assertSame('broker', $this->actingAs($admin)->get('/setup')->viewData('current'));
+        $this->actingAs($admin)->get('/setup')->assertOk()->assertSee('The privacy broker')->assertSee(Broker::about())->assertSee('p-3f9a1c2b7e@student');
 
-        // Students until roles are chosen.
-        $page = $this->actingAs($admin)->get('/setup')->assertOk()->assertSee('Which roles get pseudonyms?')->assertSee(Broker::about());
-        $this->assertSame([$student], $this->ticked($page->getContent()));
-
-        // Only the admin, and not the harness step before this one is saved.
-        $this->actingAs(User::factory()->create())->post('/setup/broker', ['roles' => [$staff]])->assertForbidden();
+        // Only the admin, and not the harness step before this one.
+        $this->actingAs(User::factory()->create())->post('/setup/broker')->assertForbidden();
         $this->actingAs($admin)->post('/setup/harness')->assertForbidden();
 
-        // Saving stores the Broker's setting, refreshes its directory, and moves on.
-        $this->actingAs($admin)->post('/setup/broker', ['roles' => [$student]])->assertRedirect('/setup');
-        $this->assertSame([$student], Broker::pseudonymRoleIds());
-        $this->assertNotNull(Setting::get('broker.refreshed_at'));
+        // Next loads the directory (everyone, the admin included) and moves on.
+        $this->actingAs($admin)->post('/setup/broker')->assertRedirect('/setup');
         $this->assertTrue(app(Broker::class)->ready());
-        $this->assertSame('harness', $this->actingAs($admin)->get('/setup')->assertSee('docker compose exec harness harness-connect')->viewData('current'));
+        $this->assertNotNull(Person::where('email', strtolower($admin->email))->first());
+        $this->assertSame('harness', $this->actingAs($admin)->get('/setup')->viewData('current'));
 
-        // Going back to it shows what was saved, and saves it again.
+        // Going back to it works like the other steps; not once setup is done.
         Setting::put('harness.last_seen_at', now()->toIso8601String());
-        $page = $this->actingAs($admin)->get('/setup?step=broker')->assertSee('Which roles get pseudonyms?')->assertSee('/setup?step=admin', false);
-        $this->assertSame([$student], $this->ticked($page->getContent()));
-        $this->actingAs($admin)->from('/setup?step=broker')->post('/setup/broker', ['roles' => [$student, $staff]])->assertRedirect('/setup');
-        $this->assertEqualsCanonicalizing([$student, $staff], Broker::pseudonymRoleIds());
-        $this->assertSame('claude', $this->actingAs($admin)->get('/setup')->viewData('current'));
-
-        // Not once setup is done.
+        $this->actingAs($admin)->get('/setup?step=broker')->assertSee('The privacy broker')->assertSee('/setup?step=admin', false);
+        $this->actingAs($admin)->from('/setup?step=broker')->post('/setup/broker')->assertRedirect('/setup');
         Setting::put('setup.completed_at', now()->toIso8601String());
-        $this->actingAs($admin)->post('/setup/broker', ['roles' => []])->assertForbidden();
+        $this->actingAs($admin)->post('/setup/broker')->assertForbidden();
     }
 }
