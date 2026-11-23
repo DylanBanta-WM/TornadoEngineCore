@@ -26,6 +26,7 @@ Route::middleware(['auth', 'can:administration'])->prefix('administration')->gro
     Route::post('/updates/core', [UpdatesController::class, 'core'])->name('administration.updates.core');
     Route::post('/updates/check', [UpdatesController::class, 'check'])->name('administration.updates.check');
     Route::post('/rebuild', [UpdatesController::class, 'rebuild'])->name('administration.rebuild');
+    Route::post('/patches/remove', [UpdatesController::class, 'removePatch'])->name('administration.patches.remove');
 
     Route::post('/overrides', [OverridesController::class, 'create'])->name('administration.overrides.create');
     Route::post('/overrides/view', [OverridesController::class, 'save'])->name('administration.overrides.save');

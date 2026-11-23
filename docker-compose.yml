@@ -22,6 +22,7 @@ services:
       - ./docker/modules.yml:/tornado/modules.yml
       - ./docker/php-extensions.txt:/tornado/php-extensions.txt
       - ./docker/modules.php:/tornado/modules.php:ro
+      - ./docker/patches.php:/tornado/patches.php:ro
 
   assets:
     image: node:20.19.5-trixie-slim

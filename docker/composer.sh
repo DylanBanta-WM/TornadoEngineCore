@@ -14,9 +14,11 @@ if [ -f composer.local.json ]; then
   if [ ! -f composer.local.lock ] || [ composer.local.json -nt composer.local.lock ] || [ composer.json -nt composer.local.lock ]; then
     composer update --no-interaction --no-progress --ignore-platform-req='ext-*'
     php /tornado/modules.php
+    php /tornado/patches.php apply
     exit
   fi
 fi
 
 composer install --no-interaction --no-progress --ignore-platform-req='ext-*'
 php /tornado/modules.php
+php /tornado/patches.php apply

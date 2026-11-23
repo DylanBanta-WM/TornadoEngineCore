@@ -97,6 +97,9 @@ class Updater
         $tag = 'v'.$job->version;
         $git = fn (array $args) => array_merge(['git', '-C', $repo], $args);
 
+        // The district's Core patch (web/local/patches/core.patch) comes off first, and goes back on at the end.
+        $this->step($job, ['php', "{$repo}/docker/patches.php", 'remove', 'core']);
+
         // Files Core writes on each server (modules' containers and PHP extensions) don't count.
         $changed = trim($this->step($job, $git(['status', '--porcelain', '--untracked-files=no', '--', '.', ':!docker/modules.yml', ':!docker/php-extensions.txt'])));
         if ($changed !== '') {
@@ -131,6 +134,9 @@ class Updater
         if (str_contains($containers, 'PHP extensions changed')) {
             $notes['rebuild'] = __('Needs a rebuild for its PHP extensions. It stays off until then.');
         }
+
+        // The district's patches (web/local/patches) go back on; one that no longer fits is turned off.
+        $this->step($job, ['php', "{$repo}/docker/patches.php", 'apply']);
 
         $this->step($job, ['php', 'artisan', 'migrate', '--force']);
         $this->styles($job);

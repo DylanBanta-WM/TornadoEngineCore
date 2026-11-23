@@ -7190,16 +7190,16 @@
         },
         {
             "name": "tornado-engine/notifications",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications.git",
-                "reference": "be67ac2485675c052857c572db8e26e32a0d3272"
+                "reference": "ec559ecf931cf3c5b3e4d47b03feada0a559b355"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Notifications/zipball/be67ac2485675c052857c572db8e26e32a0d3272",
-                "reference": "be67ac2485675c052857c572db8e26e32a0d3272",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Notifications/zipball/ec559ecf931cf3c5b3e4d47b03feada0a559b355",
+                "reference": "ec559ecf931cf3c5b3e4d47b03feada0a559b355",
                 "shasum": ""
             },
             "require": {
@@ -7216,7 +7216,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.2.x-dev"
+                    "dev-main": "0.3.x-dev"
                 }
             },
             "autoload": {
@@ -7231,9 +7231,9 @@
             "description": "Tornado Engine core-module: the notification bell in the menu bar, with modules still to be set up.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications/tree/v0.2.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications/tree/v0.3.0"
             },
-            "time": "2026-11-23T18:27:42+00:00"
+            "time": "2026-11-23T18:49:10+00:00"
         },
         {
             "name": "tornado-engine/uploads",
