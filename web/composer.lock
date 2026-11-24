@@ -6952,16 +6952,16 @@
         },
         {
             "name": "tornado-engine/chat",
-            "version": "v0.22.0",
+            "version": "v0.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Chat.git",
-                "reference": "e6d92b98cd93c19fda991511cc60a36145646f9e"
+                "reference": "6c97497b73c1cda74f1d78fd81b14220f751bf4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/e6d92b98cd93c19fda991511cc60a36145646f9e",
-                "reference": "e6d92b98cd93c19fda991511cc60a36145646f9e",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/6c97497b73c1cda74f1d78fd81b14220f751bf4d",
+                "reference": "6c97497b73c1cda74f1d78fd81b14220f751bf4d",
                 "shasum": ""
             },
             "require": {
@@ -6975,12 +6975,13 @@
                 "tornado": {
                     "core": ">=0.22",
                     "name": "Chat",
+                    "compose": "docker/compose.yml",
                     "provider": "TornadoEngine\\Chat\\ChatServiceProvider",
                     "settings": "/administration/chat",
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.22.x-dev"
+                    "dev-main": "0.23.x-dev"
                 }
             },
             "autoload": {
@@ -6995,9 +6996,9 @@
             "description": "Tornado Engine core-module: talk with Claude from the website, and have it build new tools as modules.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.22.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.23.0"
             },
-            "time": "2026-11-24T16:16:12+00:00"
+            "time": "2026-11-24T16:47:46+00:00"
         },
         {
             "name": "tornado-engine/cron",
@@ -7237,16 +7238,16 @@
         },
         {
             "name": "tornado-engine/uploads",
-            "version": "v0.9.1",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads.git",
-                "reference": "7b66abfaccdbb734adb97c2c7bf96328a3abb6a3"
+                "reference": "3efff67eb13a495b586ec230def8f22d77aea34c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Uploads/zipball/7b66abfaccdbb734adb97c2c7bf96328a3abb6a3",
-                "reference": "7b66abfaccdbb734adb97c2c7bf96328a3abb6a3",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Uploads/zipball/3efff67eb13a495b586ec230def8f22d77aea34c",
+                "reference": "3efff67eb13a495b586ec230def8f22d77aea34c",
                 "shasum": ""
             },
             "require": {
@@ -7265,7 +7266,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.9.x-dev"
+                    "dev-main": "0.10.x-dev"
                 }
             },
             "autoload": {
@@ -7280,9 +7281,9 @@
             "description": "Tornado Engine core-module: upload files, and give Claude filtered copies (text run through the broker; images only when marked as having no student information).",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads/tree/v0.9.1"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Uploads/tree/v0.10.0"
             },
-            "time": "2026-11-18T14:28:06+00:00"
+            "time": "2026-11-24T16:47:43+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
