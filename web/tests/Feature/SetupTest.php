@@ -235,7 +235,7 @@ class SetupTest extends TestCase
         $this->saveBroker();
         Setting::put('harness.last_seen_at', now()->toIso8601String());
         Setting::putSecret('harness.claude_credential', 'sk-ant-oat01-test');
-        Cache::put('module-finder.found.v2', [[
+        Cache::put('module-finder.found.v3', [[
             'package' => 'district/reports', 'name' => 'Reports', 'description' => 'Make reports.', 'url' => 'https://github.com/district/reports',
             'official' => true, 'onPackagist' => true, 'latest' => '0.2.0', 'needsNewerCore' => null, 'requires' => ['district/base'], 'suggested' => true,
         ], [
