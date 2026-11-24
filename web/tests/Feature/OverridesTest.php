@@ -61,7 +61,7 @@ class OverridesTest extends TestCase
     public function test_a_view_can_be_overridden_changed_and_removed(): void
     {
         $admin = $this->admin();
-        $this->actingAs($admin)->get('/administration/overrides')->assertOk()->assertSee('zz-overrides::card')->assertSee('core::layouts.app');
+        $this->actingAs($admin)->get('/settings/overrides')->assertOk()->assertSee('zz-overrides::card')->assertSee('core::layouts.app');
 
         $this->actingAs($admin)->post('/administration/overrides', ['view' => 'zz-overrides::card']);
         $this->assertFileExists("{$this->local}/views/zz-overrides/card.blade.php");
@@ -69,7 +69,7 @@ class OverridesTest extends TestCase
         $this->actingAs($admin)->post('/administration/overrides/view', ['view' => 'zz-overrides::card', 'contents' => '<p>Our card</p>', 'action' => 'save']);
         $this->assertStringContainsString('Our card', $this->render());
 
-        $this->actingAs($admin)->from('/administration/overrides')->post('/administration/overrides/view', ['view' => 'zz-overrides::card', 'contents' => '@if (true) <?php echo ; ?>', 'action' => 'save'])
+        $this->actingAs($admin)->from('/settings/overrides')->post('/administration/overrides/view', ['view' => 'zz-overrides::card', 'contents' => '@if (true) <?php echo ; ?>', 'action' => 'save'])
             ->assertSessionHasErrors('overrides');
         $this->assertStringContainsString('Our card', $this->render());
 
@@ -86,8 +86,8 @@ class OverridesTest extends TestCase
         file_put_contents("{$this->module}/card.blade.php", "<p>Original card, now with a link</p>\n");
 
         $this->assertSame('changed', app(Overrides::class)->all()[0]['status']);
-        $this->actingAs($admin)->get('/administration/updates')->assertSee('An update changed a view you\'ve overridden.');
-        $this->actingAs($admin)->get('/administration/overrides')->assertSee('The module changed it')->assertSee('+&lt;p&gt;Original card, now with a link&lt;/p&gt;', false);
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('An update changed a view you\'ve overridden.');
+        $this->actingAs($admin)->get('/settings/overrides')->assertSee('The module changed it')->assertSee('+&lt;p&gt;Original card, now with a link&lt;/p&gt;', false);
 
         $this->actingAs($admin)->post('/administration/overrides/view', ['view' => 'zz-overrides::card', 'action' => 'review']);
         $this->assertSame(0, app(Overrides::class)->needingReview());
@@ -95,7 +95,7 @@ class OverridesTest extends TestCase
 
     public function test_names_cant_reach_outside_the_folders(): void
     {
-        $this->actingAs($this->admin())->from('/administration/overrides')->post('/administration/overrides', ['view' => 'zz-overrides::../../../.env'])->assertSessionHasErrors('overrides');
+        $this->actingAs($this->admin())->from('/settings/overrides')->post('/administration/overrides', ['view' => 'zz-overrides::../../../.env'])->assertSessionHasErrors('overrides');
         $this->actingAs(User::factory()->create())->post('/administration/overrides', ['view' => 'zz-overrides::card'])->assertForbidden();
     }
 }

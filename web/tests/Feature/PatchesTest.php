@@ -169,7 +169,7 @@ class PatchesTest extends TestCase
         $this->patches->change('vendor/tornado-engine/demo/src/Thing.php', "<?php\n\nreturn 'hello, district';\n");
         $admin = User::factory()->create(['is_admin' => true]);
 
-        $this->actingAs($admin)->get('/administration/updates')->assertSee('Patches')->assertSee('tornado-engine/demo')->assertSee('src/Thing.php');
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Patches')->assertSee('tornado-engine/demo')->assertSee('src/Thing.php');
         $this->actingAs($admin)->post('/administration/patches/remove', ['target' => 'tornado-engine/demo'])->assertSessionHas('patches_status');
         $this->assertSame([], $this->patches->all());
         $this->assertStringContainsString("'hello'", file_get_contents("{$this->base}/vendor/tornado-engine/demo/src/Thing.php"), 'its change undone');

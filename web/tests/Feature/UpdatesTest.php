@@ -45,7 +45,7 @@ class UpdatesTest extends TestCase
     {
         $this->githubTags(['v0.6.0', 'v0.10.0', 'v0.8.1', 'not-a-version']);
 
-        $this->actingAs($this->admin())->get('/administration/updates')
+        $this->actingAs($this->admin())->get('/settings/updates')
             ->assertOk()
             ->assertSee('This server runs version 0.7.0.')
             ->assertSee('Version 0.10.0 is available.')
@@ -56,8 +56,8 @@ class UpdatesTest extends TestCase
     {
         $this->githubTags(['v0.7.0']);
 
-        $this->actingAs($this->admin())->get('/administration/updates')->assertSee('That\'s the newest official version.')->assertDontSee('Update to');
-        $this->actingAs($this->admin())->from('/administration/updates')->post('/administration/updates/core')->assertSessionHasErrors('updates');
+        $this->actingAs($this->admin())->get('/settings/updates')->assertSee('That\'s the newest official version.')->assertDontSee('Update to');
+        $this->actingAs($this->admin())->from('/settings/updates')->post('/administration/updates/core')->assertSessionHasErrors('updates');
         $this->assertSame(0, UpdateJob::count());
     }
 
@@ -67,11 +67,11 @@ class UpdatesTest extends TestCase
         $admin = $this->admin();
 
         $this->actingAs($admin)->post('/administration/updates/core')->assertSessionHas('updates_status');
-        $this->actingAs($admin)->from('/administration/updates')->post('/administration/updates/core')->assertSessionHasErrors('updates');
+        $this->actingAs($admin)->from('/settings/updates')->post('/administration/updates/core')->assertSessionHasErrors('updates');
 
         $job = UpdateJob::sole();
         $this->assertSame(['core', '0.8.0', 'queued'], [$job->kind, $job->version, $job->status]);
-        $this->actingAs($admin)->get('/administration/updates')->assertSee('Tornado Engine Core 0.8.0')->assertSee('Waiting');
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Tornado Engine Core 0.8.0')->assertSee('Waiting');
         $this->actingAs(User::factory()->create())->post('/administration/updates/core')->assertForbidden();
     }
 

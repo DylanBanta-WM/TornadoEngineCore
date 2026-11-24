@@ -17,7 +17,7 @@ final readonly class Module
         public bool $compatible,
         /** @var list<string> PHP extensions it needs that this server doesn't have yet. */
         public array $missingExtensions = [],
-        /** Its settings page, e.g. "/administration/gam" ("settings" in extra.tornado). */
+        /** Its settings page, e.g. "/settings/gam" ("settings" in extra.tornado; the older "/administration/gam" means the same). */
         public ?string $settings = null,
         /** It needs its settings filled in before it works ("needs-setup" in extra.tornado). */
         public bool $needsSetup = false,

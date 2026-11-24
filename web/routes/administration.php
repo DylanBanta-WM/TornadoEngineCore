@@ -14,8 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// The pages are at /settings (Administration → Settings in the menu); the old /administration addresses lead there.
+Route::middleware(['auth', 'can:administration'])->group(function () {
+    Route::get('/settings', [AdministrationController::class, 'index'])->name('administration');
+    Route::get('/settings/{tab}', [AdministrationController::class, 'tab'])->name('administration.tab');
+    Route::get('/administration', fn () => redirect('/settings', 301));
+    Route::get('/administration/{tab}', fn (string $tab) => redirect('/settings/'.$tab, 301));
+});
+
 Route::middleware(['auth', 'can:administration'])->prefix('administration')->group(function () {
-    Route::get('/', [AdministrationController::class, 'index'])->name('administration');
     Route::post('/address', [AdministrationController::class, 'address'])->name('administration.address');
     Route::post('/google', [AdministrationController::class, 'google'])->name('administration.google');
     Route::post('/signin', [AdministrationController::class, 'signin'])->name('administration.signin');
@@ -33,6 +40,4 @@ Route::middleware(['auth', 'can:administration'])->prefix('administration')->gro
     Route::post('/overrides/css', [OverridesController::class, 'css'])->name('administration.overrides.css');
     Route::get('/rebuild/status', [UpdatesController::class, 'rebuildStatus'])->name('administration.rebuild.status');
 
-    // Tabs that modules add.
-    Route::get('/{tab}', [AdministrationController::class, 'tab'])->name('administration.tab');
 });

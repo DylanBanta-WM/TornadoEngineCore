@@ -2,7 +2,7 @@
     $code = 'rounded bg-gray-100 dark:bg-gray-900 px-1 py-0.5 font-mono text-[13px] text-gray-900 dark:text-gray-100 break-all';
 @endphp
 
-<x-admin-layout :title="__('Administration')">
+<x-admin-layout :title="__('Settings')">
     <x-administration-tabs current="settings" />
 
     <x-card-grid>

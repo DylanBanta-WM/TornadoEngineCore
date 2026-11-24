@@ -21,9 +21,9 @@ class AdministrationTest extends TestCase
 
     public function test_only_admins_can_open_administration(): void
     {
-        $this->get('/administration')->assertRedirect('/login');
-        $this->actingAs(User::factory()->create())->get('/administration')->assertForbidden();
-        $this->actingAs($this->admin())->get('/administration')
+        $this->get('/settings')->assertRedirect('/login');
+        $this->actingAs(User::factory()->create())->get('/settings')->assertForbidden();
+        $this->actingAs($this->admin())->get('/settings')
             ->assertOk()
             ->assertSee('Web address')
             ->assertSee('Sign-in')
@@ -38,7 +38,7 @@ class AdministrationTest extends TestCase
 
         try {
             app(Administration::class)->card($view)->card('no.such.view');
-            $this->actingAs($this->admin())->get('/administration')->assertSee('Test module')->assertSee('Card body');
+            $this->actingAs($this->admin())->get('/settings')->assertSee('Test module')->assertSee('Card body');
         } finally {
             unlink(resource_path("views/{$view}.blade.php"));
         }
@@ -53,10 +53,10 @@ class AdministrationTest extends TestCase
             app(Administration::class)->tab('zz-test', 'Test tab')->card($view, tab: 'zz-test');
             $admin = $this->admin();
 
-            $this->actingAs($admin)->get('/administration')->assertSee('Test tab')->assertDontSee('On its own tab');
-            $this->actingAs($admin)->get('/administration/zz-test')->assertOk()->assertSee('On its own tab')->assertDontSee('Claude Code login');
-            $this->actingAs($admin)->get('/administration/no-such-tab')->assertNotFound();
-            $this->actingAs(User::factory()->create())->get('/administration/zz-test')->assertForbidden();
+            $this->actingAs($admin)->get('/settings')->assertSee('Test tab')->assertDontSee('On its own tab');
+            $this->actingAs($admin)->get('/settings/zz-test')->assertOk()->assertSee('On its own tab')->assertDontSee('Claude Code login');
+            $this->actingAs($admin)->get('/settings/no-such-tab')->assertNotFound();
+            $this->actingAs(User::factory()->create())->get('/settings/zz-test')->assertForbidden();
         } finally {
             unlink(resource_path("views/{$view}.blade.php"));
         }
@@ -73,7 +73,7 @@ class AdministrationTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->post('/administration/address', ['address' => 'https://new.school.test'])
-            ->assertRedirect('https://new.school.test/administration');
+            ->assertRedirect('https://new.school.test/settings');
 
         $this->assertSame('https://new.school.test', Setting::get('site.url'));
     }
@@ -82,7 +82,7 @@ class AdministrationTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->post('/administration/google', ['domain' => 'School.Test', 'client_id' => 'new-id', 'client_secret' => 'new-secret'])
-            ->assertRedirect('/administration');
+            ->assertRedirect('/settings');
 
         $this->assertSame('school.test', Setting::get('google.domain'));
         $this->assertSame('new-secret', Setting::getSecret('google.client_secret'));
@@ -99,7 +99,7 @@ class AdministrationTest extends TestCase
         Setting::put('google.client_id', 'visible-client-id');
         Setting::putSecret('google.client_secret', 'secret');
 
-        $this->actingAs($this->admin())->get('/administration')
+        $this->actingAs($this->admin())->get('/settings')
             ->assertSee('Client ID and secret:')
             ->assertSee('Clear')
             ->assertDontSee('visible-client-id');
@@ -111,9 +111,9 @@ class AdministrationTest extends TestCase
         Setting::putSecret('google.client_secret', 'working-secret');
         $this->checkFails('google', 'Google didn\'t accept this client ID and secret.');
 
-        $this->actingAs($this->admin())->from('/administration')
+        $this->actingAs($this->admin())->from('/settings')
             ->post('/administration/google', ['domain' => 'school.test', 'client_id' => 'bad-id', 'client_secret' => 'bad'])
-            ->assertRedirect('/administration')
+            ->assertRedirect('/settings')
             ->assertSessionHasErrors('google_keys');
 
         $this->assertSame('working-id', Setting::get('google.client_id'));
@@ -126,13 +126,13 @@ class AdministrationTest extends TestCase
         Setting::putSecret('harness.claude_credential', 'sk-ant-oat01-working');
         $this->checkFails('claude', 'Anthropic didn\'t accept this API key.');
 
-        $this->actingAs($this->admin())->from('/administration')
+        $this->actingAs($this->admin())->from('/settings')
             ->post('/administration/claude', ['type' => 'api_key', 'credential' => 'sk-ant-api03-bad'])
             ->assertSessionHasErrors('credential');
 
         $this->assertSame('subscription', Setting::get('harness.claude_credential_type'));
         $this->assertSame('sk-ant-oat01-working', Setting::getSecret('harness.claude_credential'));
-        $this->actingAs($this->admin())->get('/administration')->assertSee('A Claude subscription token is saved.')->assertDontSee('sk-ant-oat01-working');
+        $this->actingAs($this->admin())->get('/settings')->assertSee('A Claude subscription token is saved.')->assertDontSee('sk-ant-oat01-working');
     }
 
     public function test_the_harness_can_get_a_new_connect_command(): void
@@ -142,14 +142,14 @@ class AdministrationTest extends TestCase
 
         $this->assertNotEmpty($token);
         $this->assertSame(hash('sha256', $token), Setting::get('harness.token_hash'));
-        $this->actingAs($this->admin())->get('/administration')->assertSee('harness-connect');
+        $this->actingAs($this->admin())->get('/settings')->assertSee('harness-connect');
     }
 
     public function test_the_claude_login_can_change(): void
     {
         $this->actingAs($this->admin())
             ->post('/administration/claude', ['type' => 'api_key', 'credential' => 'sk-ant-api03-new'])
-            ->assertRedirect('/administration');
+            ->assertRedirect('/settings');
 
         $this->assertSame('api_key', Setting::get('harness.claude_credential_type'));
         $this->assertSame('sk-ant-api03-new', Setting::getSecret('harness.claude_credential'));
@@ -164,5 +164,17 @@ class AdministrationTest extends TestCase
         }
 
         $this->get('/dns-setup')->assertRedirect('/docs/dns-setup');
+    }
+
+    public function test_settings_are_at_settings_and_the_old_addresses_lead_there(): void
+    {
+        $admin = \App\Models\User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->get('/settings')->assertOk()->assertSee('Settings');
+        $this->actingAs($admin)->get('/administration')->assertRedirect('/settings');
+        $this->actingAs($admin)->get('/administration/updates')->assertRedirect('/settings/updates');
+        $this->assertSame('/settings/gam', \App\Modules\ModuleRegistry::settingsPath('/administration/gam'), 'modules may still say the old address');
+        $this->assertSame('/settings', \App\Modules\ModuleRegistry::settingsPath('/administration'));
+        $this->assertSame('/administrationx', \App\Modules\ModuleRegistry::settingsPath('/administrationx'));
     }
 }

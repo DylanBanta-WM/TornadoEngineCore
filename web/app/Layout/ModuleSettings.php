@@ -30,7 +30,7 @@ class ModuleSettings
     /** The module whose settings page is at this path, if any. */
     public function moduleAt(string $path): ?Module
     {
-        $path = '/'.trim($path, '/');
+        $path = ModuleRegistry::settingsPath('/'.trim($path, '/'));
         foreach (app(ModuleRegistry::class)->compatible() as $module) {
             if ($module->settings !== null && rtrim($module->settings, '/') === $path) {
                 return $module;

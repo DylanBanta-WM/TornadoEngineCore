@@ -142,9 +142,9 @@ class SignInTest extends TestCase
         $admin = User::factory()->create(['is_admin' => true, 'password' => Hash::make('secret-pass')]);
 
         $this->actingAs($admin)->post('/administration/signin', ['methods' => ['google']])->assertSessionHasErrors('methods');
-        $this->actingAs($admin)->post('/administration/signin', ['methods' => ['microsoft', 'password']])->assertRedirect('/administration');
+        $this->actingAs($admin)->post('/administration/signin', ['methods' => ['microsoft', 'password']])->assertRedirect('/settings');
         $this->assertSame(['microsoft', 'password'], SignIn::methods());
-        $this->actingAs($admin)->get('/administration')->assertSee('Microsoft sign-in')->assertSee('/auth/microsoft/callback');
+        $this->actingAs($admin)->get('/settings')->assertSee('Microsoft sign-in')->assertSee('/auth/microsoft/callback');
     }
 
     public function test_sites_set_up_before_sign_in_methods_keep_google(): void

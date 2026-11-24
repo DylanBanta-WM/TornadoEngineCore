@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\View;
  * The Administration area: a Settings tab (Core's settings, at /administration) and tabs that
  * modules add, each holding cards (views using <x-settings-card>):
  *
- *     $administration->tab('cron', 'Scheduled jobs', order: 20);             // /administration/cron
+ *     $administration->tab('cron', 'Scheduled jobs', order: 20);             // /settings/cron
  *     $administration->card('cron::administration-card', tab: 'cron');
  *
  * A card without a tab goes on the Settings tab. Card forms post to the module's own routes,

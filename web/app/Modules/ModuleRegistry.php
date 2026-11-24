@@ -49,7 +49,7 @@ class ModuleRegistry
                 provider: $tornado['provider'] ?? null,
                 compatible: $core !== '' && $this->satisfies($coreVersion, $core) && ! $missing,
                 missingExtensions: $missing,
-                settings: is_string($tornado['settings'] ?? null) && str_starts_with($tornado['settings'], '/') ? $tornado['settings'] : null,
+                settings: is_string($tornado['settings'] ?? null) && str_starts_with($tornado['settings'], '/') ? self::settingsPath($tornado['settings']) : null,
                 needsSetup: (bool) ($tornado['needs-setup'] ?? false),
                 prompt: is_string($tornado['prompt'] ?? null) && trim($tornado['prompt']) !== '' ? trim($tornado['prompt']) : null,
                 requires: $requires,
@@ -89,5 +89,11 @@ class ModuleRegistry
         } catch (Throwable) {
             return false;
         }
+    }
+
+    /** Settings pages moved from /administration to /settings (Core 0.33); modules may still say the old one. */
+    public static function settingsPath(string $path): string
+    {
+        return (string) preg_replace('#^/administration(?=/|$)#', '/settings', $path);
     }
 }

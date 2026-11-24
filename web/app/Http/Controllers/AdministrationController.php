@@ -49,7 +49,7 @@ class AdministrationController extends Controller
         $address = Settings::saveAddress($request->validate(Settings::addressRules())['address']);
 
         // Carry on at the new address.
-        return redirect()->away($address.'/administration')->with('status', 'address');
+        return redirect()->away($address.'/settings')->with('status', 'address');
     }
 
     public function signin(Request $request): RedirectResponse

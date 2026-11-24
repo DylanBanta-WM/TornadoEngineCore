@@ -53,7 +53,7 @@ class RebuildTest extends TestCase
         $this->needRebuild();
 
         $admin = $this->admin();
-        $this->actingAs($admin)->get('/administration/updates')
+        $this->actingAs($admin)->get('/settings/updates')
             ->assertSee('The server needs a rebuild to finish installing.')
             ->assertSee('docker compose up -d --build')
             ->assertSee('sudo ./host/install.sh');
@@ -67,17 +67,17 @@ class RebuildTest extends TestCase
         $admin = $this->admin();
 
         $this->actingAs($admin)->get('/modules')->assertSee('Rebuild')->assertDontSee('sudo ./host/install.sh');
-        $this->actingAs($admin)->from('/administration/updates')->post('/administration/rebuild')->assertRedirect('/administration/updates');
+        $this->actingAs($admin)->from('/settings/updates')->post('/administration/rebuild')->assertRedirect('/settings/updates');
 
         $this->assertFileExists("{$this->storage}/app/tornado/rebuild.request");
         $this->actingAs($admin)->getJson('/administration/rebuild/status')->assertJson(['running' => true]);
-        $this->actingAs($admin)->get('/administration/updates')->assertSee('Rebuilding.');
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Rebuilding.');
 
         // The helper finishes.
         unlink("{$this->storage}/app/tornado/rebuild.request");
         file_put_contents("{$this->storage}/app/tornado/rebuild.status", json_encode(['state' => 'done', 'started' => now()->toIso8601String(), 'finished' => now()->addSecond()->toIso8601String(), 'exit' => 0]));
         $this->assertFalse(Rebuild::needed());
-        $this->actingAs($admin)->get('/administration/updates')->assertDontSee('needs a rebuild to finish installing');
+        $this->actingAs($admin)->get('/settings/updates')->assertDontSee('needs a rebuild to finish installing');
     }
 
     public function test_a_failed_rebuild_shows_what_happened(): void
@@ -87,7 +87,7 @@ class RebuildTest extends TestCase
         file_put_contents("{$this->storage}/app/tornado/rebuild.status", json_encode(['state' => 'failed', 'started' => now()->toIso8601String(), 'finished' => now()->addSecond()->toIso8601String(), 'exit' => 1]));
         file_put_contents("{$this->storage}/app/tornado/rebuild.log", 'failed to solve: no space left on device');
 
-        $this->actingAs($this->admin())->get('/administration/updates')->assertSee('The last rebuild failed.')->assertSee('no space left on device');
+        $this->actingAs($this->admin())->get('/settings/updates')->assertSee('The last rebuild failed.')->assertSee('no space left on device');
     }
 
     public function test_one_thing_at_a_time_and_only_for_admins(): void
@@ -95,7 +95,7 @@ class RebuildTest extends TestCase
         $this->helperRunning();
         UpdateJob::queue('module', '1.0.0', 'district/directory');
 
-        $this->actingAs($this->admin())->from('/administration/updates')->post('/administration/rebuild')->assertSessionHasErrors('rebuild');
+        $this->actingAs($this->admin())->from('/settings/updates')->post('/administration/rebuild')->assertSessionHasErrors('rebuild');
         $this->assertFileDoesNotExist("{$this->storage}/app/tornado/rebuild.request");
         $this->actingAs(User::factory()->create())->post('/administration/rebuild')->assertForbidden();
     }
@@ -110,13 +110,13 @@ class RebuildTest extends TestCase
         $admin = $this->admin();
 
         $this->actingAs($admin)->get('/modules')->assertSee('tornado-engine/gam 0.6.0')->assertDontSee('tornado-engine/gam 0.5.0')->assertSee('tornado-engine/chat 0.1.0');
-        $this->actingAs($admin)->get('/administration/updates')->assertSee('Tornado Engine Core 0.13.0')->assertDontSee('Tornado Engine Core 0.12.0');
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Tornado Engine Core 0.13.0')->assertDontSee('Tornado Engine Core 0.12.0');
     }
 
     public function test_rebuild_notes_go_away_once_the_server_is_rebuilt(): void
     {
         UpdateJob::create(['kind' => 'core', 'version' => '0.12.0', 'status' => 'done', 'notes' => ['rebuild' => 'This update changes Tornado Engine\'s containers. On the server, run docker compose up -d --build to finish it.']]);
 
-        $this->actingAs($this->admin())->get('/administration/updates')->assertDontSee('This update changes Tornado Engine')->assertDontSee('needs a rebuild to finish installing');
+        $this->actingAs($this->admin())->get('/settings/updates')->assertDontSee('This update changes Tornado Engine')->assertDontSee('needs a rebuild to finish installing');
     }
 }
