@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
-use App\Patches\Patches;
 use App\Updates\CoreRelease;
+use App\Updates\DistrictBranch;
 use App\Updates\Rebuild;
 use App\Updates\UpdateJob;
 use Illuminate\Http\JsonResponse;
@@ -58,33 +57,38 @@ class UpdatesController extends Controller
             : __('Checked. The newest official version is :version.', ['version' => $latest]));
     }
 
-    /** Takes a patch off (undoing its changes) and deletes it. */
-    public function removePatch(Request $request, Patches $patches): RedirectResponse
-    {
-        $target = (string) $request->validate(['target' => ['required', 'string', 'max:200']])['target'];
-        abort_unless(array_key_exists($target, $patches->all()), 404);
-        $patches->remove($target);
-
-        return back()->with('patches_status', __('Removed the patch for :target.', ['target' => $target === 'core' ? __('Core') : $target]));
-    }
-
-    /** Installs a Core version even though the district's changes clash: those are set aside. */
+    /** Installs a version of Core (or of a customized module) even though the district's changes clash: those are set aside. */
     public function anyway(Request $request): RedirectResponse
     {
-        $version = (string) $request->validate(['version' => ['required', 'string', 'regex:/^\d+\.\d+\.\d+$/']])['version'];
+        $data = $request->validate(['version' => ['required', 'string', 'regex:/^\d+\.\d+\.\d+$/'], 'package' => ['nullable', 'string']]);
+        $package = $data['package'] ?? null;
+        abort_if($package !== null && ! isset(DistrictBranch::copies()[$package]), 404);
         if (UpdateJob::busy()) {
             return back()->withErrors(['updates' => __('An install or update is already running.')]);
         }
-        $job = UpdateJob::queue('core', $version);
+        $job = $package ? UpdateJob::queue('module', $data['version'], $package) : UpdateJob::queue('core', $data['version']);
         $job->update(['anyway' => true]);
 
-        return back()->with('district_status', __('Installing Core :version. Changes that clash will be set aside.', ['version' => $version]));
+        return back()->with('district_status', __('Installing :name :version. Changes that clash will be set aside.', ['name' => $package ?? __('Core'), 'version' => $data['version']]));
     }
 
-    public function dismissSetAside(): RedirectResponse
+    public function dismissSetAside(Request $request): RedirectResponse
     {
-        Setting::put('district.set_aside', null);
+        DistrictBranch::saveSetAside((string) $request->input('target', 'core'), null);
 
         return back();
+    }
+
+    /** Stops customizing a module: back to its official release (the customized copy is kept). */
+    public function official(Request $request): RedirectResponse
+    {
+        $package = (string) $request->validate(['package' => ['required', 'string']])['package'];
+        abort_unless(isset(DistrictBranch::copies()[$package]), 404);
+        if (UpdateJob::busy()) {
+            return back()->withErrors(['updates' => __('An install or update is already running.')]);
+        }
+        UpdateJob::queue('official', '', $package);
+
+        return back()->with('district_status', __('Putting :package back to its official version.', ['package' => $package]));
     }
 }

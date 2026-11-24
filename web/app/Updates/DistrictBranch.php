@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Process;
 use RuntimeException;
 
 /**
- * A district's own changes to Core, kept as commits on a local "district" branch of Core's repository
- * (people and Chat change Core's files directly; the updater commits what changed). A Core update replays
- * them onto the new version. If they clash, the update waits, unless someone chose "update anyway": then the
- * new version goes on, the commits that fit come along, and the ones that clash are set aside (a backup
- * branch keeps them all). The same for every district.
+ * A district's own changes to Core, or to a module it customized, kept as commits on a local "district" branch
+ * of that repository (people and Chat change the files directly; the updater commits what changed). An update
+ * replays them onto the new version. If they clash, the update waits, unless someone chose "update anyway": then
+ * the new version goes on, the commits that fit come along, and the ones that clash are set aside (a backup
+ * branch keeps them all). A customized module is a working copy of its repository in web/modules. The same for
+ * every district.
  */
 class DistrictBranch
 {
@@ -100,7 +101,7 @@ class DistrictBranch
         $this->run(['rebase', '--abort']);
 
         if (! $anyway) {
-            throw new RuntimeException(__('Your district\'s changes to Core clash with :tag, so Core wasn\'t updated. Update anyway to set aside the changes that don\'t fit (they\'re kept, and Chat can redo them), or redo them first.', ['tag' => $tag]));
+            throw new RuntimeException(__('Your district\'s changes clash with :tag, so it wasn\'t updated. Update anyway to set aside the changes that don\'t fit (they\'re kept, and Chat can redo them), or redo them first.', ['tag' => $tag]));
         }
 
         // Update anyway: the new version, then each change that still fits.
@@ -117,12 +118,79 @@ class DistrictBranch
     }
 
     /**
-     * Saves what the website shows (Settings → Updates): the district's changes and the release they sit on.
-     * Only the updater can see Core's repository, so it writes this down for the website.
+     * Saves what the website shows (Settings → Updates): the district's changes and the release they sit on, for
+     * Core or (with $package) a customized module. Only the updater can see the repositories, so it writes this down.
      */
-    public function remember(): void
+    public function remember(?string $package = null): void
     {
-        Setting::put('district.commits', json_encode(['base' => $this->officialBase(), 'commits' => $this->commits()]));
+        $summary = ['base' => $this->officialBase(), 'commits' => $this->commits()];
+        if ($package === null) {
+            Setting::put('district.commits', json_encode($summary));
+
+            return;
+        }
+        $modules = self::rememberedModules();
+        $modules[$package] = $summary;
+        Setting::put('district.modules', json_encode($modules));
+    }
+
+    public static function forget(string $package): void
+    {
+        $modules = self::rememberedModules();
+        unset($modules[$package]);
+        Setting::put('district.modules', $modules ? json_encode($modules) : null);
+        self::saveSetAside($package, null);
+    }
+
+    /** @return array<string, array{base: ?string, commits: list<array{hash: string, message: string, date: string}>}> */
+    public static function rememberedModules(): array
+    {
+        return json_decode((string) Setting::get('district.modules'), true) ?: [];
+    }
+
+    /**
+     * The modules the district customized: working copies in web/modules on a district branch.
+     *
+     * @return array<string, string> package => folder
+     */
+    public static function copies(): array
+    {
+        $copies = [];
+        foreach (glob(self::modules('*/.git')) ?: [] as $git) {
+            $dir = dirname($git);
+            $composer = json_decode((string) @file_get_contents("{$dir}/composer.json"), true);
+            if (trim((string) @file_get_contents("{$git}/HEAD")) === 'ref: refs/heads/'.self::BRANCH && isset($composer['name'])) {
+                $copies[strtolower($composer['name'])] = basename($dir);
+            }
+        }
+
+        return $copies;
+    }
+
+    /** A path in web/modules (tests use a scratch folder). */
+    public static function modules(string $path = ''): string
+    {
+        return rtrim((string) (config('tornado.updater.modules_path') ?? base_path('modules')), '/').($path !== '' ? '/'.$path : '');
+    }
+
+    /**
+     * What updates set aside, by what they were in: 'core' or a package.
+     *
+     * @return array<string, array{tag: string, changes: list<string>, backup: string}>
+     */
+    public static function setAside(): array
+    {
+        $saved = json_decode((string) Setting::get('district.set_aside'), true) ?: [];
+
+        return isset($saved['tag']) ? ['core' => $saved] : $saved; // Core 0.35 to 0.37 saved Core's alone.
+    }
+
+    public static function saveSetAside(string $target, ?array $entry): void
+    {
+        $all = self::setAside();
+        $all[$target] = $entry;
+        $all = array_filter($all);
+        Setting::put('district.set_aside', $all ? json_encode($all) : null);
     }
 
     /** @return array{base: ?string, commits: list<array{hash: string, message: string, date: string}>} */

@@ -59,11 +59,19 @@ class RunUpdater extends Command
                 $recorded = time();
                 try {
                     $note = Setting::get('district.note');
+                    $message = $note ?: __('Changes made on this server');
                     $district = app(DistrictBranch::class);
-                    if ($district->record($note ?: __('Changes made on this server'))) {
+                    $recorded = (bool) $district->record($message);
+                    $district->remember();
+                    // And the modules the district customized (working copies in web/modules).
+                    foreach (DistrictBranch::copies() as $package => $folder) {
+                        $copy = app(DistrictBranch::class, ['repo' => DistrictBranch::modules($folder)]);
+                        $recorded = (bool) $copy->record($message) || $recorded;
+                        $copy->remember($package);
+                    }
+                    if ($recorded) {
                         Setting::put('district.note', null);
                     }
-                    $district->remember();
                 } catch (\Throwable $e) {
                     report($e);
                 }

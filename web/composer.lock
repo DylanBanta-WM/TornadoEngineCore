@@ -6952,16 +6952,16 @@
         },
         {
             "name": "tornado-engine/chat",
-            "version": "v0.21.0",
+            "version": "v0.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Chat.git",
-                "reference": "b0cc5af88924cb920c330114623fc87d5697ed36"
+                "reference": "e6d92b98cd93c19fda991511cc60a36145646f9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/b0cc5af88924cb920c330114623fc87d5697ed36",
-                "reference": "b0cc5af88924cb920c330114623fc87d5697ed36",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/e6d92b98cd93c19fda991511cc60a36145646f9e",
+                "reference": "e6d92b98cd93c19fda991511cc60a36145646f9e",
                 "shasum": ""
             },
             "require": {
@@ -6980,7 +6980,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.21.x-dev"
+                    "dev-main": "0.22.x-dev"
                 }
             },
             "autoload": {
@@ -6995,9 +6995,9 @@
             "description": "Tornado Engine core-module: talk with Claude from the website, and have it build new tools as modules.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.21.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.22.0"
             },
-            "time": "2026-11-24T16:01:33+00:00"
+            "time": "2026-11-24T16:16:12+00:00"
         },
         {
             "name": "tornado-engine/cron",
@@ -7190,16 +7190,16 @@
         },
         {
             "name": "tornado-engine/notifications",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications.git",
-                "reference": "ec559ecf931cf3c5b3e4d47b03feada0a559b355"
+                "reference": "18bed9a9ce53c78a4ebe98ae5839ff33701018f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Notifications/zipball/ec559ecf931cf3c5b3e4d47b03feada0a559b355",
-                "reference": "ec559ecf931cf3c5b3e4d47b03feada0a559b355",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Notifications/zipball/18bed9a9ce53c78a4ebe98ae5839ff33701018f2",
+                "reference": "18bed9a9ce53c78a4ebe98ae5839ff33701018f2",
                 "shasum": ""
             },
             "require": {
@@ -7216,7 +7216,7 @@
                     "core-module": true
                 },
                 "branch-alias": {
-                    "dev-main": "0.3.x-dev"
+                    "dev-main": "0.4.x-dev"
                 }
             },
             "autoload": {
@@ -7231,9 +7231,9 @@
             "description": "Tornado Engine core-module: the notification bell in the menu bar, with modules still to be set up.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications/tree/v0.3.0"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Notifications/tree/v0.4.0"
             },
-            "time": "2026-11-23T18:49:10+00:00"
+            "time": "2026-11-24T16:16:09+00:00"
         },
         {
             "name": "tornado-engine/uploads",

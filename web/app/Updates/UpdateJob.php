@@ -78,7 +78,9 @@ class UpdateJob extends Model
     {
         return match ($this->kind) {
             'core' => __('Tornado Engine Core :version', ['version' => $this->version]),
-            'undo' => __('Undo Chat\'s changes to Core'),
+            'undo' => __('Undo Chat\'s changes'),
+            'customize' => __('Customize :package', ['package' => $this->package]),
+            'official' => __(':package back to its official version', ['package' => $this->package]),
             'remove' => $this->delete_data
                 ? __('Uninstall :package and delete its data', ['package' => $this->package])
                 : __('Uninstall :package', ['package' => $this->package]),

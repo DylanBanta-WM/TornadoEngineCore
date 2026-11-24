@@ -2,7 +2,6 @@
 
 namespace App\Updates;
 
-use App\Models\Setting;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
 use Throwable;
@@ -22,9 +21,11 @@ class Updater
     public function run(UpdateJob $job): void
     {
         $this->done = 0;
-        // What finish() runs is 5 more steps (containers, patches, migrations, styles, caches).
-        $this->total = 5 + match ($job->kind) {
+        // What finish() runs is 4 more steps (containers, migrations, styles, caches).
+        $this->total = 4 + match ($job->kind) {
             'core' => 7,
+            'customize' => 3,
+            'official', 'undo' => 1,
             'remove' => $job->delete_data ? 2 : 1,
             default => 1,
         };
@@ -35,6 +36,8 @@ class Updater
             match ($job->kind) {
                 'core' => $this->core($job, $notes),
                 'undo' => $this->undo($job),
+                'customize' => $this->customize($job),
+                'official' => $this->official($job),
                 'remove' => $this->remove($job),
                 default => $this->module($job),
             };
@@ -52,6 +55,14 @@ class Updater
     private function module(UpdateJob $job): void
     {
         $this->checkPackage($job);
+
+        // A module the district customized moves to the new version with the district's changes on top.
+        if ($folder = DistrictBranch::copies()[$job->package] ?? null) {
+            $this->moveCopy($job, $folder, (string) $job->version);
+
+            return;
+        }
+
         $this->localComposer($job->repository);
 
         // A module in web/modules (for example one Chat built) is linked from there.
@@ -103,21 +114,111 @@ class Updater
     }
 
     /**
-     * @param  array<string, string>  $notes
+     * Customizes an installed module: a working copy of its repository at the installed release, in
+     * web/modules/<folder> on a district branch, linked in its place. Changes to it are then kept across updates.
      */
-    /** Undoes the changes to Core that some Chat runs made (the job's version lists the runs: "12,13"). */
+    private function customize(UpdateJob $job): void
+    {
+        $this->checkPackage($job);
+        if (isset(DistrictBranch::copies()[$job->package])) {
+            return;
+        }
+        $installed = collect(json_decode((string) @file_get_contents(config('tornado.updater.installed_json') ?? base_path('vendor/composer/installed.json')), true)['packages'] ?? [])
+            ->firstWhere('name', $job->package);
+        $url = $installed['source']['url'] ?? null;
+        if (! $installed || is_link(base_path("vendor/{$job->package}"))) {
+            throw new RuntimeException(__(':package isn\'t installed from a release, so there\'s nothing to customize: change it in web/modules.', ['package' => $job->package]));
+        }
+        if (! is_string($url) || ! preg_match('#^https://#', $url)) {
+            throw new RuntimeException(__('Couldn\'t find where :package\'s code comes from.', ['package' => $job->package]));
+        }
+        $version = ltrim((string) $installed['version'], 'v');
+        $folder = substr($job->package, strpos($job->package, '/') + 1);
+        $dir = DistrictBranch::modules($folder);
+        if (file_exists($dir)) {
+            throw new RuntimeException(__('web/modules/:folder is already used by something else.', ['folder' => $folder]));
+        }
+
+        $this->step($job, ['git', '-c', 'advice.detachedHead=false', 'clone', '-q', '--branch', "v{$version}", $url, $dir]);
+        $this->step($job, ['git', '-C', $dir, 'checkout', '-q', '-b', DistrictBranch::BRANCH]);
+        app(DistrictBranch::class, ['repo' => $dir])->remember($job->package);
+        $this->link($job, $folder, $version);
+    }
+
+    /** Stops customizing a module: back to its official release. The working copy is kept, set aside in web/modules. */
+    private function official(UpdateJob $job): void
+    {
+        $this->checkPackage($job);
+        $folder = DistrictBranch::copies()[$job->package] ?? null;
+        if (! $folder) {
+            throw new RuntimeException(__(':package isn\'t customized.', ['package' => $job->package]));
+        }
+        $base = ltrim((string) app(DistrictBranch::class, ['repo' => DistrictBranch::modules($folder)])->officialBase(), 'v');
+
+        $path = config('tornado.updater.composer_local') ?? base_path('composer.local.json');
+        $local = json_decode((string) @file_get_contents($path), true) ?: [];
+        $local['repositories'] = array_values(array_filter($local['repositories'] ?? [], fn ($entry) => ($entry['url'] ?? null) !== "modules/{$folder}"));
+        file_put_contents($path, json_encode($local, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+
+        // Kept, out of the way: a folder starting with a dot isn't a module.
+        $kept = DistrictBranch::modules('.'.$folder.'-customized-'.now()->format('Ymd-His'));
+        rename(DistrictBranch::modules($folder), $kept);
+        $job->addToLog(__('The customized copy is kept in web/modules/:kept.', ['kept' => basename($kept)])."\n");
+        DistrictBranch::forget($job->package);
+
+        $this->step($job, ['composer', 'require', "{$job->package}:".($job->version ?: ($base !== '' ? $base : '*')), '--update-with-dependencies', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'],
+            ['COMPOSER' => 'composer.local.json']);
+    }
+
+    /** Moves a customized module to an official version (fetched from its repository), the district's changes on top. */
+    private function moveCopy(UpdateJob $job, string $folder, string $version): void
+    {
+        $dir = DistrictBranch::modules($folder);
+        $district = app(DistrictBranch::class, ['repo' => $dir]);
+        try {
+            $this->step($job, ['git', '-C', $dir, 'fetch', '-q', '--tags', 'origin']);
+            $job->addToLog(__('Putting your changes to :package on top of :version.', ['package' => $job->package, 'version' => $version])."\n");
+            $setAside = $district->update("v{$version}", (bool) $job->anyway);
+            DistrictBranch::saveSetAside($job->package, $setAside ? ['tag' => "v{$version}", 'changes' => $setAside, 'backup' => DistrictBranch::BRANCH.'-before-'.$version] : null);
+        } finally {
+            $district->remember($job->package);
+        }
+        $this->link($job, $folder, $version);
+    }
+
+    /** Links a customized module from web/modules, reporting its official version (so what needs it still fits). */
+    private function link(UpdateJob $job, string $folder, string $version): void
+    {
+        $this->localComposer("modules/{$folder}", [$job->package => $version]);
+        $this->step($job, ['composer', 'require', "{$job->package}:{$version}", '--update-with-dependencies', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'],
+            ['COMPOSER' => 'composer.local.json']);
+    }
+
+    /** Undoes the changes to Core and customized modules that some Chat runs made (the job's version lists the runs: "12,13"). */
     private function undo(UpdateJob $job): void
     {
-        $district = app(DistrictBranch::class, ['repo' => config('tornado.repository_path')]);
         $runs = array_values(array_filter(array_map('intval', explode(',', (string) $job->version))));
+        $pending = __('Changes made by Chat (run :id)', ['id' => end($runs) ?: 0]);
+        $district = app(DistrictBranch::class, ['repo' => config('tornado.repository_path')]);
         try {
-            $undone = $district->undo($runs, __('Changes made by Chat (run :id)', ['id' => end($runs) ?: 0]));
+            $undone = $district->undo($runs, $pending);
         } finally {
             $district->remember();
+        }
+        foreach (DistrictBranch::copies() as $package => $folder) {
+            $copy = app(DistrictBranch::class, ['repo' => DistrictBranch::modules($folder)]);
+            try {
+                $undone = array_merge($undone, array_map(fn ($change) => "{$package}: {$change}", $copy->undo($runs, $pending)));
+            } finally {
+                $copy->remember($package);
+            }
         }
         $job->addToLog($undone ? __('Undone: :changes', ['changes' => implode('; ', $undone)])."\n" : __('Those runs made no changes to Core.')."\n");
     }
 
+    /**
+     * @param  array<string, string>  $notes
+     */
     private function core(UpdateJob $job, array &$notes): void
     {
         $repo = config('tornado.repository_path');
@@ -139,7 +240,7 @@ class Updater
         } finally {
             $district->remember();
         }
-        Setting::put('district.set_aside', $setAside ? json_encode(['tag' => $tag, 'changes' => $setAside, 'backup' => DistrictBranch::BRANCH.'-before-'.$job->version]) : null);
+        DistrictBranch::saveSetAside('core', $setAside ? ['tag' => $tag, 'changes' => $setAside, 'backup' => DistrictBranch::BRANCH.'-before-'.$job->version] : null);
         if ($setAside) {
             $job->addToLog(__('Set aside (they didn\'t fit :tag): :changes', ['tag' => $tag, 'changes' => implode('; ', $setAside)])."\n");
         }
@@ -164,9 +265,6 @@ class Updater
         if (str_contains($containers, 'PHP extensions changed')) {
             $notes['rebuild'] = __('Needs a rebuild for its PHP extensions. It stays off until then.');
         }
-
-        // The district's patches (web/local/patches) go back on; one that no longer fits is turned off.
-        $this->step($job, ['php', "{$repo}/docker/patches.php", 'apply']);
 
         $this->step($job, ['php', 'artisan', 'migrate', '--force']);
         $this->styles($job);
@@ -252,7 +350,8 @@ class Updater
      * Makes sure web/composer.local.json exists (a district's modules go there, not in Core's
      * composer.json), and lists a module's GitHub repository if it isn't on Packagist.
      */
-    private function localComposer(?string $repository): void
+    /** @param  array<string, string>  $versions  for a linked folder: the version Composer reports for its package */
+    private function localComposer(?string $repository, array $versions = []): void
     {
         $path = config('tornado.updater.composer_local') ?? base_path('composer.local.json');
 
@@ -272,6 +371,11 @@ class Updater
             $local['repositories'][] = str_starts_with($repository, 'modules/')
                 ? ['type' => 'path', 'url' => $repository, 'options' => ['symlink' => true]]
                 : ['type' => 'vcs', 'url' => $repository];
+        }
+        foreach ($versions ? $local['repositories'] : [] as $i => $entry) {
+            if (($entry['url'] ?? null) === $repository) {
+                $local['repositories'][$i]['options']['versions'] = $versions;
+            }
         }
 
         file_put_contents($path, json_encode($local, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Setting;
 use App\Models\User;
+use App\Updates\DistrictBranch;
 use App\Updates\UpdateJob;
 use App\Updates\Updater;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -120,7 +121,7 @@ class UpdatesTest extends TestCase
         $anyway->update(['anyway' => true]);
         app(Updater::class)->run($anyway);
         $this->assertSame('done', $anyway->fresh()->status, (string) $anyway->fresh()->log);
-        $this->assertSame(['Our change'], json_decode((string) Setting::get('district.set_aside'), true)['changes']);
+        $this->assertSame(['Our change'], DistrictBranch::setAside()['core']['changes']);
     }
 
     public function test_the_updater_installs_a_module_through_composer_local_json(): void
@@ -302,7 +303,7 @@ class UpdatesTest extends TestCase
         $held->update(['status' => 'failed', 'log' => 'Your district\'s changes to Core clash with v0.8.0, so Core wasn\'t updated.']);
         $admin = $this->admin();
 
-        $this->actingAs($admin)->get('/settings/updates')->assertSee('Your changes to Core')->assertSee('Changes made by Chat (run 12)')
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Your changes')->assertSee('Changes made by Chat (run 12)')
             ->assertSee('Core 0.8.0 wasn&#039;t installed', false)->assertSee('Update anyway');
 
         $this->actingAs($admin)->post('/administration/updates/anyway', ['version' => '0.8.0'])->assertSessionHas('district_status');

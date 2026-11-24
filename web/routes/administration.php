@@ -33,7 +33,7 @@ Route::middleware(['auth', 'can:administration'])->prefix('administration')->gro
     Route::post('/updates/core', [UpdatesController::class, 'core'])->name('administration.updates.core');
     Route::post('/updates/check', [UpdatesController::class, 'check'])->name('administration.updates.check');
     Route::post('/rebuild', [UpdatesController::class, 'rebuild'])->name('administration.rebuild');
-    Route::post('/patches/remove', [UpdatesController::class, 'removePatch'])->name('administration.patches.remove');
+    Route::post('/district/official', [UpdatesController::class, 'official'])->name('administration.district.official');
     Route::post('/updates/anyway', [UpdatesController::class, 'anyway'])->name('administration.updates.anyway');
     Route::post('/district/dismiss', [UpdatesController::class, 'dismissSetAside'])->name('administration.district.dismiss');
 
