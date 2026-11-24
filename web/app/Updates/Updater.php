@@ -34,6 +34,7 @@ class Updater
         try {
             match ($job->kind) {
                 'core' => $this->core($job, $notes),
+                'undo' => $this->undo($job),
                 'remove' => $this->remove($job),
                 default => $this->module($job),
             };
@@ -104,6 +105,19 @@ class Updater
     /**
      * @param  array<string, string>  $notes
      */
+    /** Undoes the changes to Core that some Chat runs made (the job's version lists the runs: "12,13"). */
+    private function undo(UpdateJob $job): void
+    {
+        $district = app(DistrictBranch::class, ['repo' => config('tornado.repository_path')]);
+        $runs = array_values(array_filter(array_map('intval', explode(',', (string) $job->version))));
+        try {
+            $undone = $district->undo($runs, __('Changes made by Chat (run :id)', ['id' => end($runs) ?: 0]));
+        } finally {
+            $district->remember();
+        }
+        $job->addToLog($undone ? __('Undone: :changes', ['changes' => implode('; ', $undone)])."\n" : __('Those runs made no changes to Core.')."\n");
+    }
+
     private function core(UpdateJob $job, array &$notes): void
     {
         $repo = config('tornado.repository_path');

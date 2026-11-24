@@ -143,4 +143,19 @@ class DistrictBranchTest extends TestCase
         $this->assertSame(['Our other'], array_column($this->branch()->commits(), 'message'));
         $this->assertStringContainsString('Our greeting', $this->git('log', '--format=%s', 'district-before-1.1.0'));
     }
+
+    public function test_a_chats_changes_can_be_undone(): void
+    {
+        $this->write('web/app/Greeting.php', $this->lines('Hello, district'));
+        $this->branch()->record('Changes made by Chat (run 5)');
+        $this->write('web/app/Other.php', "<?php\n\nreturn 'run 6';\n");
+        $this->branch()->record('Changes made by Chat (run 6)');
+        $this->write('web/app/New.php', "<?php\n\nreturn 'not committed yet';\n");
+
+        $this->assertSame(['Changes made by Chat (run 6)', 'Changes made by Chat (run 6)'], $this->branch()->undo([6], 'Changes made by Chat (run 6)'));
+
+        $this->assertSame("<?php\n\nreturn 'other';\n", $this->read('web/app/Other.php'));
+        $this->assertFileDoesNotExist("{$this->repo}/web/app/New.php");
+        $this->assertSame($this->lines('Hello, district'), $this->read('web/app/Greeting.php'), 'run 5 is left as it is');
+    }
 }

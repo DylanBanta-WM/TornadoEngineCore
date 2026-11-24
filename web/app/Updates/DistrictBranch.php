@@ -131,6 +131,31 @@ class DistrictBranch
         return (json_decode((string) Setting::get('district.commits'), true) ?: []) + ['base' => null, 'commits' => []];
     }
 
+    /**
+     * Undoes the changes Chat runs made (their commits say "(run N)"), newest first, as new commits.
+     * Anything not committed yet is committed first, so a run's latest changes are included.
+     *
+     * @param  list<int>  $runs
+     * @return list<string> the changes undone
+     */
+    public function undo(array $runs, string $pending): array
+    {
+        $this->record($pending);
+        $undone = [];
+        foreach (array_reverse($this->commits()) as $commit) {
+            if (! preg_match('/\(run (\d+)\)/', $commit['message'], $m) || ! in_array((int) $m[1], $runs, true)) {
+                continue;
+            }
+            if (! $this->run(['revert', '--no-edit', $commit['hash']])->successful()) {
+                $this->run(['revert', '--abort']);
+                throw new RuntimeException(__('Couldn\'t undo ":change": later changes depend on it. Nothing else was undone after it.', ['change' => $commit['message']]));
+            }
+            $undone[] = $commit['message'];
+        }
+
+        return $undone;
+    }
+
     /** The official release the district branch sits on: the newest version tag in its history. */
     public function officialBase(): ?string
     {
