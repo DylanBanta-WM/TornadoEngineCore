@@ -43,7 +43,7 @@ class HarnessController extends Controller
 
         $task->update(['status' => 'running', 'started_at' => now()]);
 
-        return response()->json(['task' => $task->only(['id', 'prompt', 'session_id', 'permission_mode', 'permission_prompt_tool', 'system_prompt', 'cwd'])]);
+        return response()->json(['task' => $task->only(['id', 'prompt', 'session_id', 'permission_mode', 'permission_prompt_tool', 'system_prompt', 'cwd', 'model'])]);
     }
 
     /**

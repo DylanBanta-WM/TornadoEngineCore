@@ -21,6 +21,7 @@ run_task() {
   [ "$(jq -r '.session_id // empty' <<<"$task")" ] && args+=(--resume "$(jq -r .session_id <<<"$task")")
   [ "$(jq -r '.system_prompt // empty' <<<"$task")" ] && args+=(--append-system-prompt "$(jq -r .system_prompt <<<"$task")")
   [ "$(jq -r '.permission_prompt_tool // empty' <<<"$task")" ] && args+=(--permission-prompt-tool "$(jq -r .permission_prompt_tool <<<"$task")")
+  [ "$(jq -r '.model // empty' <<<"$task")" ] && args+=(--model "$(jq -r .model <<<"$task")")
 
   (cd "$dir" && jq -rj .prompt <<<"$task" | harness-claude "${args[@]}" >"$fifo" 2>"$errors") &
   pid=$!

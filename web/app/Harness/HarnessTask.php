@@ -19,13 +19,15 @@ class HarnessTask extends Model
     /** Claude Code's permission modes. */
     public const MODES = ['bypassPermissions', 'auto', 'acceptEdits', 'plan', 'manual'];
 
-    protected $fillable = ['source', 'reference', 'prompt', 'session_id', 'permission_mode', 'permission_prompt_tool', 'system_prompt', 'cwd',
+    protected $fillable = ['source', 'reference', 'prompt', 'session_id', 'permission_mode', 'permission_prompt_tool', 'system_prompt', 'cwd', 'model',
         'status', 'stop', 'result_session_id', 'error', 'started_at', 'finished_at'];
 
     public static function queue(string $source, string $prompt, ?string $reference = null, ?string $session = null, string $mode = 'bypassPermissions',
-        ?string $systemPrompt = null, ?string $permissionPromptTool = null, string $cwd = 'web'): self
+        ?string $systemPrompt = null, ?string $permissionPromptTool = null, string $cwd = 'web', ?string $model = null): self
     {
         return self::create([
+            // A Claude Code model alias (opus, sonnet, haiku: always the newest of each) or a model id.
+            'model' => $model !== null && preg_match('/^(opus|sonnet|haiku|claude-[a-z0-9.-]+)$/', $model) ? $model : null,
             'source' => $source,
             'reference' => $reference,
             'prompt' => $prompt,
