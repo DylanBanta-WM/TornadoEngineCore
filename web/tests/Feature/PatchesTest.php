@@ -81,23 +81,19 @@ class PatchesTest extends TestCase
         $this->assertSame([], $this->patches->all());
     }
 
-    public function test_core_and_new_files_can_be_patched(): void
+    public function test_new_module_files_can_be_patched_and_core_is_changed_directly(): void
     {
-        $this->assertSame('core', $this->patches->change('app/Core.php', "<?php\n\nreturn 'district core';\n"));
-        $this->patches->change('app/New.php', "<?php\n\nreturn 'new';\n");
-
-        $patch = file_get_contents("{$this->base}/local/patches/core.patch");
-        $this->assertStringContainsString('+++ b/app/Core.php', $patch);
+        $this->patches->change('vendor/tornado-engine/demo/src/New.php', "<?php\n\nreturn 'new';\n");
+        $patch = file_get_contents("{$this->base}/local/patches/tornado-engine/demo.patch");
         $this->assertStringContainsString('new file mode', $patch);
-        $this->assertStringContainsString('+++ b/app/New.php', $patch);
+        $this->assertStringContainsString('+++ b/src/New.php', $patch);
 
-        // Before a Core update it comes off, and goes back on after.
-        $this->script('remove', 'core');
-        $this->assertStringContainsString("'core'", file_get_contents("{$this->base}/app/Core.php"));
-        $this->assertFileDoesNotExist("{$this->base}/app/New.php");
-        $this->script('apply');
-        $this->assertStringContainsString('district core', file_get_contents("{$this->base}/app/Core.php"));
-        $this->assertFileExists("{$this->base}/app/New.php");
+        try {
+            $this->patches->change('app/Core.php', 'x');
+            $this->fail('Core was patched.');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('Change Core\'s files directly', $e->getMessage());
+        }
     }
 
     public function test_only_core_and_tornado_engine_modules_are_patched(): void

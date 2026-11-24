@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Administration\Administration;
 use App\Models\Setting;
 use App\Models\User;
+use App\Modules\ModuleRegistry;
 use App\Support\ConnectionCheck;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
@@ -168,13 +169,13 @@ class AdministrationTest extends TestCase
 
     public function test_settings_are_at_settings_and_the_old_addresses_lead_there(): void
     {
-        $admin = \App\Models\User::factory()->create(['is_admin' => true]);
+        $admin = User::factory()->create(['is_admin' => true]);
 
         $this->actingAs($admin)->get('/settings')->assertOk()->assertSee('Settings');
         $this->actingAs($admin)->get('/administration')->assertRedirect('/settings');
         $this->actingAs($admin)->get('/administration/updates')->assertRedirect('/settings/updates');
-        $this->assertSame('/settings/gam', \App\Modules\ModuleRegistry::settingsPath('/administration/gam'), 'modules may still say the old address');
-        $this->assertSame('/settings', \App\Modules\ModuleRegistry::settingsPath('/administration'));
-        $this->assertSame('/administrationx', \App\Modules\ModuleRegistry::settingsPath('/administrationx'));
+        $this->assertSame('/settings/gam', ModuleRegistry::settingsPath('/administration/gam'), 'modules may still say the old address');
+        $this->assertSame('/settings', ModuleRegistry::settingsPath('/administration'));
+        $this->assertSame('/administrationx', ModuleRegistry::settingsPath('/administrationx'));
     }
 }

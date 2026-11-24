@@ -2,6 +2,7 @@
 
 namespace App\Updates;
 
+use App\Models\Setting;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
 use Throwable;
@@ -109,22 +110,25 @@ class Updater
         $tag = 'v'.$job->version;
         $git = fn (array $args) => array_merge(['git', '-C', $repo], $args);
 
-        // The district's Core patch (web/local/patches/core.patch) comes off first, and goes back on at the end.
-        $this->step($job, ['php', "{$repo}/docker/patches.php", 'remove', 'core']);
-
-        // Files Core writes on each server (modules' containers and PHP extensions) don't count.
-        $changed = trim($this->step($job, $git(['status', '--porcelain', '--untracked-files=no', '--', '.', ':!docker/modules.yml', ':!docker/php-extensions.txt'])));
-        if ($changed !== '') {
-            throw new RuntimeException(__('Core\'s own files have been changed on this server, so it can\'t update itself. Update it by hand with git.'));
-        }
-
         $this->step($job, $git(['fetch', '--no-tags', 'https://github.com/'.config('tornado.core_repository').'.git', "refs/tags/{$tag}:refs/tags/{$tag}"]));
 
         if (trim($this->step($job, $git(['diff', '--name-only', 'HEAD', $tag, '--', 'docker', 'docker-compose.yml', 'harness']))) !== '') {
             $notes['rebuild'] = __('Needs a rebuild to finish.');
         }
 
-        $this->step($job, $git(['merge', '--ff-only', $tag]));
+        // The district's own changes (commits on its branch) go on top of the new version; if they clash,
+        // Core waits, unless someone chose to update anyway.
+        $job->addToLog("\n".__('Putting this district\'s changes on top of :tag.', ['tag' => $tag])."\n");
+        $district = app(DistrictBranch::class, ['repo' => $repo]);
+        try {
+            $setAside = $district->update($tag, (bool) $job->anyway);
+        } finally {
+            $district->remember();
+        }
+        Setting::put('district.set_aside', $setAside ? json_encode(['tag' => $tag, 'changes' => $setAside, 'backup' => DistrictBranch::BRANCH.'-before-'.$job->version]) : null);
+        if ($setAside) {
+            $job->addToLog(__('Set aside (they didn\'t fit :tag): :changes', ['tag' => $tag, 'changes' => implode('; ', $setAside)])."\n");
+        }
 
         if (is_file(config('tornado.updater.composer_local') ?? base_path('composer.local.json'))) {
             $this->step($job, ['composer', 'update', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*'], ['COMPOSER' => 'composer.local.json']);

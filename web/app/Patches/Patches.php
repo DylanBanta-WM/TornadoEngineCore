@@ -59,7 +59,8 @@ class Patches
 
         foreach (self::CORE_PATHS as $allowed) {
             if (str_starts_with($path, $allowed)) {
-                return ['target' => 'core', 'root' => $this->base, 'path' => $path];
+                // Core keeps a district's changes as commits on its district branch (App\Updates\DistrictBranch).
+                throw new RuntimeException(__('Change Core\'s files directly: this site keeps its changes to Core across updates (Settings → Updates).'));
             }
         }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Setting;
 use App\Models\User;
 use App\Updates\UpdateJob;
 use App\Updates\Updater;
@@ -79,6 +80,7 @@ class UpdatesTest extends TestCase
     {
         Process::fake([
             "*'status' '--porcelain'*" => Process::result(''),
+            "*'log' '--reverse'*" => Process::result(''),
             "*'diff' '--name-only'*'harness'*" => Process::result("docker-compose.yml\n"),
             '*modules.php*' => Process::result("Modules' containers changed. Run \"docker compose up -d\" again to start them.\n"),
             '*' => Process::result('ok'),
@@ -90,23 +92,35 @@ class UpdatesTest extends TestCase
         $job->refresh();
         $this->assertSame('done', $job->status, (string) $job->log);
         Process::assertRan(fn ($process) => $process->command === ['git', '-C', '/tornado', 'fetch', '--no-tags', 'https://github.com/DylanBanta-WM/TornadoEngineCore.git', 'refs/tags/v0.8.0:refs/tags/v0.8.0']);
-        Process::assertRan(fn ($process) => $process->command === ['git', '-C', '/tornado', 'merge', '--ff-only', 'v0.8.0']);
+        // No district changes: a fast-forward to the new version.
+        Process::assertRan(fn ($process) => array_slice($process->command, 0, 3) === ['git', '-C', '/tornado'] && array_slice($process->command, -3) === ['merge', '--ff-only', 'v0.8.0']);
         Process::assertRan(fn ($process) => $process->command === ['composer', 'install', '--no-interaction', '--no-progress', '--ignore-platform-req=ext-*']);
         Process::assertRan(fn ($process) => $process->command === ['php', 'artisan', 'migrate', '--force']);
         $this->assertArrayHasKey('rebuild', $job->notes);
         $this->assertArrayHasKey('containers', $job->notes);
     }
 
-    public function test_core_wont_update_over_local_changes(): void
+    public function test_a_clash_with_local_changes_holds_core_unless_updated_anyway(): void
     {
-        Process::fake(["*'status' '--porcelain'*" => Process::result(' M web/app/Models/User.php'), '*' => Process::result('')]);
+        // Real git behaviour is in DistrictBranchTest; here, the updater passes "anyway" along and reports a clash.
+        Process::fake([
+            "*'status' '--porcelain'*" => Process::result(''),
+            "*'log' '--reverse'*" => Process::result("abc123\t2026-11-24T10:00:00+00:00\tOur change\n"),
+            "*'rebase' '--onto'*" => Process::result('', 'CONFLICT', 1),
+            "*'cherry-pick' 'abc123'*" => Process::result('', 'CONFLICT', 1),
+            '*' => Process::result(''),
+        ]);
         $job = UpdateJob::queue('core', '0.8.0');
-
         app(Updater::class)->run($job);
+        $this->assertSame('failed', $job->fresh()->status);
+        $this->assertStringContainsString('clash with v0.8.0', $job->fresh()->log);
+        Process::assertDidntRun(fn ($process) => in_array('reset', $process->command, true));
 
-        $this->assertSame('failed', $job->fresh()->status, (string) $job->fresh()->log);
-        $this->assertStringContainsString('can\'t update itself', $job->fresh()->log);
-        Process::assertDidntRun(fn ($process) => in_array('merge', $process->command, true));
+        $anyway = UpdateJob::queue('core', '0.8.0');
+        $anyway->update(['anyway' => true]);
+        app(Updater::class)->run($anyway);
+        $this->assertSame('done', $anyway->fresh()->status, (string) $anyway->fresh()->log);
+        $this->assertSame(['Our change'], json_decode((string) Setting::get('district.set_aside'), true)['changes']);
     }
 
     public function test_the_updater_installs_a_module_through_composer_local_json(): void
@@ -279,5 +293,26 @@ class UpdatesTest extends TestCase
         $this->actingAs($this->admin())->get('/settings/updates')->assertOk();
         $this->assertSame(55, UpdateJob::activeProgress());
         $this->assertStringContainsString('role="progressbar"', view('components.update-jobs', ['jobs' => collect([$running->fresh()])])->render());
+    }
+
+    public function test_the_updates_page_shows_district_changes_and_offers_update_anyway_after_a_clash(): void
+    {
+        Setting::put('district.commits', json_encode(['base' => 'v0.7.0', 'commits' => [['hash' => 'a1', 'message' => 'Changes made by Chat (run 12)', 'date' => now()->toIso8601String()]]]));
+        $held = UpdateJob::queue('core', '0.8.0');
+        $held->update(['status' => 'failed', 'log' => 'Your district\'s changes to Core clash with v0.8.0, so Core wasn\'t updated.']);
+        $admin = $this->admin();
+
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Your changes to Core')->assertSee('Changes made by Chat (run 12)')
+            ->assertSee('Core 0.8.0 wasn&#039;t installed', false)->assertSee('Update anyway');
+
+        $this->actingAs($admin)->post('/administration/updates/anyway', ['version' => '0.8.0'])->assertSessionHas('district_status');
+        $this->assertTrue(UpdateJob::latest('id')->first()->anyway);
+
+        Setting::put('district.set_aside', json_encode(['tag' => 'v0.8.0', 'changes' => ['Our greeting'], 'backup' => 'district-before-0.8.0']));
+        $this->actingAs($admin)->get('/settings/updates')->assertSee('Our greeting')->assertSee('district-before-0.8.0');
+        $this->actingAs($admin)->post('/administration/district/dismiss');
+        $this->assertNull(Setting::get('district.set_aside'));
+
+        $this->actingAs(User::factory()->create())->post('/administration/updates/anyway', ['version' => '0.8.0'])->assertForbidden();
     }
 }

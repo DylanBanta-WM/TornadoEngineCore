@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Harness\HarnessTask;
 use App\Models\Setting;
+use App\Updates\DistrictBranch;
 use App\Updates\UpdateJob;
 use App\Updates\Updater;
 use Illuminate\Console\Command;
@@ -26,6 +28,7 @@ class RunUpdater extends Command
         }
 
         $beat = 0;
+        $recorded = 0;
         while (true) {
             if (time() - $beat >= 30) {
                 Setting::put('updater.heartbeat', now()->toIso8601String());
@@ -48,6 +51,22 @@ class RunUpdater extends Command
 
             if ($this->option('once')) {
                 return self::SUCCESS;
+            }
+
+            // Changes made to Core's files (by Chat, or by hand) become commits on the district branch, about once
+            // a minute, and never while Chat is working (so a half-done change isn't one).
+            if (time() - $recorded >= 60 && ! HarnessTask::where('status', 'running')->exists()) {
+                $recorded = time();
+                try {
+                    $note = Setting::get('district.note');
+                    $district = app(DistrictBranch::class);
+                    if ($district->record($note ?: __('Changes made on this server'))) {
+                        Setting::put('district.note', null);
+                    }
+                    $district->remember();
+                } catch (\Throwable $e) {
+                    report($e);
+                }
             }
             sleep(3);
         }

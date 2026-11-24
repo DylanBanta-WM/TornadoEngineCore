@@ -6952,16 +6952,16 @@
         },
         {
             "name": "tornado-engine/chat",
-            "version": "v0.19.3",
+            "version": "v0.19.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Chat.git",
-                "reference": "347d580191a50614aa04ad4c22c68f3c5e9994f7"
+                "reference": "6b5e078f6749ccdad7f101a69fc1d0eae223096f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/347d580191a50614aa04ad4c22c68f3c5e9994f7",
-                "reference": "347d580191a50614aa04ad4c22c68f3c5e9994f7",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Chat/zipball/6b5e078f6749ccdad7f101a69fc1d0eae223096f",
+                "reference": "6b5e078f6749ccdad7f101a69fc1d0eae223096f",
                 "shasum": ""
             },
             "require": {
@@ -6995,9 +6995,9 @@
             "description": "Tornado Engine core-module: talk with Claude from the website, and have it build new tools as modules.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.19.3"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Chat/tree/v0.19.4"
             },
-            "time": "2026-11-24T14:54:47+00:00"
+            "time": "2026-11-24T15:35:38+00:00"
         },
         {
             "name": "tornado-engine/cron",
@@ -7096,16 +7096,16 @@
         },
         {
             "name": "tornado-engine/module-finder",
-            "version": "v0.12.4",
+            "version": "v0.12.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder.git",
-                "reference": "199dcfba509f3a69ccf9753c745f95c801ac0dcd"
+                "reference": "8fe37a53338a38ddb2923eab73bbfb2eee184c61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/199dcfba509f3a69ccf9753c745f95c801ac0dcd",
-                "reference": "199dcfba509f3a69ccf9753c745f95c801ac0dcd",
+                "url": "https://api.github.com/repos/DylanBanta-WM/TornadoEngine-Module-Finder/zipball/8fe37a53338a38ddb2923eab73bbfb2eee184c61",
+                "reference": "8fe37a53338a38ddb2923eab73bbfb2eee184c61",
                 "shasum": ""
             },
             "require": {
@@ -7137,9 +7137,9 @@
             "description": "Tornado Engine core-module: finds modules on GitHub, and installs and updates them from the /modules page.",
             "support": {
                 "issues": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/issues",
-                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.12.4"
+                "source": "https://github.com/DylanBanta-WM/TornadoEngine-Module-Finder/tree/v0.12.5"
             },
-            "time": "2026-11-23T21:31:02+00:00"
+            "time": "2026-11-24T15:17:48+00:00"
         },
         {
             "name": "tornado-engine/nav",

@@ -68,6 +68,9 @@ class HarnessController extends Controller
 
     public function finishTask(Request $request, string $task): JsonResponse
     {
+        // If this run changed Core's files, the updater's commit says which run (never what was asked: it may have names).
+        Setting::put('district.note', __('Changes made by Chat (run :id)', ['id' => $task]));
+
         $task = HarnessTask::findOrFail($task);
         $task->update([
             'status' => $task->stop ? 'stopped' : ((int) $request->input('exit', 1) === 0 ? 'done' : 'failed'),

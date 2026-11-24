@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Patches\Patches;
 use App\Updates\CoreRelease;
 use App\Updates\Rebuild;
@@ -65,5 +66,25 @@ class UpdatesController extends Controller
         $patches->remove($target);
 
         return back()->with('patches_status', __('Removed the patch for :target.', ['target' => $target === 'core' ? __('Core') : $target]));
+    }
+
+    /** Installs a Core version even though the district's changes clash: those are set aside. */
+    public function anyway(Request $request): RedirectResponse
+    {
+        $version = (string) $request->validate(['version' => ['required', 'string', 'regex:/^\d+\.\d+\.\d+$/']])['version'];
+        if (UpdateJob::busy()) {
+            return back()->withErrors(['updates' => __('An install or update is already running.')]);
+        }
+        $job = UpdateJob::queue('core', $version);
+        $job->update(['anyway' => true]);
+
+        return back()->with('district_status', __('Installing Core :version. Changes that clash will be set aside.', ['version' => $version]));
+    }
+
+    public function dismissSetAside(): RedirectResponse
+    {
+        Setting::put('district.set_aside', null);
+
+        return back();
     }
 }

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UpdateJob extends Model
 {
-    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'delete_data', 'status', 'progress', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
+    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'delete_data', 'anyway', 'status', 'progress', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
 
     public static function queue(string $kind, string $version, ?string $package = null, ?string $repository = null, bool $install = false): self
     {
@@ -99,6 +99,6 @@ class UpdateJob extends Model
 
     protected function casts(): array
     {
-        return ['notes' => 'array', 'install' => 'boolean', 'delete_data' => 'boolean', 'finished_at' => 'datetime', 'opened_at' => 'datetime'];
+        return ['notes' => 'array', 'install' => 'boolean', 'delete_data' => 'boolean', 'anyway' => 'boolean', 'finished_at' => 'datetime', 'opened_at' => 'datetime'];
     }
 }
