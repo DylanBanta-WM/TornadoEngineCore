@@ -266,4 +266,18 @@ class UpdatesTest extends TestCase
         $this->assertSame('done', $job->fresh()->status, (string) $job->fresh()->log);
         $this->assertStringContainsString('Network storage was busy. Trying again.', $job->fresh()->log);
     }
+
+    public function test_a_finished_job_is_at_100_percent_and_a_running_one_shows_a_bar(): void
+    {
+        Process::fake();
+        $job = UpdateJob::queue('module', '1.0.0', 'tornado-engine/thing');
+        app(Updater::class)->run($job);
+        $this->assertSame(100, $job->fresh()->progress);
+
+        $running = UpdateJob::queue('module', '1.1.0', 'tornado-engine/other');
+        $running->update(['status' => 'running', 'progress' => 55]);
+        $this->actingAs($this->admin())->get('/settings/updates')->assertOk();
+        $this->assertSame(55, UpdateJob::activeProgress());
+        $this->assertStringContainsString('role="progressbar"', view('components.update-jobs', ['jobs' => collect([$running->fresh()])])->render());
+    }
 }

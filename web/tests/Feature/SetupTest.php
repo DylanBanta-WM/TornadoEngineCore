@@ -259,8 +259,10 @@ class SetupTest extends TestCase
         $this->assertTrue(Setup::complete());
 
         // A wait while they install, then the dashboard (where the tour starts).
-        $this->actingAs($admin)->get('/setup/installing')->assertOk()->assertSee('One more minute, we&#039;re getting everything set up for you.', false);
-        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false]);
+        $this->actingAs($admin)->get('/setup/installing')->assertOk()->assertSee('One moment while we get things ready for you.', false);
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false, 'progress' => 0]);
+        UpdateJob::query()->update(['status' => 'running', 'progress' => 40]);
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false, 'progress' => 40]);
         UpdateJob::query()->update(['status' => 'done']);
         $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => true, 'url' => url('/dashboard')]);
 
@@ -268,7 +270,7 @@ class SetupTest extends TestCase
         Rebuild::markNeeded();
         @mkdir(storage_path('app/tornado'), 0775, true);
         file_put_contents(storage_path('app/tornado/rebuild.heartbeat'), now()->toIso8601String());
-        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false]);
+        $this->actingAs($admin)->getJson('/setup/installing/status')->assertExactJson(['done' => false, 'progress' => 97]);
         $this->assertFileExists(storage_path('app/tornado/rebuild.request'));
         @unlink(storage_path('app/tornado/rebuild.request'));
         file_put_contents(storage_path('app/tornado/rebuild.status'), json_encode(['state' => 'done', 'started' => now()->toIso8601String(), 'finished' => now()->addSecond()->toIso8601String(), 'exit' => 0]));

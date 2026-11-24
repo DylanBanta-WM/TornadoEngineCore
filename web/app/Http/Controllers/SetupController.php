@@ -225,15 +225,16 @@ class SetupController extends Controller
     public function installingStatus(): JsonResponse
     {
         if (UpdateJob::busy()) {
-            return response()->json(['done' => false]);
+            return response()->json(['done' => false, 'progress' => UpdateJob::activeProgress()]);
         }
+        // The installs are done; what's left is the rebuild, the last bit of the bar.
         if (Rebuild::running()) {
-            return response()->json(['done' => false]);
+            return response()->json(['done' => false, 'progress' => 97]);
         }
         if (Rebuild::needed() && Rebuild::helper()) {
             Rebuild::request();
 
-            return response()->json(['done' => false]);
+            return response()->json(['done' => false, 'progress' => 97]);
         }
 
         return response()->json(['done' => true, 'url' => route('dashboard')]);

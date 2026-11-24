@@ -36,6 +36,9 @@
                     <p class="min-w-0 break-all font-medium text-gray-900 dark:text-gray-100">{{ $job->label() }}</p>
                     <span class="rounded px-2 py-0.5 text-xs font-medium {{ $badge[$job->status][0] }}">{{ $badge[$job->status][1] }}</span>
                 </div>
+                @if ($job->active())
+                    <x-progress-bar :percent="$job->status === 'running' ? $job->progress : 0" />
+                @endif
                 <p class="text-gray-600 dark:text-gray-400">{{ $job->created_at->diffForHumans() }}@if ($job->user) · {{ $job->user->name }}@endif</p>
                 @foreach (array_diff_key($job->notes ?? [], $rebuildNeeded ? [] : ['rebuild' => true, 'containers' => true]) as $note)
                     <p class="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-amber-900 dark:text-amber-200">{{ $note }}</p>

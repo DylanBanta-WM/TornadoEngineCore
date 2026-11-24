@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UpdateJob extends Model
 {
-    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'delete_data', 'status', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
+    protected $fillable = ['kind', 'package', 'version', 'repository', 'install', 'delete_data', 'status', 'progress', 'log', 'notes', 'user_id', 'finished_at', 'opened_at'];
 
     public static function queue(string $kind, string $version, ?string $package = null, ?string $repository = null, bool $install = false): self
     {
@@ -52,6 +52,14 @@ class UpdateJob extends Model
         return self::whereIn('status', ['queued', 'running'])->exists();
     }
 
+    /** The percentage of the queued or running jobs together, or null when none is. */
+    public static function activeProgress(): ?int
+    {
+        $jobs = self::whereIn('status', ['queued', 'running'])->get(['status', 'progress']);
+
+        return $jobs->isEmpty() ? null : (int) round($jobs->avg(fn ($job) => $job->status === 'queued' ? 0 : $job->progress));
+    }
+
     /** The queued or running job for this package (or Core, with null), if any. */
     public static function pendingFor(?string $package): ?self
     {
@@ -75,6 +83,12 @@ class UpdateJob extends Model
                 : __('Uninstall :package', ['package' => $this->package]),
             default => __(':package :version', ['package' => $this->package, 'version' => $this->version]),
         };
+    }
+
+    /** Whether it's queued or running (so a progress bar belongs to it). */
+    public function active(): bool
+    {
+        return in_array($this->status, ['queued', 'running'], true);
     }
 
     public function addToLog(string $text): void

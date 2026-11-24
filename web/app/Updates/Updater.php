@@ -13,9 +13,21 @@ use Throwable;
  */
 class Updater
 {
+    /** Steps run so far, and how many there will be about (the progress bar's share of each). */
+    private int $done = 0;
+
+    private int $total = 1;
+
     public function run(UpdateJob $job): void
     {
-        $job->update(['status' => 'running', 'log' => '']);
+        $this->done = 0;
+        // What finish() runs is 5 more steps (containers, patches, migrations, styles, caches).
+        $this->total = 5 + match ($job->kind) {
+            'core' => 7,
+            'remove' => $job->delete_data ? 2 : 1,
+            default => 1,
+        };
+        $job->update(['status' => 'running', 'progress' => 0, 'log' => '']);
         $notes = [];
 
         try {
@@ -25,7 +37,7 @@ class Updater
                 default => $this->module($job),
             };
             $this->finish($job, $notes);
-            $job->update(['status' => 'done', 'notes' => $notes, 'finished_at' => now()]);
+            $job->update(['status' => 'done', 'progress' => 100, 'notes' => $notes, 'finished_at' => now()]);
             if ($notes) {
                 Rebuild::markNeeded();
             }
@@ -171,6 +183,9 @@ class Updater
             $job->addToLog((string) @file_get_contents("{$dir}/assets.log"));
             throw new RuntimeException(__('Rebuilding the styles failed.'));
         }
+
+        $this->done++;
+        $this->report($job);
     }
 
     /**
@@ -182,6 +197,9 @@ class Updater
     private function step(UpdateJob $job, array $command, array $env = []): string
     {
         $job->addToLog("\n$ ".implode(' ', $command)."\n");
+
+        // Starting a step counts the ones before it as done; the bar stays under 100 until the job is.
+        $this->report($job);
 
         // On network storage (NFS), a file a running process still has open leaves a .nfs file
         // behind that can't be deleted for a moment; Composer then fails. Wait and try again.
@@ -201,7 +219,15 @@ class Updater
             throw new RuntimeException(__('This step failed, so the rest didn\'t run.'));
         }
 
+        $this->done++;
+        $this->report($job);
+
         return $output;
+    }
+
+    private function report(UpdateJob $job): void
+    {
+        $job->update(['progress' => min(95, (int) floor($this->done / max($this->total, 1) * 100))]);
     }
 
     /**
